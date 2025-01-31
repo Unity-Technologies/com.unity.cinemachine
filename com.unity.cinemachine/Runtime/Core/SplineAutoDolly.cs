@@ -13,7 +13,7 @@ namespace Unity.Cinemachine
         /// <summary>If set, will enable AutoDolly on a spline</summary>
         [Tooltip("If set, will enable the selected automatic dolly along the spline")]
         public bool Enabled;
-        
+
         /// <summary>This is the object that actually implements the AutoDolly</summary>
         [SerializeReference]
         public ISplineAutoDolly Method;
@@ -44,7 +44,7 @@ namespace Unity.Cinemachine
             /// <param name="deltaTime">Current deltaTime.  If smaller than 0, then previous frame data should be ignored.</param>
             /// <returns>The desired position on the spline, expressed in positionUnits.</returns>
             float GetSplinePosition(
-                MonoBehaviour sender, Transform target, SplineContainer spline, 
+                MonoBehaviour sender, Transform target, SplineContainer spline,
                 float currentPosition, PathIndexUnit positionUnits, float deltaTime);
         }
 
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine
             /// <param name="deltaTime">Current deltaTime.  If smaller than 0, then previous frame data should be ignored.</param>
             /// <returns>The desired position on the spline, expressed in positionUnits.</returns>
             float ISplineAutoDolly.GetSplinePosition(
-                MonoBehaviour sender, Transform target, SplineContainer spline, 
+                MonoBehaviour sender, Transform target, SplineContainer spline,
                 float currentPosition, PathIndexUnit positionUnits, float deltaTime)
             {
                 // Only works if playing
@@ -106,12 +106,12 @@ namespace Unity.Cinemachine
 
             /// <summary>
             /// Affects how many segments to split a spline into when calculating the nearest point.
-            /// Higher values mean smaller and more segments, which increases accuracy at the cost of 
-            /// processing time.  In most cases, the default resolution is appropriate. Use 
+            /// Higher values mean smaller and more segments, which increases accuracy at the cost of
+            /// processing time.  In most cases, the default resolution is appropriate. Use
             /// with <see cref="SearchIteration"/> to fine-tune point accuracy.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
-            [Tooltip("Affects how many segments to split a spline into when calculating the nearest point.  " 
+            [Tooltip("Affects how many segments to split a spline into when calculating the nearest point.  "
                 + "Higher values mean smaller and more segments, which increases accuracy at the cost of "
                 + "processing time.  In most cases, the default value (4) is appropriate. Use with SearchIteration "
                 + "to fine-tune point accuracy.")]
@@ -119,8 +119,8 @@ namespace Unity.Cinemachine
 
             /// <summary>
             /// The nearest point is calculated by finding the nearest point on the entire length
-            /// of the spline using <see cref="SearchResolution"/> to divide into equally spaced line segments. 
-            /// Successive iterations will then subdivide further the nearest segment, producing more 
+            /// of the spline using <see cref="SearchResolution"/> to divide into equally spaced line segments.
+            /// Successive iterations will then subdivide further the nearest segment, producing more
             /// accurate results. In most cases, the default value is sufficient.
             /// For more information, see SplineUtility.GetNearestPoint.
             /// </summary>
@@ -131,7 +131,7 @@ namespace Unity.Cinemachine
             public int SearchIteration = 2;
 
             /// <summary>Called from OnValidate() to validate the settings.</summary>
-            void ISplineAutoDolly.Validate() 
+            void ISplineAutoDolly.Validate()
             {
                 SearchResolution = Mathf.Max(SearchResolution, 1);
                 SearchIteration = Mathf.Max(SearchIteration, 1);
@@ -154,15 +154,15 @@ namespace Unity.Cinemachine
             /// <param name="deltaTime">Current deltaTime.  If smaller than 0, then previous frame data should be ignored.</param>
             /// <returns>The desired position on the spline, expressed in positionUnits.</returns>
             float ISplineAutoDolly.GetSplinePosition(
-                MonoBehaviour sender, Transform target, SplineContainer spline, 
+                MonoBehaviour sender, Transform target, SplineContainer spline,
                 float currentPosition, PathIndexUnit positionUnits, float deltaTime)
             {
                 if (target == null || !spline.IsValid())
                     return currentPosition;
 
                 // Convert target into spline local space, because SplineUtility works in spline local space
-                SplineUtility.GetNearestPoint(spline.Spline, 
-                    spline.transform.InverseTransformPoint(target.position), out _, out var normalizedPos, 
+                SplineUtility.GetNearestPoint(spline.Spline,
+                    spline.transform.InverseTransformPoint(target.position), out _, out var normalizedPos,
                     SearchResolution, SearchIteration);
 
                 // GML hack because SplineUtility.GetNearestPoint is buggy

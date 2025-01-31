@@ -9,19 +9,19 @@ using UnityEngine.InputSystem.Users;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This is a behaviour that is used to drive other behaviours that implement IInputAxisOwner, 
-    /// which it discovers dynamically.  It is the bridge between the input system and 
+    /// This is a behaviour that is used to drive other behaviours that implement IInputAxisOwner,
+    /// which it discovers dynamically.  It is the bridge between the input system and
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
-    /// 
-    /// This implementation can read input from the Input package, or from the legacy input system, 
+    ///
+    /// This implementation can read input from the Input package, or from the legacy input system,
     /// or both, depending on what is installed in the project.
     /// </summary>
     [ExecuteAlways]
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Input Axis Controller")]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineInputAxisController.html")]
-    public class CinemachineInputAxisController 
-        : InputAxisControllerBase<CinemachineInputAxisController.Reader> 
+    public class CinemachineInputAxisController
+        : InputAxisControllerBase<CinemachineInputAxisController.Reader>
     {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
@@ -37,9 +37,9 @@ namespace Unity.Cinemachine
         /// <summary>If set, Input Actions will be auto-enabled at start</summary>
         [Tooltip("If set, Input Actions will be auto-enabled at start")]
         public bool AutoEnableInputs = true;
-#endif        
+#endif
         /// <summary>
-        /// This is a mechanism to allow the inspector to set up default values 
+        /// This is a mechanism to allow the inspector to set up default values
         /// when the component is reset.
         /// </summary>
         /// <param name="axis">The information of the input axis.</param>
@@ -47,10 +47,10 @@ namespace Unity.Cinemachine
         internal delegate void SetControlDefaultsForAxis(
             in IInputAxisOwner.AxisDescriptor axis, ref Controller controller);
         internal static SetControlDefaultsForAxis SetControlDefaults;
-        
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
-        /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.  
+        /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.
         /// To handle other types you can install a handler to read InputActions of a different type.
         /// </summary>
         /// <param name="action">The action to read</param>
@@ -67,7 +67,7 @@ namespace Unity.Cinemachine
             PlayerIndex = -1;
             AutoEnableInputs = true;
         }
-#endif        
+#endif
 
         /// <summary>
         /// Creates default controllers for an axis.
@@ -77,18 +77,18 @@ namespace Unity.Cinemachine
         /// <param name="controller">Controller to drive the axis.</param>
         protected override void InitializeControllerDefaultsForAxis(
             in IInputAxisOwner.AxisDescriptor axis, Controller controller)
-        { 
+        {
             SetControlDefaults?.Invoke(axis, ref controller);
         }
 
         //TODO Support fixed update as well. Input system has a setting to update inputs only during fixed update.
         //TODO This won't work accuratly if this setting is enabled.
-        void Update() 
+        void Update()
         {
             if (Application.isPlaying)
                 UpdateControllers();
         }
-        
+
         /// <summary>Read an input value from legacy input or from and Input Action</summary>
         [Serializable]
         public sealed class Reader : IInputAxisReader
@@ -108,7 +108,7 @@ namespace Unity.Cinemachine
             internal InputAction m_CachedAction;
 
             /// <summary>
-            /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.  
+            /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.
             /// To handle other types you can install a handler to read InputActions of a different type.
             /// </summary>
             /// <param name="action">The action to read</param>
@@ -122,7 +122,7 @@ namespace Unity.Cinemachine
 #endif
 
 #if ENABLE_LEGACY_INPUT_MANAGER
-            /// <summary>Axis name for the Legacy Input system (if used).  
+            /// <summary>Axis name for the Legacy Input system (if used).
             /// CinemachineCore.GetInputAxis() will be called with this name.</summary>
             [InputAxisNameProperty]
             [Tooltip("Axis name for the Legacy Input system (if used).  "
@@ -137,7 +137,7 @@ namespace Unity.Cinemachine
 #endif
 
             /// <summary>Enable this if the input value is inherently dependent on frame time.
-            /// For example, mouse deltas will naturally be bigger for longer frames, so 
+            /// For example, mouse deltas will naturally be bigger for longer frames, so
             /// should not normally be scaled by deltaTime.</summary>
             [Tooltip("Enable this if the input value is inherently dependent on frame time.  "
                 + "For example, mouse deltas will naturally be bigger for longer frames, so "
@@ -186,7 +186,7 @@ namespace Unity.Cinemachine
                         m_CachedAction.Enable();
 
                     // local function to wrap the lambda which otherwise causes a tiny gc
-                    static InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) 
+                    static InputAction GetFirstMatch(in InputUser user, InputActionReference aRef)
                     {
                         var iter = user.actions.GetEnumerator();
                         while (iter.MoveNext())
@@ -226,13 +226,13 @@ namespace Unity.Cinemachine
             /// <param name="defaultReader">Not used</param>
             /// <returns>Returns the value of the input device.</returns>
             float ReadInput(
-                InputAction action, IInputAxisOwner.AxisDescriptor.Hints hint, 
+                InputAction action, IInputAxisOwner.AxisDescriptor.Hints hint,
                 UnityEngine.Object context, ControlValueReader defaultReader)
             {
                 var control = action.activeControl;
                 if (control != null)
                 {
-                    try 
+                    try
                     {
                         // If we can read as a Vector2, do so
                         if (control.valueType == typeof(Vector2) || action.expectedControlType == "Vector2")
@@ -241,7 +241,7 @@ namespace Unity.Cinemachine
                             return hint == IInputAxisOwner.AxisDescriptor.Hints.Y ? value.y : value.x;
                         }
                         // Default: assume type is float
-                        return action.ReadValue<float>(); 
+                        return action.ReadValue<float>();
                     }
                     catch (InvalidOperationException)
                     {

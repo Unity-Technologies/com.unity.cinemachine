@@ -33,7 +33,7 @@ namespace Unity.Cinemachine
                 }
             };
             m_OriginalTextColor = m_DebugLabel.style.color;
-                
+
             var debugUIContainer = CinemachineDebug.GetOrCreateUIContainer(outputCamera);
             debugUIContainer.Add(m_DebugLabel);
         }
@@ -52,7 +52,7 @@ namespace Unity.Cinemachine
         {
             ReleaseUnmanagedResources();
         }
-            
+
         void ReleaseUnmanagedResources()
         {
             if (m_DebugLabel != null)

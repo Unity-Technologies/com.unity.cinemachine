@@ -22,7 +22,7 @@ namespace Unity.Cinemachine
         [Tooltip("Objects on these layers will be detected")]
         public LayerMask AimCollisionFilter;
 
-        /// <summary>Objects with this tag will be ignored.  
+        /// <summary>Objects with this tag will be ignored.
         /// It is a good idea to set this field to the target's tag.</summary>
         [TagField]
         [Tooltip("Objects with this tag will be ignored.  "
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine
         [Tooltip("If set, camera noise will be adjusted to stabilize target on screen")]
         public bool NoiseCancellation = true;
 
-        /// <summary>World space position of where the player would hit if a projectile were to 
+        /// <summary>World space position of where the player would hit if a projectile were to
         /// be fired from the player origin.  This may be different
         /// from state.ReferenceLookAt due to camera offset from player origin.</summary>
         public Vector3 AimTarget { get; private set; }
@@ -54,7 +54,7 @@ namespace Unity.Cinemachine
             AimDistance = 200.0f;
             NoiseCancellation = true;
         }
-        
+
         /// <summary>
         /// Sets the ReferenceLookAt to be the result of a raycast in the direction of camera forward.
         /// If an object is hit, point is placed there, else it is placed at AimDistance along the ray.
@@ -125,17 +125,17 @@ namespace Unity.Cinemachine
             }
 
             aimDistance = Mathf.Max(1, aimDistance);
-            bool hasHit = RuntimeUtility.RaycastIgnoreTag(new Ray(camPos, fwd), 
+            bool hasHit = RuntimeUtility.RaycastIgnoreTag(new Ray(camPos, fwd),
                 out RaycastHit hitInfo, aimDistance, AimCollisionFilter, IgnoreTag);
             return hasHit ? hitInfo.point : camPos + fwd * aimDistance;
         }
-        
+
         Vector3 ComputeAimTarget(Vector3 cameraLookAt, Transform player)
         {
             // Adjust for actual player aim target (may be different due to offset)
             var playerPos = player.position;
             var dir = cameraLookAt - playerPos;
-            if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir), 
+            if (RuntimeUtility.RaycastIgnoreTag(new Ray(playerPos, dir),
                 out RaycastHit hitInfo, dir.magnitude, AimCollisionFilter, IgnoreTag))
                 return hitInfo.point;
             return cameraLookAt;

@@ -2,7 +2,7 @@
 
 ![Spline Dolly LookAt Targets Inspector](images/SplineDollyLookAtTargetsInspector.png)
 
-This CinemachineCamera __Rotation Control__ behaviour lets you assign LookAt targets to points on a spline, so that as the camera arrives at the position on the spline, it looks at the specified place.  
+This CinemachineCamera __Rotation Control__ behaviour lets you assign LookAt targets to points on a spline, so that as the camera arrives at the position on the spline, it looks at the specified place.
 
 It's useful for creating curated dolly shots with specified aim targets along the way.  This behaviour eliminates the need to provide rotation animations for the camera that are synchronized with the spline position animation.  LookAt points are anchored to specific spline positions, and because they specify a LookAt target point, the appropriate rotation angles get computed dynamically.  As a result, the rotation animation is more robust and less likely to break if the spline is modified.
 

@@ -29,7 +29,7 @@ namespace Unity.Cinemachine
         [VcamTargetProperty]
         public Transform m_Follow = null;
 
-        /// <summary>If enabled, this lens setting will apply to all three child rigs, 
+        /// <summary>If enabled, this lens setting will apply to all three child rigs,
         /// otherwise the child rig lens settings will be used</summary>
         [Tooltip("If enabled, this lens setting will apply to all three child rigs, "
             + "otherwise the child rig lens settings will be used")]
@@ -45,8 +45,8 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_LensAttributes")]
         public LegacyLensSettings m_Lens = LegacyLensSettings.Default;
 
-        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
-        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will
         /// make an arbitrary choice.</summary>
         [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
             + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
         [Tooltip("Controls how automatic recentering of the Y axis is accomplished")]
         public AxisState.Recentering m_YAxisRecentering = new AxisState.Recentering(false, 1, 2);
 
-        /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to 
+        /// <summary>The Horizontal axis.  Value is -180...180.  This is passed on to
         /// the rigs' OrbitalTransposer component</summary>
         [Tooltip("The Horizontal axis.  Value is -180...180.  "
             + "This is passed on to the rigs' OrbitalTransposer component")]
@@ -90,7 +90,7 @@ namespace Unity.Cinemachine
         public TargetTracking.BindingMode m_BindingMode
             = TargetTracking.BindingMode.LazyFollow;
 
-        /// <summary>Controls how taut is the line that connects the rigs' orbits, which 
+        /// <summary>Controls how taut is the line that connects the rigs' orbits, which
         /// determines final placement on the Y axis</summary>
         [Tooltip("Controls how taut is the line that connects the rigs' orbits, which "
             + "determines final placement on the Y axis")]
@@ -172,7 +172,7 @@ namespace Unity.Cinemachine
                 }
             }
         }
-        
+
         /// <summary>Helper for upgrading from CM2</summary>
         internal protected override bool IsDprecated => true;
 
@@ -186,7 +186,7 @@ namespace Unity.Cinemachine
             m_Lens.Validate();
 
             InvalidateRigCache();
-            
+
 #if UNITY_EDITOR
             for (int i = 0; m_Rigs != null && i < m_Rigs.Length; ++i)
                 if (m_Rigs[i] != null)
@@ -338,7 +338,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Force the virtual camera to assume a given position and orientation.  
+        /// Force the virtual camera to assume a given position and orientation.
         /// Procedural placement then takes over
         /// </summary>
         /// <param name="pos">Worldspace position to take</param>
@@ -367,7 +367,7 @@ namespace Unity.Cinemachine
             }
             base.ForceCameraPosition(pos, rot);
         }
-        
+
         /// <summary>Internal use only.  Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.  All 3 child rigs are updated,
         /// and a blend calculated, depending on the value of the Y axis.</summary>
@@ -430,8 +430,8 @@ namespace Unity.Cinemachine
 //              m_YAxis.m_Recentering.DoRecentering(ref m_YAxis, -1, 0.5f);
 //            m_RecenterToTargetHeading.CancelRecentering();
 //            m_YAxis.m_Recentering.CancelRecentering();
-            if (fromCam != null 
-                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+            if (fromCam != null
+                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(this))
             {
                 var cameraPos = fromCam.State.RawPosition;
@@ -456,7 +456,7 @@ namespace Unity.Cinemachine
                 UpdateCameraState(worldUp, deltaTime);
             m_OnCameraLiveEvent?.Invoke(this, fromCam);
         }
-        
+
         /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
         /// <returns>Returns true when input is required.</returns>
         bool AxisState.IRequiresInput.RequiresInput() => true;
@@ -788,7 +788,7 @@ namespace Unity.Cinemachine
 
         float UpdateXAxisHeading(CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up)
         {
-            if (this == null)   
+            if (this == null)
                 return 0; // deleted
 
             // Update the axis only once per frame
@@ -917,7 +917,7 @@ namespace Unity.Cinemachine
         Vector4[] m_CachedCtrl2;
         void UpdateCachedSpline()
         {
-            bool cacheIsValid = (m_CachedOrbits != null && m_CachedOrbits.Length == 3 
+            bool cacheIsValid = (m_CachedOrbits != null && m_CachedOrbits.Length == 3
                 && m_CachedTension == m_SplineCurvature);
             for (int i = 0; i < 3 && cacheIsValid; ++i)
                 cacheIsValid = (m_CachedOrbits[i].m_Height == m_Orbits[i].m_Height

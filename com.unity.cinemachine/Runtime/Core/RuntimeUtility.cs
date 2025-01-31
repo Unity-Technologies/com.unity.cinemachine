@@ -6,7 +6,7 @@ namespace Unity.Cinemachine
     /// or its editor tools in various places</summary>
     public static class RuntimeUtility
     {
-        /// <summary>Convenience to destroy an object, using the appropriate method depending 
+        /// <summary>Convenience to destroy an object, using the appropriate method depending
         /// on whether the game is playing</summary>
         /// <param name="obj">The object to destroy</param>
         public static void DestroyObject(UnityEngine.Object obj)
@@ -25,11 +25,11 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Check whether a GameObject is a prefab.  
+        /// Check whether a GameObject is a prefab.
         /// For editor only - some things are disallowed if prefab.  In runtime, will always return false.
         /// </summary>
         /// <param name="gameObject">the object to check</param>
-        /// <returns>If editor, checks if object is a prefab or prefab instance.  
+        /// <returns>If editor, checks if object is a prefab or prefab instance.
         /// In runtime, returns false always</returns>
         public static bool IsPrefab(GameObject gameObject)
         {
@@ -40,7 +40,7 @@ namespace Unity.Cinemachine
             return false;
 #endif
         }
-        
+
 #if CINEMACHINE_PHYSICS
         static RaycastHit[] s_HitBuffer = new RaycastHit[16];
         static int[] s_PenetrationIndexBuffer = new int[16];
@@ -94,8 +94,8 @@ namespace Unity.Cinemachine
         /// <param name="ignoreTag">Tag to ignore</param>
         /// <returns>True if something is hit.  Results in hitInfo.</returns>
         public static bool SphereCastIgnoreTag(
-            Ray ray, float radius, 
-            out RaycastHit hitInfo, float rayLength, 
+            Ray ray, float radius,
+            out RaycastHit hitInfo, float rayLength,
             int layerMask, in string ignoreTag)
         {
             if (radius < UnityVectorExtensions.Epsilon)
@@ -108,7 +108,7 @@ namespace Unity.Cinemachine
             int numPenetrations = 0;
             float penetrationDistanceSum = 0;
             int numHits = Physics.SphereCastNonAlloc(
-                rayStart, radius, dir, s_HitBuffer, rayLength, layerMask, 
+                rayStart, radius, dir, s_HitBuffer, rayLength, layerMask,
                 QueryTriggerInteraction.Ignore);
             for (int i = 0; i < numHits; ++i)
             {
@@ -182,8 +182,8 @@ namespace Unity.Cinemachine
         static int s_ScratchColliderRefCount;
 
         /// <summary>
-        /// This is a hidden sphere collider that won't interfere with the scene and can be used 
-        /// for making scratch calculations.  It is a single static object that gets created on first 
+        /// This is a hidden sphere collider that won't interfere with the scene and can be used
+        /// for making scratch calculations.  It is a single static object that gets created on first
         /// demand and recycled on subsequent demands.  Call DestroyScratchCollider() to destroy the cached
         /// object.
         /// </summary>
@@ -207,7 +207,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// This will destroy the object created by GetScratchCollider() and cause the next call 
+        /// This will destroy the object created by GetScratchCollider() and cause the next call
         /// to GetScratchCollider() to create a new cached object.
         /// </summary>
         public static void DestroyScratchCollider()

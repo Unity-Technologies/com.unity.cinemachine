@@ -8,7 +8,7 @@ After you install Cinemachine, a new __GameObject > Cinemachine__ menu is availa
 
 ## Requirements
 
-Cinemachine has few external dependencies. Just install it and start using it. If you are also using the Post Processing via HDRP or URP volumes, then adapter modules are provided - protected by `ifdef` directives which auto-define if the presence of the dependencies is detected.  
+Cinemachine has few external dependencies. Just install it and start using it. If you are also using the Post Processing via HDRP or URP volumes, then adapter modules are provided - protected by `ifdef` directives which auto-define if the presence of the dependencies is detected.
 
 There are similar `ifdef`-protected behaviours for other packages, such as Timeline and UGUI.
 

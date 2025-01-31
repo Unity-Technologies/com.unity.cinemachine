@@ -15,14 +15,14 @@ namespace Unity.Cinemachine.Editor
                 InspectorUtility.AddRemainingProperties(ux, prop);
             return ux;
         }
-        
+
         [InitializeOnLoad]
         class DefaultControlInitializer
         {
             static DefaultControlInitializer()
             {
-                CinemachineInputAxisController.SetControlDefaults 
-                    = (in IInputAxisOwner.AxisDescriptor axis, ref CinemachineInputAxisController.Controller controller) => 
+                CinemachineInputAxisController.SetControlDefaults
+                    = (in IInputAxisOwner.AxisDescriptor axis, ref CinemachineInputAxisController.Controller controller) =>
                 {
 #pragma warning disable CS0219 // Variable is assigned but its value is never used
                     var actionName = "";
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine.Editor
 #if CINEMACHINE_UNITY_INPUTSYSTEM
                     if (actionName.Length != 0)
                     {
-                        var assetPath = CinemachineCore.kPackageRoot 
+                        var assetPath = CinemachineCore.kPackageRoot
                             + "/Runtime/Input/CinemachineDefaultInputActions.inputactions";
                         var assets = AssetDatabase.LoadAllAssetsAtPath(assetPath);
                         for (int i = 0; controller.Input.InputAction == null && i < assets.Length; ++i)
@@ -105,17 +105,17 @@ namespace Unity.Cinemachine.Editor
             CinemachineInputAxisController.Controller def = new ();
 
             var overlay = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
-            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "") 
+            overlay.Add(new PropertyField(property.FindPropertyRelative(() => def.Enabled), "")
                 { style = { marginLeft = 2, flexGrow = 0, flexBasis = InspectorUtility.SingleLineHeight, alignSelf = Align.Center}} );
 
             // Draw the input value on the same line as the foldout, for convenience
             var inputProperty = property.FindPropertyRelative(() => def.Input);
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.InputAction), "") 
+            overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.InputAction), "")
                 { style = { marginLeft = -3, flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight}} );
 #endif
 #if ENABLE_LEGACY_INPUT_MANAGER
-            overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.LegacyInput), "") 
+            overlay.Add(new PropertyField(inputProperty.FindPropertyRelative(() => def.Input.LegacyInput), "")
                 { style = {flexGrow = 1, flexBasis = 5 * InspectorUtility.SingleLineHeight }} );
 #endif
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip };
@@ -159,7 +159,7 @@ namespace Unity.Cinemachine.Editor
             var isEmptyMessage = ux.AddChild(new HelpBox(
                 "<b>This component will be ignored because no applicable target components are present.</b>\n\n"
                     + "Applicable target components include: "
-                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)), 
+                    + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)),
                 HelpBoxMessageType.Warning));
             list.TrackPropertyWithInitialCallback(
                 property, (p) => isEmptyMessage.SetVisible(p.serializedObject != null && p.arraySize == 0));

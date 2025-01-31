@@ -1,6 +1,6 @@
 # Cinemachine and Timeline
 
-Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CinemachineCameras when you need to produce a predictable shot sequence with choreographed cameras. 
+Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CinemachineCameras when you need to produce a predictable shot sequence with choreographed cameras.
 
 **Tip**: For simple shot sequences, you can also use a [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md) instead of Timeline.
 
@@ -18,7 +18,7 @@ To cut between two CinemachineCameras, place the clips next to each other.
 
 To blend between two CinemachineCameras, overlap the clips.
 
-![](images/CinemachineTimelineShotClips.png)  
+![](images/CinemachineTimelineShotClips.png)
 _Example: Cinemachine Shot Clips in Timeline, with a cut between Shots A-B and a blend between Shots B-C._
 
 ## Multiple Cinemachine Tracks

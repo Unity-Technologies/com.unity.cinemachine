@@ -71,7 +71,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>Get Follow target as ICinemachineTargetGroup, or null if target is not a group</summary>
-        public ICinemachineTargetGroup FollowTargetAsGroup 
+        public ICinemachineTargetGroup FollowTargetAsGroup
         {
             get
             {
@@ -170,7 +170,7 @@ namespace Unity.Cinemachine
         // GML todo: remove this - use attribute
         public abstract CinemachineCore.Stage Stage { get; }
 
-        /// <summary>Special for Body Stage components that want to be applied after Aim 
+        /// <summary>Special for Body Stage components that want to be applied after Aim
         /// stage because they use the aim as inout for the procedural placement</summary>
         public virtual bool BodyAppliesAfterAim => false;
 
@@ -196,7 +196,7 @@ namespace Unity.Cinemachine
         public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) {}
 
         /// <summary>
-        /// Force the virtual camera to assume a given position and orientation.  
+        /// Force the virtual camera to assume a given position and orientation.
         /// Procedural placement then takes over.
         /// Base class implementation does nothing.</summary>
         /// <param name="pos">World-space position to take</param>

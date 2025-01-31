@@ -12,8 +12,8 @@ namespace Unity.Cinemachine.Editor
         public static readonly Color HelperLineDefaultColor = new Color(255, 255, 255, 25);
         const float k_DottedLineSpacing = 4f;
 
-        static GUIStyle s_LabelStyle = new () 
-        { 
+        static GUIStyle s_LabelStyle = new ()
+        {
             normal =
             {
                 background = AssetDatabase.LoadAssetAtPath<Texture2D>($"{ResourcePath}/SceneToolsLabelBackground.png"),
@@ -48,7 +48,7 @@ namespace Unity.Cinemachine.Editor
                 Mathf.Abs(delta.z) < UnityVectorExtensions.Epsilon ? 0 : delta.z);
             return delta;
         }
-        
+
         public static void DrawLabel(Vector3 position, string text)
         {
             var labelOffset = HandleUtility.GetHandleSize(position) / 2f;
@@ -70,47 +70,47 @@ namespace Unity.Cinemachine.Editor
 
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
-            
+
             var camPos = vcam.State.GetFinalPosition();
             var camRot = vcam.State.GetFinalOrientation();
             var camForward = camRot * Vector3.forward;
-                
+
             EditorGUI.BeginChangeCheck();
             var fovHandleId = GUIUtility.GetControlID(s_ScaleSliderHash, FocusType.Passive);
-            var newFov = Handles.ScaleSlider(fovHandleId, s_FOVAfterLastToolModification, 
+            var newFov = Handles.ScaleSlider(fovHandleId, s_FOVAfterLastToolModification,
                 camPos, camForward, camRot, HandleUtility.GetHandleSize(camPos), 0.1f);
 
             if (EditorGUI.EndChangeCheck())
             {
                 if (orthographic)
                 {
-                    lensProperty.FindPropertyRelative("OrthographicSize").floatValue += 
+                    lensProperty.FindPropertyRelative("OrthographicSize").floatValue +=
                         (s_FOVAfterLastToolModification - newFov);
                 }
                 else
                 {
-                    lensProperty.FindPropertyRelative("FieldOfView").floatValue += 
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue +=
                         (s_FOVAfterLastToolModification - newFov);
-                    lensProperty.FindPropertyRelative("FieldOfView").floatValue = 
+                    lensProperty.FindPropertyRelative("FieldOfView").floatValue =
                         Mathf.Clamp(lensProperty.FindPropertyRelative("FieldOfView").floatValue, 1f, 179f);
                 }
                 lensProperty.serializedObject.ApplyModifiedProperties();
             }
             s_FOVAfterLastToolModification = newFov;
 
-            var fovHandleDraggedOrHovered = 
+            var fovHandleDraggedOrHovered =
                 GUIUtility.hotControl == fovHandleId || HandleUtility.nearestControl == fovHandleId;
             if (fovHandleDraggedOrHovered)
             {
                 var labelPos = camPos + camForward * HandleUtility.GetHandleSize(camPos);
                 if (lens.IsPhysicalCamera)
                 {
-                    DrawLabel(labelPos, "Focal Length (" + 
+                    DrawLabel(labelPos, "Focal Length (" +
                         Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.PhysicalProperties.SensorSize.y).ToString("F1") + ")");
                 }
                 else if (orthographic)
                 {
-                    DrawLabel(labelPos, "Orthographic Size (" + 
+                    DrawLabel(labelPos, "Orthographic Size (" +
                         lens.OrthographicSize.ToString("F1") + ")");
                 }
                 else if (isLensHorizontal)
@@ -120,15 +120,15 @@ namespace Unity.Cinemachine.Editor
                 }
                 else
                 {
-                    DrawLabel(labelPos, "Vertical FOV (" + 
+                    DrawLabel(labelPos, "Vertical FOV (" +
                         lens.FieldOfView.ToString("F1") + ")");
                 }
             }
-            
+
             Handles.color = fovHandleDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             DrawFrustum(vcamLocalToWorld, lens);
-                
+
             SoloOnDrag(GUIUtility.hotControl == fovHandleId, vcam, fovHandleId);
 
             Handles.color = originalColor;
@@ -138,7 +138,7 @@ namespace Unity.Cinemachine.Editor
         {
             var originalColor = Handles.color;
             Handles.color = Handles.preselectionColor;
-            
+
             var vcamState = vcam.State;
             var camPos = vcamState.GetFinalPosition();
             var camRot = vcamState.GetFinalOrientation();
@@ -148,27 +148,27 @@ namespace Unity.Cinemachine.Editor
             var nearClipPos = camPos + camForward * nearClipPlane.floatValue;
             var farClipPos = camPos + camForward * farClipPlane.floatValue;
             var vcamLens = vcamState.Lens;
-            
+
             EditorGUI.BeginChangeCheck();
             var ncHandleId = GUIUtility.GetControlID(FocusType.Passive);
-            var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward, 
+            var newNearClipPos = Handles.Slider(ncHandleId, nearClipPos, camForward,
                 CubeHandleCapSize(nearClipPos), Handles.CubeHandleCap, 0.5f);
             var fcHandleId = GUIUtility.GetControlID(FocusType.Passive);
-            var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward, 
+            var newFarClipPos = Handles.Slider(fcHandleId, farClipPos, camForward,
                 CubeHandleCapSize(farClipPos), Handles.CubeHandleCap, 0.5f);
             if (EditorGUI.EndChangeCheck())
             {
-                nearClipPlane.floatValue += 
+                nearClipPlane.floatValue +=
                     SliderHandleDelta(newNearClipPos, nearClipPos, camForward);
                 if (!vcamLens.Orthographic)
                 {
                     nearClipPlane.floatValue = Mathf.Max(0.01f, nearClipPlane.floatValue);
                 }
-                farClipPlane.floatValue += 
+                farClipPlane.floatValue +=
                     SliderHandleDelta(newFarClipPos, farClipPos, camForward);
                 lens.serializedObject.ApplyModifiedProperties();
             }
-            
+
             var vcamLocalToWorld = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             Handles.color = HelperLineDefaultColor;
             DrawFrustum(vcamLocalToWorld, vcamLens);
@@ -182,8 +182,8 @@ namespace Unity.Cinemachine.Editor
                 DrawPreFrustum(vcamLocalToWorld, vcamLens);
                 DrawLabel(farClipPos, farClipPlane.displayName + " (" + farClipPlane.floatValue.ToString("F1") + ")");
             }
-            
-            SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId, 
+
+            SoloOnDrag(GUIUtility.hotControl == ncHandleId || GUIUtility.hotControl == fcHandleId,
                 vcam, Mathf.Min(ncHandleId, fcHandleId));
 
             Handles.color = originalColor;
@@ -193,7 +193,7 @@ namespace Unity.Cinemachine.Editor
         {
             if (!lens.Orthographic && lens.NearClipPlane >= 0)
             {
-                DrawPerspectiveFrustum(transform, lens.FieldOfView, 
+                DrawPerspectiveFrustum(transform, lens.FieldOfView,
                     lens.NearClipPlane, 0, lens.Aspect, true);
             }
         }
@@ -207,30 +207,30 @@ namespace Unity.Cinemachine.Editor
             }
             else
             {
-                DrawPerspectiveFrustum(transform, lens.FieldOfView, 
+                DrawPerspectiveFrustum(transform, lens.FieldOfView,
                     lens.FarClipPlane, lens.NearClipPlane, lens.Aspect, false);
             }
         }
 
-        static void DrawOrthographicFrustum(Matrix4x4 transform, 
+        static void DrawOrthographicFrustum(Matrix4x4 transform,
             float orthographicSize, float farClipPlane, float nearClipRange, float aspect)
         {
             var originalMatrix = Handles.matrix;
             Handles.matrix = transform;
-            
-            var size = new Vector3(aspect * orthographicSize * 2, 
+
+            var size = new Vector3(aspect * orthographicSize * 2,
                 orthographicSize * 2, farClipPlane - nearClipRange);
             Handles.DrawWireCube(new Vector3(0, 0, (size.z / 2) + nearClipRange), size);
-            
+
             Handles.matrix = originalMatrix;
         }
-        
-        static void DrawPerspectiveFrustum(Matrix4x4 transform, 
+
+        static void DrawPerspectiveFrustum(Matrix4x4 transform,
             float fov, float farClipPlane, float nearClipRange, float aspect, bool dottedLine)
         {
             var originalMatrix = Handles.matrix;
             Handles.matrix = transform;
-            
+
             fov = fov * 0.5f * Mathf.Deg2Rad;
             var tanfov = Mathf.Tan(fov);
             var farEnd = new Vector3(0, 0, farClipPlane);
@@ -308,7 +308,7 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             var originalColor = Handles.color;
-            
+
             var lookAtPos = target.position;
             var lookAtRot = target.rotation;
             var trackedObjectPos = lookAtPos + lookAtRot * trackedObjectOffset.vector3Value;
@@ -321,37 +321,37 @@ namespace Unity.Cinemachine.Editor
 
             if (EditorGUI.EndChangeCheck())
             {
-                trackedObjectOffset.vector3Value += 
+                trackedObjectOffset.vector3Value +=
                     PositionHandleDelta(lookAtRot, newTrackedObjectPos, trackedObjectPos);
                 trackedObjectOffset.serializedObject.ApplyModifiedProperties();
             }
 
-            var isDragged = 
+            var isDragged =
                 tooHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < tooHandleMaxId;
-            var isDraggedOrHovered = isDragged || 
+            var isDraggedOrHovered = isDragged ||
                 tooHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < tooHandleMaxId;
             if (isDraggedOrHovered)
             {
                 DrawLabel(trackedObjectPos, "(" + stage + ") " + trackedObjectOffset.displayName + " "
                     + trackedObjectOffset.vector3Value.ToString("F1"));
             }
-            
+
             Handles.color = isDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             Handles.DrawDottedLine(lookAtPos, trackedObjectPos, k_DottedLineSpacing);
             Handles.DrawLine(trackedObjectPos, vcam.State.GetFinalPosition());
 
             SoloOnDrag(isDragged, vcam, tooHandleMaxId);
-            
+
             Handles.color = originalColor;
         }
 
         public static void DoFollowOffsetTool(
-            CinemachineVirtualCameraBase vcam, SerializedProperty offsetProperty, 
-            Vector3 camPos, Vector3 targetPosition, Quaternion targetRotation, 
+            CinemachineVirtualCameraBase vcam, SerializedProperty offsetProperty,
+            Vector3 camPos, Vector3 targetPosition, Quaternion targetRotation,
             Action OnChanged = null)
         {
             var originalColor = Handles.color;
-            
+
             EditorGUI.BeginChangeCheck();
             var foHandleIds = Handles.PositionHandleIds.@default;
             var newPos = Handles.PositionHandle(foHandleIds, camPos, targetRotation);
@@ -364,19 +364,19 @@ namespace Unity.Cinemachine.Editor
                 offsetProperty.serializedObject.ApplyModifiedProperties();
                 OnChanged?.Invoke();
             }
-        
+
             var offset = offsetProperty.vector3Value;
             var isDragged = foHandleMinId < GUIUtility.hotControl && GUIUtility.hotControl < foHandleMaxId;
-            var isDraggedOrHovered = isDragged || 
+            var isDraggedOrHovered = isDragged ||
                 foHandleMinId < HandleUtility.nearestControl && HandleUtility.nearestControl < foHandleMaxId;
             if (isDraggedOrHovered)
                 DrawLabel(camPos, offsetProperty.displayName + " " + offset.ToString("F1"));
-        
+
             Handles.color = isDraggedOrHovered ? Handles.selectedColor : HelperLineDefaultColor;
             Handles.DrawDottedLine(targetPosition, camPos, k_DottedLineSpacing);
-            
+
             SoloOnDrag(isDragged, vcam, foHandleMaxId);
-            
+
             Handles.color = originalColor;
         }
 
@@ -385,7 +385,7 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         /// <returns>Index of the rig being edited, or -1 if none</returns>
         public static int DoThreeOrbitRigHandle(
-            CinemachineVirtualCameraBase vcam, Quaternion rotationFrame, 
+            CinemachineVirtualCameraBase vcam, Quaternion rotationFrame,
             SerializedProperty orbitSetting, Vector3 orbitCenter)
         {
             Cinemachine3OrbitRig.Settings def = new();
@@ -404,9 +404,9 @@ namespace Unity.Cinemachine.Editor
                 var orbit = orbits[rigIndex];
                 var orbitHeight = orbit.FindPropertyRelative(() => def.Top.Height);
                 var orbitRadius = orbit.FindPropertyRelative(() => def.Top.Radius);
-                
+
                 if (OrbitHandles(
-                    orbitSetting.serializedObject, orbitHeight, orbitRadius, 
+                    orbitSetting.serializedObject, orbitHeight, orbitRadius,
                     orbitCenter, rotationFrame,
                     out var heightHandleId, out var radiusHandleId))
                 {
@@ -421,8 +421,8 @@ namespace Unity.Cinemachine.Editor
         }
 
         static bool OrbitHandles(
-            SerializedObject orbit, 
-            SerializedProperty orbitHeight, SerializedProperty orbitRadius, 
+            SerializedObject orbit,
+            SerializedProperty orbitHeight, SerializedProperty orbitRadius,
             Vector3 followPos, Quaternion rotationFrame,
             out int heightHandleId, out int radiusHandleId)
         {
@@ -431,13 +431,13 @@ namespace Unity.Cinemachine.Editor
 
             Handles.color = Handles.preselectionColor;
             EditorGUI.BeginChangeCheck();
-            
+
             heightHandleId = GUIUtility.GetControlID(FocusType.Passive);
 
             var height = Vector3.up * orbitHeight.floatValue;
             var newHeight = Handles.Slider(
                 heightHandleId, height, Vector3.up, CubeHandleCapSize(height), Handles.CubeHandleCap, 0.5f);
-                
+
             radiusHandleId = GUIUtility.GetControlID(FocusType.Passive);
             var radius = Vector3.up * orbitHeight.floatValue + Vector3.right * orbitRadius.floatValue;
             var newRadius = Handles.Slider(
@@ -451,7 +451,7 @@ namespace Unity.Cinemachine.Editor
             }
 
             var isDragged = GUIUtility.hotControl == heightHandleId || GUIUtility.hotControl == radiusHandleId;
-            Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId 
+            Handles.color = isDragged || HandleUtility.nearestControl == heightHandleId
                 || HandleUtility.nearestControl == radiusHandleId ? Handles.selectedColor : HelperLineDefaultColor;
             if (GUIUtility.hotControl == heightHandleId || HandleUtility.nearestControl == heightHandleId)
                 DrawLabel(height, orbitHeight.displayName + ": " + orbitHeight.floatValue);
@@ -461,7 +461,7 @@ namespace Unity.Cinemachine.Editor
             Handles.matrix = oldMatrix;
             return isDragged;
         }
-        
+
         static bool s_IsDragging;
         static ICinemachineCamera s_UserSolo;
         public static void SoloOnDrag(bool isDragged, CinemachineVirtualCameraBase vcam, int handleMaxId)
@@ -483,5 +483,5 @@ namespace Unity.Cinemachine.Editor
                 s_UserSolo = null;
             }
         }
-    } 
+    }
 }

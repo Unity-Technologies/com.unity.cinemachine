@@ -6,15 +6,15 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// Definition of an impulse signal that gets propagated to listeners.
-    /// 
+    ///
     /// Here you provide a Raw Signal source, and define an envelope for time-scaling
-    /// it to craft the complete Impulse signal shape.  Also, you provide here parameters 
+    /// it to craft the complete Impulse signal shape.  Also, you provide here parameters
     /// that define how the signal dissipates with spatial distance from the source location.
     /// Finally, you specify the Impulse Channel on which the signal will be sent.
-    /// 
+    ///
     /// An API method is provided here to take these parameters, create an Impulse Event,
     /// and broadcast it on the channel.
-    /// 
+    ///
     /// When creating a custom Impulse Source class, you will have an instance of this class
     /// as a field in your custom class.  Be sure also to include the
     /// [CinemachineImpulseDefinition] attribute on the field, to get the right
@@ -53,7 +53,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// A user-defined impulse shape, used only if m_ImpulseShape is Custom.
-        /// Defines the signal that will be generated.  X axis must go from 0...1, 
+        /// Defines the signal that will be generated.  X axis must go from 0...1,
         /// and Y axis is the scale that will be applied to the impact velocity.
         /// </summary>
         [Tooltip("Defines the custom shape of the impact signal that will be generated.")]
@@ -61,7 +61,7 @@ namespace Unity.Cinemachine
         public AnimationCurve CustomImpulseShape = new AnimationCurve();
 
         /// <summary>
-        /// The time during which the impact signal will occur.  
+        /// The time during which the impact signal will occur.
         /// The signal shape will be stretched to fill that time.
         /// </summary>
         [Tooltip("The time during which the impact signal will occur.  "
@@ -76,11 +76,11 @@ namespace Unity.Cinemachine
         {
             /// <summary>The impulse is felt equally everywhere in space, at the same time</summary>
             Uniform,
-            /// <summary>The impulse is felt only within a specified radius, and its strength 
+            /// <summary>The impulse is felt only within a specified radius, and its strength
             /// weakens for listeners that are farther away</summary>
             Dissipating,
             /// <summary>
-            /// The impulse is felt only within a specified radius, and its strength 
+            /// The impulse is felt only within a specified radius, and its strength
             /// weakens for listeners that are farther away.  Also, the impulse travels outwardly
             /// from the impact point, at a specified velocity, similar to a sound wave.
             /// </summary>
@@ -125,7 +125,7 @@ namespace Unity.Cinemachine
             + "1 is normal.  Setting this to 0 completely mutes the signal.")]
         [FormerlySerializedAs("m_AmplitudeGain")]
         public float AmplitudeGain = 1f;
-        
+
         /// <summary>
         /// Legacy mode only: Scale factor to apply to the time axis.
         /// </summary>
@@ -153,7 +153,7 @@ namespace Unity.Cinemachine
         public bool Randomize = true;
 
         /// <summary>
-        /// Legacy mode only: This defines the time-envelope of the signal.  
+        /// Legacy mode only: This defines the time-envelope of the signal.
         /// The raw signal will be time-scaled to fit in the envelope.
         /// </summary>
         [Tooltip("Legacy mode only: This defines the time-envelope of the signal.  "
@@ -163,7 +163,7 @@ namespace Unity.Cinemachine
             = CinemachineImpulseManager.EnvelopeDefinition.Default;
 
         /// <summary>
-        /// Legacy mode only: The signal will have full amplitude in this radius surrounding the impact point.  
+        /// Legacy mode only: The signal will have full amplitude in this radius surrounding the impact point.
         /// Beyond that it will dissipate with distance.
         /// </summary>
         [Header("Spatial Range")]
@@ -172,19 +172,19 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_ImpactRadius")]
         public float ImpactRadius = 100;
 
-        /// <summary>Legacy mode only: How the signal direction behaves as the listener moves 
+        /// <summary>Legacy mode only: How the signal direction behaves as the listener moves
         /// away from the origin.</summary>
         [Tooltip("Legacy mode only: How the signal direction behaves as the listener moves away from the origin.")]
         [FormerlySerializedAs("m_DirectionMode")]
-        public CinemachineImpulseManager.ImpulseEvent.DirectionModes DirectionMode 
+        public CinemachineImpulseManager.ImpulseEvent.DirectionModes DirectionMode
             = CinemachineImpulseManager.ImpulseEvent.DirectionModes.Fixed;
 
         /// <summary>
-        /// Legacy mode only: This defines how the signal will dissipate with distance beyond the impact radius.  
+        /// Legacy mode only: This defines how the signal will dissipate with distance beyond the impact radius.
         /// </summary>
         [Tooltip("Legacy mode only: This defines how the signal will dissipate with distance beyond the impact radius.")]
         [FormerlySerializedAs("m_DissipationMode")]
-        public CinemachineImpulseManager.ImpulseEvent.DissipationModes DissipationMode 
+        public CinemachineImpulseManager.ImpulseEvent.DissipationModes DissipationMode
             = CinemachineImpulseManager.ImpulseEvent.DissipationModes.ExponentialDecay;
 
         /// <summary>
@@ -195,9 +195,9 @@ namespace Unity.Cinemachine
         public float DissipationDistance = 100;
 
         /// <summary>
-        /// The speed (m/s) at which the impulse propagates through space.  High speeds 
-        /// allow listeners to react instantaneously, while slower speeds allow listeners in the 
-        /// scene to react as if to a wave spreading from the source.  
+        /// The speed (m/s) at which the impulse propagates through space.  High speeds
+        /// allow listeners to react instantaneously, while slower speeds allow listeners in the
+        /// scene to react as if to a wave spreading from the source.
         /// </summary>
         [Tooltip("The speed (m/s) at which the impulse propagates through space.  High speeds "
             + "allow listeners to react instantaneously, while slower speeds allow listeners in the "
@@ -230,21 +230,21 @@ namespace Unity.Cinemachine
                 max = Mathf.Max(max, (int)iter.Current);
             s_StandardShapes = new AnimationCurve[max + 1];
 
-            s_StandardShapes[(int)ImpulseShapes.Recoil] = new AnimationCurve(new Keyframe[] 
-            { 
-                new Keyframe(0, 1, -3.2f, -3.2f), 
-                new Keyframe(1, 0, 0, 0) 
+            s_StandardShapes[(int)ImpulseShapes.Recoil] = new AnimationCurve(new Keyframe[]
+            {
+                new Keyframe(0, 1, -3.2f, -3.2f),
+                new Keyframe(1, 0, 0, 0)
             });
 
-            s_StandardShapes[(int)ImpulseShapes.Bump] = new AnimationCurve(new Keyframe[] 
-            { 
-                new Keyframe(0, 0, -4.9f, -4.9f), 
-                new Keyframe(0.2f, 0, 8.25f,  8.25f), 
-                new Keyframe(1, 0, -0.25f, -0.25f) 
+            s_StandardShapes[(int)ImpulseShapes.Bump] = new AnimationCurve(new Keyframe[]
+            {
+                new Keyframe(0, 0, -4.9f, -4.9f),
+                new Keyframe(0.2f, 0, 8.25f,  8.25f),
+                new Keyframe(1, 0, -0.25f, -0.25f)
             });
 
-            s_StandardShapes[(int)ImpulseShapes.Explosion] = new AnimationCurve(new Keyframe[] 
-            { 
+            s_StandardShapes[(int)ImpulseShapes.Explosion] = new AnimationCurve(new Keyframe[]
+            {
                 new Keyframe(0, -1.4f, -7.9f, -7.9f),
                 new Keyframe(0.27f, 0.78f, 23.4f, 23.4f),
                 new Keyframe(0.54f, -0.12f, 22.6f, 22.6f),
@@ -254,8 +254,8 @@ namespace Unity.Cinemachine
                 new Keyframe(1, 0, 0, 0)
             });
 
-            s_StandardShapes[(int)ImpulseShapes.Rumble] = new AnimationCurve(new Keyframe[] 
-            { 
+            s_StandardShapes[(int)ImpulseShapes.Rumble] = new AnimationCurve(new Keyframe[]
+            {
                 new Keyframe(0, 0, 0, 0),
                 new Keyframe(0.1f, 0.25f, 0, 0),
                 new Keyframe(0.2f, 0, 0, 0),
@@ -291,24 +291,24 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Generate an impulse event at a location in space, 
+        /// <summary>Generate an impulse event at a location in space,
         /// and broadcast it on the appropriate impulse channel</summary>
         /// <param name="position">Event originates at this position in world space</param>
-        /// <param name="velocity">This direction is considered to be "down" for the purposes of the 
-        /// event signal, and the magnitude of the signal will be scaled according to the 
+        /// <param name="velocity">This direction is considered to be "down" for the purposes of the
+        /// event signal, and the magnitude of the signal will be scaled according to the
         /// length of this vector</param>
         public void CreateEvent(Vector3 position, Vector3 velocity)
         {
             CreateAndReturnEvent(position, velocity);
         }
-        
-        /// <summary>Generate an impulse event at a location in space, 
+
+        /// <summary>Generate an impulse event at a location in space,
         /// and broadcast it on the appropriate impulse channel</summary>
         /// <param name="position">Event originates at this position in world space</param>
-        /// <param name="velocity">This direction is considered to be "down" for the purposes of the 
-        /// event signal, and the magnitude of the signal will be scaled according to the 
+        /// <param name="velocity">This direction is considered to be "down" for the purposes of the
+        /// event signal, and the magnitude of the signal will be scaled according to the
         /// length of this vector</param>
-        /// <returns>The newly-created impulse event. This can be used to dynamically adjust the 
+        /// <returns>The newly-created impulse event. This can be used to dynamically adjust the
         /// event settings while the event is active. Note that this event object may be recycled
         /// for future events, so the pointer should not be retained for too long.</returns>
         public CinemachineImpulseManager.ImpulseEvent CreateAndReturnEvent(

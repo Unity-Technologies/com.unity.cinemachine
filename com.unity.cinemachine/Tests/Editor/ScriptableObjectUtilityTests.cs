@@ -9,15 +9,15 @@ namespace Unity.Cinemachine.Tests.Editor
         [Test]
         public void CinemachineInstallPathIsValid()
         {
-            var pathToCmLogo = Path.Combine(CinemachineCore.kPackageRoot + 
+            var pathToCmLogo = Path.Combine(CinemachineCore.kPackageRoot +
                 "/Editor/EditorResources/Icons/Dark/CmCamera@256.png");
             Assert.That(File.Exists(pathToCmLogo));
         }
-        
+
         [Test]
         public void CinemachineInstallRelativePathIsValid()
         {
-            var relativePathToCmLogo = Path.Combine(CinemachineCore.kPackageRoot + 
+            var relativePathToCmLogo = Path.Combine(CinemachineCore.kPackageRoot +
                 "/Editor/EditorResources/Icons/Dark/CmCamera@256.png");
             var pathToCmLogo = Path.GetFullPath(relativePathToCmLogo);
             Assert.That(File.Exists(pathToCmLogo));

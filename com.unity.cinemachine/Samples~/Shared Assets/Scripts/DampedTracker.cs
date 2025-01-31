@@ -3,7 +3,7 @@ using UnityEngine;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// Will match a GameObject's position and rotation to a target's position 
+    /// Will match a GameObject's position and rotation to a target's position
     /// and rotation, with damping
     /// </summary>
     [ExecuteAlways]

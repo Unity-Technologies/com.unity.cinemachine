@@ -10,7 +10,7 @@ A functional Cinemachine setup involves three main types of elements:
 * A [**Cinemachine Brain**](#cinemachine-brain) which enables the Cinemachine functionality in the Unity Camera, and
 * One or multiple [**Cinemachine Cameras**](#cinemachine-cameras) which take turns controlling the Unity Camera according to their status.
 
-![](images/concept-base.png)  
+![](images/concept-base.png)
 _Cinemachine setup example: the Unity Camera with its Cinemachine Brain component and three Cinemachine Cameras._
 
 ## Unity Camera
@@ -46,12 +46,12 @@ Cinemachine Camera GameObjects are separate from the Unity Camera GameObject.
 * They must include a [Cinemachine Camera component](CinemachineCamera.md).
 * They can include additional Cinemachine components to manage [procedural motion](concept-procedural-motion.md) and add extended functionality.
 
-![](images/CinemachineSceneHierarchy.png)  
+![](images/CinemachineSceneHierarchy.png)
 _Hierarchy example: a Scene containing a Unity Camera with Cinemachine Brain and multiple Cinemachine Cameras._
 
 ### Single or multiple Cinemachine Cameras
 
-You can create as many Cinemachine Cameras as required for your project, but you can also get a fully functional setup with a single Cinemachine Camera, depending on your needs. For example: 
+You can create as many Cinemachine Cameras as required for your project, but you can also get a fully functional setup with a single Cinemachine Camera, depending on your needs. For example:
 
 * If you want the Unity Camera to follow a single character, you can use a single Cinemachine Camera and set it up with a follow behavior that corresponds to your needs. In the end, this Cinemachine Camera will be the only one to control the Unity Camera.
 

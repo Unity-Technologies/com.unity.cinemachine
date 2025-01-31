@@ -4,19 +4,19 @@
 
 Use the Cinemachine Confiner 2D [extension](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/manual/CinemachineVirtualCameraExtensions.html) to confine the camera’s position so that the screen edges stay within a shape defined by a 2D polygon. This works for orthographic or perspective cameras, provided that the camera's forward vector remains parallel to the bounding shape’s normal (that is, that the camera is looking straight at the polygon, and not obliquely at it).
 
-When confining the camera, the Cinemachine Confiner 2D considers the camera’s view size at the polygon plane, and its aspect ratio. Based on this information and the input polygon, it computes a second (smaller) polygon, and constrains the camera’s transform to it. Computation of this secondary polygon is resource-intensive, so you should only do this when absolutely necessary. 
+When confining the camera, the Cinemachine Confiner 2D considers the camera’s view size at the polygon plane, and its aspect ratio. Based on this information and the input polygon, it computes a second (smaller) polygon, and constrains the camera’s transform to it. Computation of this secondary polygon is resource-intensive, so you should only do this when absolutely necessary.
 
 Necessary use cases in which you need to recompute the cached secondary polygon include:
 
 - when the input polygon’s points change,
 - when the input polygon is non-uniformly scaled.
 
-In these cases, for efficiency reasons, Cinemachine does not automatically regenerate the inner polygon. The client needs to call the InvalidateBoundingShapeCache() method to trigger the recalculation. You can do this from: 
+In these cases, for efficiency reasons, Cinemachine does not automatically regenerate the inner polygon. The client needs to call the InvalidateBoundingShapeCache() method to trigger the recalculation. You can do this from:
 
-- the script by calling InvalidateCache, or 
+- the script by calling InvalidateCache, or
 - the component inspector; to do so, press the **Invalidate Bounding Shape Cache** button.
 
-If the input polygon scales uniformly or translates or rotates, the cache remains valid. 
+If the input polygon scales uniformly or translates or rotates, the cache remains valid.
 
 When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
 automatically adjust the Confiner for efficiency reasons. To adjust the Confiner, call InvalidateLensCache() from script.

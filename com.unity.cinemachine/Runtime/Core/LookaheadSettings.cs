@@ -12,8 +12,8 @@ namespace Unity.Cinemachine
         /// <summary>Enable or disable procedural lookahead</summary>
         public bool Enabled;
 
-        /// <summary>Predict the position this many seconds into the future.  
-        /// Note that this setting is sensitive to noisy animation, and can amplify the noise, 
+        /// <summary>Predict the position this many seconds into the future.
+        /// Note that this setting is sensitive to noisy animation, and can amplify the noise,
         /// resulting in undesirable jitter.
         /// If the camera jitters unacceptably when the target is in motion, turn down this setting,
         /// or increase the Smoothing setting, or animate the target more smoothly.</summary>

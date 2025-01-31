@@ -11,14 +11,14 @@ namespace Unity.Cinemachine.Editor
     {
         CinemachineGroupFraming Target => target as CinemachineGroupFraming;
 
-        void OnEnable() 
+        void OnEnable()
         {
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             CinemachineDebug.OnGUIHandlers += OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
                 InspectorUtility.RepaintGameView();
         }
-        void OnDisable() 
+        void OnDisable()
         {
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;
             if (CinemachineCorePrefs.ShowInGameGuides.Value)
@@ -55,11 +55,11 @@ namespace Unity.Cinemachine.Editor
                 fovRange.SetVisible(haveZoom);
                 dollyRange.SetVisible(haveDolly);
             });
-            
+
             ux.TrackAnyUserActivity(() =>
             {
                 if (target == null || groupSizeIsZeroHelp == null)
-                    return; 
+                    return;
 
                 ICinemachineTargetGroup group = null;
                 for (int i = 0; group == null && i < targets.Length; ++i)
@@ -102,13 +102,13 @@ namespace Unity.Cinemachine.Editor
             CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenGroupSizeMarker(
                 Target.GroupBounds, Target.GroupBoundsMatrix, brain.OutputCamera);
         }
-        
+
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineGroupFraming))]
         static void DrawGroupComposerGizmos(CinemachineGroupFraming target, GizmoType selectionType)
         {
             // Show the group bounding box, as viewed from the camera position
             var vcam = target.ComponentOwner;
-            if (!target.enabled && vcam != null 
+            if (!target.enabled && vcam != null
                 && (vcam.FollowTargetAsGroup != null && vcam.FollowTargetAsGroup.IsValid)
                 || (vcam.LookAtTargetAsGroup != null && vcam.LookAtTargetAsGroup.IsValid))
             {

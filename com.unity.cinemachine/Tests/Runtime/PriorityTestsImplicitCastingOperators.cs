@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Tests
         {
             base.TearDown();
         }
-        
+
         static IEnumerable PriorityValues
         {
             get
@@ -29,7 +29,7 @@ namespace Unity.Cinemachine.Tests
                 yield return new TestCaseData(new[] {int.MaxValue, int.MaxValue / 2, 0, int.MinValue / 2, int.MinValue}).SetName("Edge-case limits").Returns(null);
             }
         }
-        
+
         [UnityTest, TestCaseSource(nameof(PriorityValues))]
         public IEnumerator CheckPriorityOrder(int[] priorities)
         {
@@ -57,9 +57,9 @@ namespace Unity.Cinemachine.Tests
             // Re-enable all cm cameras
             foreach (var cmCamera in cmCameras)
                 cmCamera.enabled = true;
-            
+
             yield return null;
-                
+
             // Check that the first CinemachineCamera in the list is equal to activeCamera.
             activeCamera = m_Brain.ActiveVirtualCamera as CinemachineCamera;
             Assert.NotNull(activeCamera);

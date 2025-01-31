@@ -25,7 +25,7 @@ namespace Unity.Cinemachine
         /// <returns>True if the spline position is valid</returns>
         public static bool LocalEvaluateSplineWithRoll(
             this ISpline spline,
-            float tNormalized, 
+            float tNormalized,
             CinemachineSplineRoll roll,
             out Vector3 position, out Quaternion rotation)
         {
@@ -60,7 +60,7 @@ namespace Unity.Cinemachine
                     return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
                 }
             }
-        
+
             position = splinePosition;
             return true;
         }
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine
         public static bool EvaluateSplineWithRoll(
             this ISpline spline,
             Transform transform,
-            float tNormalized, 
+            float tNormalized,
             CinemachineSplineRoll roll,
             out Vector3 position, out Quaternion rotation)
         {
@@ -87,7 +87,7 @@ namespace Unity.Cinemachine
             rotation = transform.rotation * rotation;
             return result;
         }
-        
+
         /// <summary>Evaluate a spline's world position at a normalized spline index</summary>
         /// <param name="spline">The spline in question</param>
         /// <param name="transform">The transform of the spline, or null</param>
@@ -99,7 +99,7 @@ namespace Unity.Cinemachine
             float3 position = spline == null ? default : SplineUtility.EvaluatePosition(spline, tNormalized);
             return transform == null ? position : Matrix4x4.TRS(transform.position, transform.rotation, Vector3.one).MultiplyPoint3x4(position);
         }
-        
+
         /// <summary>
         /// Get the maximum value for the spline position.  Minimum value is always 0.
         /// </summary>
@@ -111,9 +111,9 @@ namespace Unity.Cinemachine
         {
             switch (unit)
             {
-                case PathIndexUnit.Distance: 
+                case PathIndexUnit.Distance:
                     return spline.GetLength();
-                case PathIndexUnit.Knot: 
+                case PathIndexUnit.Knot:
                 {
                     var knotCount = spline.Count;
                     return (!spline.Closed || knotCount < 2) ? Mathf.Max(0, knotCount - 1) : knotCount;
@@ -121,7 +121,7 @@ namespace Unity.Cinemachine
             }
             return 1;
         }
-        
+
         /// <summary>
         /// Clamp spline position to min and max values, respecting loop wraparound for closed paths.
         /// </summary>

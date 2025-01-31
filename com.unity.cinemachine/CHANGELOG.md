@@ -125,13 +125,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Fixed
 - Regression fix: Extensions and components were unable to modify the blend hint.
 - Bugfix: HardLockToTarget component was ignoring PreviousStateIsValid flag.
- 
+
 ### Added
 - Cancellation of active blend is now possible in ManagerCameras, same as in CM Brains.
 
 ### Changed
 - CinemachineBrain.TopCameraFromPriorityQueue() is now protected virtual.
- 
+
 
 ## [3.0.0-pre.9] - 2023-10-01
 
@@ -319,7 +319,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow shows a warning message when no follow target is assigned like the rest of the body components.
 - Bugfix: FadeOut sample scene shader was culling some objects incorrectly.
 - Bugfix: Freelook had wrong heading at first frame, which could cause a slight jitter.
-- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified. 
+- Bugfix: FramingTransposer and Composer had a slight rounding error in their Bias fields when the Screen X and Y fields were modified.
 - Bugfix: Fixed spurious Z rotations during speherical blend.
 - Bugfix: Blending speed was not set correctly, when blending back and forth between the same cameras.
 - Regression fix: POV is relative to its parent transform.
@@ -358,7 +358,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: 3rdPersonFollow logged console messages when looking straight up or down.
 - BugFix: InputProvider no longer causes a tiny gc alloc every frame.
 - Regression fix: CinemachineCollider smoothing time did not reset correctly, so it was working once only.
-- Cinemachine supports Splines package. Added new Body component: CinemachineSplineDolly. 
+- Cinemachine supports Splines package. Added new Body component: CinemachineSplineDolly.
 - Bugfix: Overlay tooltip names were incorrect.
 - Bugfix: Confiner2D now displays the calculated confining area when its vcam is selected.
 - Samples no longer throw errors with HDRP and URP. 3rdPersonWithAimMode and Timeline samples no longer have invalid references.
@@ -380,7 +380,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.8.0] - 2021-07-13
 - Bugfix: Freelook prefabs won't get corrupted after editing the Prefab via its instances.
-- Bugfix: 3rdPersonFollow works with Aim components now. 
+- Bugfix: 3rdPersonFollow works with Aim components now.
 - Bugfix: Blends between vcams, that are rotated so that their up vector is different from World up, are correct now.
 - Bugfix: POV recentering did not always recenter correctly, when an axis range was limited.
 - Bugfix: Collider sometimes bounced a little when the camera radius was large.
@@ -388,7 +388,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineVolumeSettings inspector displayed a misleading warning message with URP when focus tracking was enabled.
 - Bugfix: Rapidly toggling active cameras before the blends were finished did not use the correct blend time.
 - AimingRig sample scene updated with a better reactive crosshair design.
-- Added API accessor for Active Blend in Clearshot and StateDrivenCamera. 
+- Added API accessor for Active Blend in Clearshot and StateDrivenCamera.
 - Bugfix: Virtual Cameras were not updating in Edit mode when Brain's BlendUpdateMode was FixedUpdate.
 - Bugfix: Lens mode override was not working correctly in all cases.
 - Collider2D inspector: added warning when collider is of the wrong type.
@@ -397,7 +397,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [2.8.0-pre.1] - 2021-04-21
 - Switching targets (Follow, LookAt) is smooth by default. For the old behaviour, set PreviousStateIsValid to false after changing the targets.
 - Bugfix: Reversing a blend in progress respects asymmetric blend times.
-- Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field now works correctly with Framing Transposer. 
+- Regression fix: CmPostProcessing and CmVolumeSettings components setting Depth of Field now works correctly with Framing Transposer.
 - Regression fix: 3rdPersonFollow kept player in view when Z damping was high.
 - Regression fix: Physical camera properties were overwritten by vcams when "override mode: physical" was not selected.
 - New sample scene: Boss cam demonstrates how to setup a camera that follows the player and looks at the player and the boss. Boss cam also shows examples of custom extensions.
@@ -454,8 +454,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: Post-processing profiles not cleaned up when no active vcams
 - Bugfix: Install CinemachineExamples Asset Package menu item was failing on 2018.4 / macOS
 - New sample scene (2DConfinerComplex) demonstrating new CinemachineConfiner2D extension.
-- Updated CharacterMovement2D script in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to make jumping responsive. 
-- Updated 2DConfinedTargetGroup and 2DConfiner scenes to use new CinemachineConfiner2D extension. 
+- Updated CharacterMovement2D script in 2D sample scenes (2DConfinedTargetGroup, 2DConfiner, 2DConfinerUndersized, 2DTargetGroup) to make jumping responsive.
+- Updated 2DConfinedTargetGroup and 2DConfiner scenes to use new CinemachineConfiner2D extension.
 
 
 ## [2.7.1] - 2020-11-14
@@ -499,7 +499,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: CinemachineNewVirtualCamera.AddComponent() now works properly
 - Bugfix: removed compile errors when Physics2D module is disabled
 - Bugfix: brain updates on scene loaded or unloaded
-- Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline  
+- Bugfix (1252431): Fixed unnecessary GC Memory allocation every frame when using timeline
 - Bugfix (1260385): check for prefab instances correctly
 - Bugfix (1266191) Clicking on foldout labels in preferences panel toggles their expanded state
 - Bugfix (1266196) Composer target Size label in preferences panel was too big
@@ -508,7 +508,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Timeline Scrubbing Cache supports nested timelines, with some known limitations to be addressed with a future Timeline package release
 - Added support for deterministic noise in the context of controlled rendering (via CinemachineCore.CurrentTimeOverride)
 - Added Target Offset field to Framing Transposer
-- Added Multi-object edit capabilities to virtual cameras and extensions 
+- Added Multi-object edit capabilities to virtual cameras and extensions
 - Added inspector button to clear the Scrubbing Cache
 
 
@@ -548,7 +548,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (1213819): repaintGameView on editor change
 - Bugfix (1217306): target group position drifting when empty or when members are descendants of the group
 - Bugfix (1218695): Fully qualify UnityEditor.Menu to avoid compile errors in some circumstances
-- Bugfix (1222740): Binding Modes, that don't have control over axis value range, are not affected by it. 
+- Bugfix (1222740): Binding Modes, that don't have control over axis value range, are not affected by it.
 - Bugfix (1227606): Timeline preview and playmode not the same for composer with hand-animated rotations
 - Bugfix: Confiner's cache is reset, when bounding shape/volume is changed.
 - Bugfix (1232146): Vcam no longer jerks at edge of confiner bound box.
@@ -596,7 +596,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix (fogbugz 1176866): Collider: clean up static RigidBody on exit
 - Bugfix (fogbugz 1174180): framing transposer wrong ortho size calculation
 - Bugfix (fogbugz 1158509): Split brain.UpdateMethod into VcamUpdateMethod and BrainUpdateMethod, to make blending work correctly
-- Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size 
+- Bugfix (fogbugz 1162074): Framing transposer and group transposer only reached half maximum ortho size
 - Bugfix (fogbugz 1165599): Transposer: fix gimbal lock issue in LockToTargetWithWorldUp
 - Bugfix: VolumeSettings: handle layermask in HDAdditionalCameraData
 - Bugfix: use vcam's up when drawing gizmos (orbital transposer and free look)
@@ -652,7 +652,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added dependency on new unity.timeline
 - Added conditional dependence on PostProcessingV2
 - No copying CM gizmo into assets folder
-- FreeLook: if inherit position from similar FreeLooks, bypass damping 
+- FreeLook: if inherit position from similar FreeLooks, bypass damping
 - Timeline: improve handling when vcam values are tweaked inside shot inspector (fogbugz 1109024)
 
 ## [2.2.8] - 2018-12-10
@@ -667,7 +667,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Updated documentation (corrections, and relocation to prevent importing)
 - Upgrade: added support for nested prefabs in Unity 2018.3 (fogbugz 1077395)
 - Optimization: position predictor is more efficient
-- Optimization: Composer caches some calculations 
+- Optimization: Composer caches some calculations
 - Optimization: Fix editor slowdown when Lens Presets asset is missing
 - Experimental: Optional new damping algorithm: attempt to reduce sensitivity to variable framerate
 - Experimental: Optional new extra-efficient versions of vcam and FreeLook (not back-compatible)
@@ -699,7 +699,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Impulse Module and More
 - New Cinemachine Impulse module for event-driven camera shakes
 - New Event Helper script CinemachineTriggerAction takes action on Collider and Collider2D enter/exit events, and exposes them as UnityEvents
-- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.  
+- New performance-tuning feature: Standby Update.  Controls how often to update the vcam when it's in Standby.
 - New NoiseSettings editor with signal preview
 - Added Focal Length or Named FOV presets for Camera Lens
 - Added support for Physical Camera: focal length and Lens Offset
@@ -729,7 +729,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Bugfix: SimpleFollow transposers were not initilizing their position correctly at game start
 - Bugfix: Timeline with CM shot was causing jitter in some FixedUpdate situations
 - Bugfix: Multiple brains with heterogeneous update methods were not behaving correctly.  CM will now support this, but you must make sure that the brains have different layer masks.
-- Example scenes now include use of CinemachineTriggerAction script.  
+- Example scenes now include use of CinemachineTriggerAction script.
 
 ## [2.1.13] - 2018-05-09
 ### Removed dependency on nonexistant Timeline package, minor bugfixes

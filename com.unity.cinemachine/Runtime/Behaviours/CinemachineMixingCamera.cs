@@ -78,12 +78,12 @@ namespace Unity.Cinemachine
             for (var i = 0; i < MaxCameras; ++i)
                 SetWeight(i, i == 0 ? 1 : 0);
         }
-        
+
         /// <inheritdoc />
         public override CameraState State => m_CameraState;
 
         /// <inheritdoc />
-        public override string Description 
+        public override string Description
         {
             get
             {

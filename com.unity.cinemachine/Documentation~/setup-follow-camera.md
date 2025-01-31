@@ -13,7 +13,7 @@ Create and set up a Cinemachine Camera that automatically follows and frames a c
    * A [Cinemachine Camera](CinemachineCamera.md) component,
    * A [Cinemachine Follow](CinemachineFollow.md) component handling the Cinemachine Camera behavior for **Position Control**, and
    * A [Cinemachine Rotation Composer](CinemachineRotationComposer.md) component handling the Cinemachine Camera behavior for **Rotation Control**.
-   
+
 2. [Verify](setup-cinemachine-environment.md#verify-the-cinemachine-brain-presence) that the Unity Camera includes a [Cinemachine Brain](CinemachineBrain.md) component.
 
 3. In the Inspector, in the **Cinemachine Camera** component, set the **Tracking Target** property to specify the GameObject to follow and look at.

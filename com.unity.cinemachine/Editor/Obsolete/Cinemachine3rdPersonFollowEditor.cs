@@ -37,7 +37,7 @@ namespace Unity.Cinemachine.Editor
                 Gizmos.color = originalGizmoColour;
             }
         }
-        
+
         public override void OnInspectorGUI()
         {
             BeginInspector();

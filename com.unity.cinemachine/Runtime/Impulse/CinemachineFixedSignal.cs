@@ -25,15 +25,15 @@ namespace Unity.Cinemachine
         public AnimationCurve ZCurve;
 
         /// <summary>
-        /// Returns the length on seconds of the signal.  
+        /// Returns the length on seconds of the signal.
         /// Returns 0 for signals of indeterminate length.
         /// </summary>
-        public override float SignalDuration 
-        { 
+        public override float SignalDuration
+        {
             get
             {
                 return Mathf.Max(
-                    AxisDuration(XCurve), 
+                    AxisDuration(XCurve),
                     Mathf.Max(AxisDuration(YCurve), AxisDuration(ZCurve)));
             }
         }
@@ -48,7 +48,7 @@ namespace Unity.Cinemachine
             }
             return duration;
         }
-    
+
         /// <summary>Get the raw signal at this time</summary>
         /// <param name="timeSinceSignalStart">The time since in seconds since the start of the signal</param>
         /// <param name="pos">The position impulse signal</param>

@@ -15,14 +15,14 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachinePanTilt.html")]
-    public class CinemachinePanTilt 
+    public class CinemachinePanTilt
         : CinemachineComponentBase, IInputAxisOwner, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
     {
         /// <summary>Defines the reference frame against which pan and tilt rotations are made.</summary>
         public enum ReferenceFrames
         {
-            /// <summary>Pan and tilt are relative to parent object's local axes, 
+            /// <summary>Pan and tilt are relative to parent object's local axes,
             /// or World axes if no parent object</summary>
             ParentObject,
 
@@ -96,7 +96,7 @@ namespace Unity.Cinemachine
 
         static InputAxis DefaultPan => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
         static InputAxis DefaultTilt => new () { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
-        
+
         /// <summary>Report the available input axes</summary>
         /// <param name="axes">Output list to which the axes will be added</param>
         void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
@@ -113,7 +113,7 @@ namespace Unity.Cinemachine
         /// <param name="handler">The handler to unregister</param>
         void IInputAxisResetSource.UnregisterResetHandler(Action handler) => m_ResetHandler -= handler;
 
-        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue
         {
             get
             {
@@ -153,12 +153,12 @@ namespace Unity.Cinemachine
             curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
-                curState.RotationDampingBypass = curState.RotationDampingBypass 
+                curState.RotationDampingBypass = curState.RotationDampingBypass
                     * UnityVectorExtensions.SafeFromToRotation(
-                        m_PreviousCameraRotation * Vector3.forward, 
+                        m_PreviousCameraRotation * Vector3.forward,
                         rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
-            
+
             var gotInputX = PanAxis.TrackValueChange();
             var gotInputY = TiltAxis.TrackValueChange();
 
@@ -175,7 +175,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Force the virtual camera to assume a given position and orientation.  
+        /// Force the virtual camera to assume a given position and orientation.
         /// Procedural placement then takes over
         /// </summary>
         /// <param name="pos">World-space position to take</param>
@@ -192,8 +192,8 @@ namespace Unity.Cinemachine
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
             m_ResetHandler?.Invoke(); // Cancel re-centering
-            if (fromCam != null 
-                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0  
+            if (fromCam != null
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
@@ -201,7 +201,7 @@ namespace Unity.Cinemachine
             }
             return false;
         }
-        
+
         void SetAxesForRotation(Quaternion targetRot)
         {
             m_ResetHandler?.Invoke(); // cancel re-centering
@@ -260,7 +260,7 @@ namespace Unity.Cinemachine
             }
             return new Vector2(PanAxis.Center, TiltAxis.Center);
 
-            static float NormalizeAngle(float angle) => ((angle + 180) % 360) - 180; 
+            static float NormalizeAngle(float angle) => ((angle + 180) % 360) - 180;
         }
     }
 }

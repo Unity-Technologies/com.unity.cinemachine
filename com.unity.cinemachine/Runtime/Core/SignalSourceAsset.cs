@@ -6,7 +6,7 @@ namespace Unity.Cinemachine
     public interface ISignalSource6D
     {
         /// <summary>
-        /// Returns the length on seconds of the signal.  
+        /// Returns the length on seconds of the signal.
         /// Returns 0 for signals of indeterminate length.
         /// </summary>
         float SignalDuration { get; }
@@ -25,7 +25,7 @@ namespace Unity.Cinemachine
     public abstract class SignalSourceAsset : ScriptableObject, ISignalSource6D
     {
         /// <summary>
-        /// Returns the length on seconds of the signal.  
+        /// Returns the length on seconds of the signal.
         /// Returns 0 for signals of indeterminate length.
         /// </summary>
         public abstract float SignalDuration { get; }
@@ -35,7 +35,7 @@ namespace Unity.Cinemachine
         /// <param name="pos">output for position component of the signal</param>
         /// <param name="rot">output for rotation component of the signal.  Use Quaternion.identity if none.</param>
         public abstract void GetSignal(
-            float timeSinceSignalStart, out Vector3 pos, out Quaternion rot);    
+            float timeSinceSignalStart, out Vector3 pos, out Quaternion rot);
     }
 
 }

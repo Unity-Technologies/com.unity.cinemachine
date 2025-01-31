@@ -2,14 +2,14 @@ using NUnit.Framework;
 using UnityEngine;
 
 namespace Unity.Cinemachine.Tests.Editor
-{    
+{
     [TestFixture]
     public class BlendManagerTests
     {
         class FakeCamera : ICinemachineCamera
         {
             readonly string m_Name;
-            public FakeCamera(string name) => m_Name = name; 
+            public FakeCamera(string name) => m_Name = name;
             public string Name => m_Name;
             public string Description => string.Empty;
             public CameraState State => CameraState.Default;
@@ -19,10 +19,10 @@ namespace Unity.Cinemachine.Tests.Editor
             public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
         }
 
-        class FakeMixer : FakeCamera, ICinemachineMixer 
-        { 
+        class FakeMixer : FakeCamera, ICinemachineMixer
+        {
             public FakeMixer(string name) : base(name) {}
-            public bool IsLiveChild(ICinemachineCamera child, bool dominantChildOnly) => false; 
+            public bool IsLiveChild(ICinemachineCamera child, bool dominantChildOnly) => false;
         }
 
         BlendManager m_BlendManager = new();
@@ -41,15 +41,15 @@ namespace Unity.Cinemachine.Tests.Editor
         void BlendCreatedEventHandler(CinemachineCore.BlendEventParams evt) => ++m_BlendCreatedCount;
         void BlendFinishedEventHandler(ICinemachineMixer mixer, ICinemachineCamera cam) => ++m_BlendFinishedCount;
 
-        [SetUp] public void Setup() 
-        { 
+        [SetUp] public void Setup()
+        {
             CinemachineCore.CameraActivatedEvent.AddListener(ActivatedEventHandler);
             CinemachineCore.CameraDeactivatedEvent.AddListener(DeactivateEventHandler);
             CinemachineCore.BlendCreatedEvent.AddListener(BlendCreatedEventHandler);
             CinemachineCore.BlendFinishedEvent.AddListener(BlendFinishedEventHandler);
         }
-        [TearDown] public void TearDown() 
-        { 
+        [TearDown] public void TearDown()
+        {
             CinemachineCore.CameraActivatedEvent.RemoveListener(ActivatedEventHandler);
             CinemachineCore.CameraDeactivatedEvent.RemoveListener(DeactivateEventHandler);
             CinemachineCore.BlendCreatedEvent.RemoveListener(BlendCreatedEventHandler);
@@ -73,7 +73,7 @@ namespace Unity.Cinemachine.Tests.Editor
             m_BlendManager.ComputeCurrentBlend();
             m_BlendManager.ProcessActiveCamera(m_Mixer, Vector3.up, deltaTime);
         }
-            
+
         [Test]
         public void TestEvents()
         {

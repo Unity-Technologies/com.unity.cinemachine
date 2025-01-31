@@ -1,4 +1,4 @@
-#if CINEMACHINE_PHYSICS 
+#if CINEMACHINE_PHYSICS
 
 using UnityEngine;
 using UnityEditor;
@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
             this.AddMissingCmCameraHelpBox(ux);
 
             var boundsHelp = ux.AddChild(new HelpBox(
-                "Bounding Volume must be a BoxCollider, SphereCollider, CapsuleCollider, or convex MeshCollider.", 
+                "Bounding Volume must be a BoxCollider, SphereCollider, CapsuleCollider, or convex MeshCollider.",
                 HelpBoxMessageType.Warning));
 
             var confiner = target as CinemachineConfiner3D;

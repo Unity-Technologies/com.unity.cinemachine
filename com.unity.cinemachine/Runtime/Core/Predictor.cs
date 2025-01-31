@@ -26,17 +26,17 @@ namespace Unity.Cinemachine
         public Vector3 CurrentPosition => m_Pos;
 
         /// <summary>
-        /// Apply a delta to the target's position, which will be ignored for 
+        /// Apply a delta to the target's position, which will be ignored for
         /// smoothing purposes.  Use this when the target's position gets warped.
         /// </summary>
         /// <param name="positionDelta">The position change of the target object</param>
         public void ApplyTransformDelta(Vector3 positionDelta) => m_Pos += positionDelta;
 
         /// <summary>Reset the lookahead data, clear all the buffers.</summary>
-        public void Reset() 
-        { 
-            m_HavePos = false; 
-            m_SmoothDampVelocity = Vector3.zero; 
+        public void Reset()
+        {
+            m_HavePos = false;
+            m_SmoothDampVelocity = Vector3.zero;
             m_Velocity = Vector3.zero;
         }
 
@@ -52,7 +52,7 @@ namespace Unity.Cinemachine
                 var vel = (pos - m_Pos) / deltaTime;
                 bool slowing = vel.sqrMagnitude < m_Velocity.sqrMagnitude;
                 m_Velocity = Vector3.SmoothDamp(
-                    m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10), 
+                    m_Velocity, vel, ref m_SmoothDampVelocity, Smoothing / (slowing ? 30 : 10),
                     float.PositiveInfinity, deltaTime);
             }
             m_Pos = pos;
@@ -76,7 +76,7 @@ namespace Unity.Cinemachine
         static float DecayConstant(float time, float residual) => Mathf.Log(1f / residual) / time;
 
         // Exponential decay: decay a given quantity over a period of time
-        static float DecayedRemainder(float initial, float decayConstant, float deltaTime) 
+        static float DecayedRemainder(float initial, float decayConstant, float deltaTime)
             => initial / Mathf.Exp(decayConstant * deltaTime);
 
         /// <summary>Standard residual</summary>
@@ -151,10 +151,10 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Get a damped version of a quantity.  This is the portion of the
         /// quantity that will take effect over the given time.
-        /// 
-        /// This is a special implementation that attempts to increase visual stability 
+        ///
+        /// This is a special implementation that attempts to increase visual stability
         /// in the context of an unstable framerate.
-        /// 
+        ///
         /// It relies on AverageFrameRateTracker to track the average framerate.
         /// </summary>
         /// <param name="initial">The amount that will be damped</param>
@@ -278,7 +278,7 @@ namespace Unity.Cinemachine
             }
 
             // Internal for testing
-            internal static void SetDampTimeScale(float fps) 
+            internal static void SetDampTimeScale(float fps)
             {
                 // Approximation computed heuristically, and curve-fitted to sampled data.
                 // Valid only for kSubframeTime = 1.0f / 1024.0f

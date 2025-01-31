@@ -29,7 +29,7 @@ namespace Unity.Cinemachine.Editor
 
             var unitsField = row.Contents.AddChild(new EnumField(
                 initialUnits) { style = { flexGrow = 2, flexBasis = 0 } });
-            unitsField.RegisterValueChangedCallback((evt) => 
+            unitsField.RegisterValueChangedCallback((evt) =>
             {
                 var newUnits = (PathIndexUnit)evt.newValue;
                 for (int i = 0; i < targets.Length; ++i)

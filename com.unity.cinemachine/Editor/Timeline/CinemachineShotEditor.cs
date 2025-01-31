@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Editor
         {
             var vcam = CinemachineMenu.CreatePassiveCmCamera("CinemachineCamera", null, false);
             vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
-#if false 
+#if false
             // GML this is too bold.  What if timeline is a child of something moving?
             // also, SetActive(false) prevents the animator from being able to animate the object
             vcam.gameObject.SetActive(false);
@@ -47,7 +47,7 @@ namespace Unity.Cinemachine.Editor
             static Dictionary<System.Type, bool> s_EditorExpanded = new ();
 
             UnityEditor.Editor m_Editor;
-            
+
             public Object Target { get; private set; }
             public Foldout Foldout { get; private set; }
 
@@ -67,7 +67,7 @@ namespace Unity.Cinemachine.Editor
                 Foldout = new Foldout { text = type.Name, value = expanded, style = { marginTop = 4, marginLeft = 0 }};
                 Foldout.AddToClassList("clip-inspector-custom-properties__foldout"); // make it pretty
                 Foldout.Add(new InspectorElement(m_Editor) { style = { paddingLeft = 0, paddingRight = 0 }});
-                Foldout.RegisterValueChangedCallback((evt) => 
+                Foldout.RegisterValueChangedCallback((evt) =>
                 {
                     if (evt.target == Foldout)
                         s_EditorExpanded[type] = evt.newValue;
@@ -100,8 +100,8 @@ namespace Unity.Cinemachine.Editor
             m_ParentElement = new VisualElement();
 
             // Auto-create shots
-            var toggle = m_ParentElement.AddChild(new Toggle(CinemachineTimelinePrefs.s_AutoCreateLabel.text) 
-            { 
+            var toggle = m_ParentElement.AddChild(new Toggle(CinemachineTimelinePrefs.s_AutoCreateLabel.text)
+            {
                 tooltip = CinemachineTimelinePrefs.s_AutoCreateLabel.tooltip,
                 value = CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value
             });
@@ -110,26 +110,26 @@ namespace Unity.Cinemachine.Editor
 
             // Cached scrubbing
             var row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
-            row.Left.AddChild(new Label(CinemachineTimelinePrefs.s_ScrubbingCacheLabel.text) 
-            { 
-                tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip, 
+            row.Left.AddChild(new Label(CinemachineTimelinePrefs.s_ScrubbingCacheLabel.text)
+            {
+                tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip,
                 style = { alignSelf = Align.Center, flexGrow = 1 }
             });
-            var cacheToggle = row.Right.AddChild(new Toggle 
-            { 
+            var cacheToggle = row.Right.AddChild(new Toggle
+            {
                 tooltip = CinemachineTimelinePrefs.s_ScrubbingCacheLabel.tooltip,
                 value = CinemachineTimelinePrefs.UseScrubbingCache.Value,
                 style = { flexGrow = 0, marginRight = 5 }
             });
             row.Right.Add(new Label { text = "(experimental)", style = { flexGrow = 1, alignSelf = Align.Center } });
-            var clearCacheButton = row.Right.AddChild(new Button 
+            var clearCacheButton = row.Right.AddChild(new Button
             {
                 text = "Clear",
                 style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5 }
             });
             clearCacheButton.RegisterCallback<ClickEvent>((evt) => TargetPositionCache.ClearCache());
             clearCacheButton.SetEnabled(CinemachineTimelinePrefs.UseScrubbingCache.Value);
-            cacheToggle.RegisterValueChangedCallback((evt) => 
+            cacheToggle.RegisterValueChangedCallback((evt) =>
             {
                 CinemachineTimelinePrefs.UseScrubbingCache.Value = evt.newValue;
                 clearCacheButton.SetEnabled(evt.newValue);
@@ -139,9 +139,9 @@ namespace Unity.Cinemachine.Editor
             m_ParentElement.AddSpace();
             var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
             row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
-            row.Left.AddChild(new Label("Cinemachine Camera") 
-            { 
-                tooltip = "The Cinemachine camera to use for this shot", 
+            row.Left.AddChild(new Label("Cinemachine Camera")
+            {
+                tooltip = "The Cinemachine camera to use for this shot",
                 style = { alignSelf = Align.Center, flexGrow = 1 }
             });
             row.Right.Add(new IMGUIContainer(() =>
@@ -151,7 +151,7 @@ namespace Unity.Cinemachine.Editor
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
             }) { style = { flexGrow = 1, marginBottom = 2 }} );
-            m_CreateButton = row.Right.AddChild(new Button(() => 
+            m_CreateButton = row.Right.AddChild(new Button(() =>
             {
                 vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
                 vcamProperty.serializedObject.ApplyModifiedProperties();
@@ -271,7 +271,7 @@ namespace Unity.Cinemachine.Editor
 
             EditorGUILayout.Space();
             EditorGUILayout.HelpBox(
-                "For best inspector display, please upgrade Timeline to version 1.8.2 or later", 
+                "For best inspector display, please upgrade Timeline to version 1.8.2 or later",
                 MessageType.Info);
 
             EditorGUI.BeginChangeCheck();

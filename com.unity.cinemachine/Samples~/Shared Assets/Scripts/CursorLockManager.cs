@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Samples
     public class CursorLockManager : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
         public InputAxis CursorLock = InputAxis.DefaultMomentary;
-        
+
         public UnityEvent OnCursorLocked = new ();
         public UnityEvent OnCursorUnlocked = new ();
 

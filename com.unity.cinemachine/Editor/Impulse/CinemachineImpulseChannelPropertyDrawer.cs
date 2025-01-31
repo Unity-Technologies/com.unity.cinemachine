@@ -22,8 +22,8 @@ namespace Unity.Cinemachine.Editor
             for (int i = 0; i < numLayers; ++i)
             {
                 mLayerList[i] = string.Format(
-                    "{0}: {1}", i, 
-                    (settings == null || settings.ImpulseChannels.Length <= i) 
+                    "{0}: {1}", i,
+                    (settings == null || settings.ImpulseChannels.Length <= i)
                         ? "default" : settings.ImpulseChannels[i]);
             }
         }
@@ -33,7 +33,7 @@ namespace Unity.Cinemachine.Editor
             UpdateLayerList();
             float addWidth = GUI.skin.button.CalcSize(mAddLabel).x;
             rect.width -= addWidth + hSpace;
-            
+
             EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
             EditorGUI.BeginChangeCheck();
             int value = EditorGUI.MaskField(rect, label, property.intValue, mLayerList);

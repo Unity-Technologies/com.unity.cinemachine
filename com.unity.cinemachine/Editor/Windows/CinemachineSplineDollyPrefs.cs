@@ -12,9 +12,9 @@ namespace Unity.Cinemachine.Editor
         public static CinemachineSettings.IntItem SplineResolution = new("CNMCN_Spline_resolution", 10);
         public static CinemachineSettings.BoolItem ShowSplineNormals = new("CNMCN_ShowSplineNormals", false);
 
-        static readonly GUIContent k_SplineRollColorGUIContent = new("Gizmo Color", 
+        static readonly GUIContent k_SplineRollColorGUIContent = new("Gizmo Color",
             "The color with which the spline is drawn, when a " + nameof(CinemachineSplineRoll) + " is attached.");
-        static readonly GUIContent k_SplineWidthGUIContent = new("Width", 
+        static readonly GUIContent k_SplineWidthGUIContent = new("Width",
             "The width of the spline");
         static readonly GUIContent k_SplineResolutionGUIContent = new("Resolution",
             "The resolution with which the spline is drawn.");

@@ -35,7 +35,7 @@ namespace Unity.Cinemachine
             base.OnEnable();
             Target.UpdateInputAxisProvider();
         }
-        
+
         protected override void OnDisable()
         {
             base.OnDisable();
@@ -57,7 +57,7 @@ namespace Unity.Cinemachine
                     MessageType.Error);
                 return;
             }
-            
+
             Target.m_XAxis.ValueRangeLocked
                 = (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow);
 
@@ -107,7 +107,7 @@ namespace Unity.Cinemachine
                     EditorGUILayout.EndVertical();
                 }
             }
-            
+
             // Extensions
             DrawExtensionsWidgetInInspector();
         }
@@ -119,10 +119,10 @@ namespace Unity.Cinemachine
                 m_RigEditorOnSceneGUI.Invoke(m_rigEditor, null);
         }
 
-        static GUIContent[] s_RigNames = 
+        static GUIContent[] s_RigNames =
         {
-            new GUIContent("Top Rig"), 
-            new GUIContent("Middle Rig"), 
+            new GUIContent("Top Rig"),
+            new GUIContent("Middle Rig"),
             new GUIContent("Bottom Rig")
         };
         internal static GUIContent[] RigNames => s_RigNames;
@@ -166,7 +166,7 @@ namespace Unity.Cinemachine
                 {
                     CreateCachedEditor(rig, null, ref m_rigEditor);
                     if (m_rigEditor != null)
-                        m_RigEditorOnSceneGUI = m_rigEditor.GetType().GetMethod("OnSceneGUI", 
+                        m_RigEditorOnSceneGUI = m_rigEditor.GetType().GetMethod("OnSceneGUI",
                             System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
                 }
             }

@@ -39,7 +39,7 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_MinDuration")]
         public float MinDuration;
 
-        /// <summary>If checked, camera choice will be randomized if multiple cameras are equally desirable.  
+        /// <summary>If checked, camera choice will be randomized if multiple cameras are equally desirable.
         /// Otherwise, child list order will be used</summary>
         [Tooltip("If checked, camera choice will be randomized if multiple cameras are equally desirable.  "
            + "Otherwise, child list order and child camera priority will be used.")]
@@ -74,14 +74,14 @@ namespace Unity.Cinemachine
             {
                 if (m_LegacyLookAt != null || m_LegacyFollow != null)
                 {
-                    DefaultTarget = new DefaultTargetSettings 
-                    { 
+                    DefaultTarget = new DefaultTargetSettings
+                    {
                         Enabled = true,
                         Target = new CameraTarget
                         {
-                            LookAtTarget = m_LegacyLookAt, 
-                            TrackingTarget = m_LegacyFollow, 
-                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
+                            LookAtTarget = m_LegacyLookAt,
+                            TrackingTarget = m_LegacyFollow,
+                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow
                         }
                     };
                     m_LegacyLookAt = m_LegacyFollow = null;

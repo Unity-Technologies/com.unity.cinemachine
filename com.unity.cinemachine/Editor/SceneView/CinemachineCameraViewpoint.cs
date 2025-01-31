@@ -21,9 +21,9 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        public override Vector3 Position 
-        { 
-            get => base.Position; 
+        public override Vector3 Position
+        {
+            get => base.Position;
             set
             {
                 base.Position = value;

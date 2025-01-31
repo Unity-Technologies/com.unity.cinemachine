@@ -5,5 +5,5 @@ This CinemachineCamera __Position Control__ behavior uses the same position at t
 ### Properties
 
 | Property | Description |
-| --- | --- |				
+| --- | --- |
 | __Damping__ | Adds lag to the camera's responsiveness.  Value is the approximate time to catch up, in seconds. |

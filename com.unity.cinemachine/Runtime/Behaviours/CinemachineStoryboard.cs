@@ -124,7 +124,7 @@ namespace Unity.Cinemachine
         [Tooltip("How far away from the camera is the Canvas generated.")]
         [FormerlySerializedAs("m_PlaneDistance")]
         public float PlaneDistance = 100;
-        
+
         class CanvasInfo
         {
             public GameObject Canvas;
@@ -172,7 +172,7 @@ namespace Unity.Cinemachine
             /// </summary>
             ScreenSpaceCamera = UnityEngine.RenderMode.ScreenSpaceCamera
         };
-        
+
         void UpdateRenderCanvas()
         {
             for (int i = 0; i < m_CanvasInfo.Count; ++i)
@@ -216,7 +216,7 @@ namespace Unity.Cinemachine
             if (ci != null && ci.Canvas != null)
                 ci.Canvas.SetActive(showIt);
         }
-        
+
         CanvasInfo LocateMyCanvas(CinemachineBrain parent, bool createIfNotFound)
         {
             CanvasInfo ci = null;

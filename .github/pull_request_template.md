@@ -10,7 +10,7 @@
 
 - [ ] Added an automated test
 - [ ] Passed all automated tests
-- [ ] Manually tested 
+- [ ] Manually tested
 
 ### Documentation status
 

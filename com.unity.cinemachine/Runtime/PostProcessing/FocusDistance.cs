@@ -102,7 +102,7 @@ namespace Unity.Cinemachine
             m_FocusDistanceParams[0].SampleRadius = KernelRadius;
             m_FocusDistanceParams[0].SamplePosX = ScreenPosition.x;
             m_FocusDistanceParams[0].SamplePosY = ScreenPosition.y;
-            m_FocusDistanceParams[0].DefaultFocusDistance 
+            m_FocusDistanceParams[0].DefaultFocusDistance
                 = (PushToCamera || CurrentFocusDistance <= 0) ? Camera.focusDistance : CurrentFocusDistance;
 
             m_FocusDistanceParamsCB.SetData(m_FocusDistanceParams);

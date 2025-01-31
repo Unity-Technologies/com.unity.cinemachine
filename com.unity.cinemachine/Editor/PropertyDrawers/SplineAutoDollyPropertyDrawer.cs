@@ -28,7 +28,7 @@ namespace Unity.Cinemachine.Editor
                 style = { flexGrow = 1 }
             });
             dropdown.AddToClassList(InspectorUtility.AlignFieldClassName);
-            dropdown.RegisterValueChangedCallback((evt) => 
+            dropdown.RegisterValueChangedCallback((evt) =>
             {
                 var index = AutoDollyMenuItems.GetTypeIndex(evt.newValue);
                 if (index != GetImplementationIndex(property))
@@ -38,15 +38,15 @@ namespace Unity.Cinemachine.Editor
                     {
                         var o = new SerializedObject(targets[i]);
                         var p2 = o.FindProperty(property.propertyPath);
-                        p2.managedReferenceValue = (index == 0) 
+                        p2.managedReferenceValue = (index == 0)
                             ? null : Activator.CreateInstance(AutoDollyMenuItems.s_AllItems[index]);
                         o.ApplyModifiedProperties();
                     }
                 }
             });
-            
+
             Update();
-            ux.TrackPropertyValue(property, (p) => 
+            ux.TrackPropertyValue(property, (p) =>
             {
                 if (p.serializedObject == null)
                     return; // object deleted
@@ -101,12 +101,12 @@ namespace Unity.Cinemachine.Editor
                         return i;
                 return 0;
             }
-        
+
             // These lists are synchronized
             public static List<Type> s_AllItems = new ();
             public static List<string> s_ItemNames = new ();
 
-            // This code dynamically discovers eligible classes and builds the menu data 
+            // This code dynamically discovers eligible classes and builds the menu data
             static AutoDollyMenuItems()
             {
                 // Get all eligible types

@@ -34,7 +34,7 @@ namespace Unity.Cinemachine
       Y = (long) Math.Round(pt.Y * scale);
       Z = (long) Math.Round(pt.Z * scale);
     }
-    
+
     public Point64(long x, long y, long z = 0)
     {
       X = x;
@@ -459,7 +459,7 @@ namespace Unity.Cinemachine
       return (vec1.x * vec2.x + vec1.y * vec2.y);
     }
 
-    internal static bool GetIntersectPoint(Point64 ln1a, 
+    internal static bool GetIntersectPoint(Point64 ln1a,
       Point64 ln1b, Point64 ln2a, Point64 ln2b, out PointD ip)
     {
       ip = new PointD();
@@ -500,7 +500,7 @@ namespace Unity.Cinemachine
       return true;
     }
 
-    internal static bool SegmentsIntersect(Point64 seg1a, 
+    internal static bool SegmentsIntersect(Point64 seg1a,
       Point64 seg1b, Point64 seg2a, Point64 seg2b)
     {
       double dx1 = seg1a.X - seg1b.X;

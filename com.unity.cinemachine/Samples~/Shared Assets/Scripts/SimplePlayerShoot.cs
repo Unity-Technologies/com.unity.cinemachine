@@ -5,9 +5,9 @@ using UnityEngine.Events;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This component manages player shooting.  It is expected to be on the player object, 
+    /// This component manages player shooting.  It is expected to be on the player object,
     /// or on a child SimplePlayerAimController object of the player.
-    /// 
+    ///
     /// If an AimTargetManager is specified, then the behaviour aims at that target.
     /// Otherwise, the behaviour aims in the forward direction of the player object,
     /// or of the SimplePlayerAimController object if it exists and is not decoupled
@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Samples
 
         [Tooltip("Input Axis for firing.  Value is 0 or 1")]
         public InputAxis Fire = InputAxis.DefaultMomentary;
-        
+
         [Tooltip("Target to Aim towards. If null, the aim is defined by the forward vector of this gameObject.")]
         public AimTargetManager AimTargetManager;
 
@@ -58,18 +58,18 @@ namespace Unity.Cinemachine.Samples
         void Update()
         {
             var now = Time.time;
-            bool fireNow = BulletPrefab != null 
+            bool fireNow = BulletPrefab != null
                 && now - m_LastFireTime > 1 / MaxBulletsPerSec
                 && Fire.Value > 0.1f;
 
             // Get the firing direction.  Special case: if there is a decoupled AimController,
             // firing direction is character forward, not AimController forward.
             var fwd = transform.forward;
-            bool decoupled = AimController != null 
+            bool decoupled = AimController != null
                 && AimController.PlayerRotation == SimplePlayerAimController.CouplingMode.Decoupled;
             if (decoupled)
                 fwd = transform.parent.forward;
-            
+
             // Face the firing direction if appropriate
             if (AimController != null && !decoupled)
             {
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine.Samples
                 GameObject bullet = null;
                 for (var i = 0; bullet == null && i < m_BulletPool.Count; ++i) // Look in the pool if one is available
                 {
-                    if (!m_BulletPool[i].activeInHierarchy) 
+                    if (!m_BulletPool[i].activeInHierarchy)
                     {
                         bullet = m_BulletPool[i];
                         bullet.transform.SetPositionAndRotation(pos, rot);

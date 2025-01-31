@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
             for (int i = 0; i < targets.Length; ++i)
                 (targets[i] as CinemachineOrbitalTransposer).UpdateInputAxisProvider();
         }
-        
+
         public override void OnInspectorGUI()
         {
             BeginInspector();
@@ -90,7 +90,7 @@ namespace Unity.Cinemachine.Editor
                 = (Target.m_BindingMode == TargetTracking.BindingMode.LazyFollow);
             DrawRemainingPropertiesInInspector();
         }
-        
+
         [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
         static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
         {

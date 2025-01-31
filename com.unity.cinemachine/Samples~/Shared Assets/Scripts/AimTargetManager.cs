@@ -2,10 +2,10 @@ using UnityEngine;
 
 namespace Unity.Cinemachine.Samples
 {
-    /// <summary> 
+    /// <summary>
     /// When there is an active ThirdPersonFollow camera with noise cancellation,
     /// the position of this object is the aim target for the ThirdPersonAim camera.
-    /// </summary> 
+    /// </summary>
     public class AimTargetManager : MonoBehaviour
     {
         [Tooltip("This canvas will be enabled when there is a 3rdPersoAim camera active")]
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine.Samples
                     liveCam = managerCam.LiveChild as CinemachineCamera;
                 else
                     liveCam = brain.ActiveVirtualCamera as CinemachineCamera;
-            
+
                 if (liveCam != null)
                 {
                     if (liveCam.TryGetComponent<CinemachineThirdPersonAim>(out var aim) && aim.enabled)

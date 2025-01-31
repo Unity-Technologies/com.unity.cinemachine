@@ -37,9 +37,9 @@ namespace Unity.Cinemachine.Tests.Editor
             new object[] {new Vector2(0, 3), new Vector2(0, 5), new Vector2(0, 9), new Vector2(0, 5), 4, IntersectionResult.l2_p2},
             new object[] {new Vector2(0, 5), new Vector2(0, 3), new Vector2(0, 9), new Vector2(0, 5), 4, IntersectionResult.l2_p2}
         };
-        
+
         [Test, TestCaseSource(nameof(s_IntersectionTestCases))]
-        public void FindIntersectionTest(Vector2 l1_p1, Vector2 l1_p2, Vector2 l2_p1, Vector2 l2_p2, 
+        public void FindIntersectionTest(Vector2 l1_p1, Vector2 l1_p2, Vector2 l2_p1, Vector2 l2_p2,
             int expectedIntersectionType, IntersectionResult expectedIntersectionResult)
         {
             int intersectionType = UnityVectorExtensions.FindIntersection(l1_p1, l1_p2, l2_p1, l2_p2,
@@ -104,7 +104,7 @@ namespace Unity.Cinemachine.Tests.Editor
             var v1 = Vector3.up;
             var angle = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.forward);
             Assert.That(angle, Is.EqualTo(expectedAngle).Within(UnityVectorExtensions.Epsilon));
-            
+
             if (compareWithBuiltIn)
             {
                 var angle2 = Vector2.SignedAngle(v1, v2);

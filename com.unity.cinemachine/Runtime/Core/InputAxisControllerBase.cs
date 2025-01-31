@@ -8,12 +8,12 @@ namespace Unity.Cinemachine
     /// <summary>
     /// This interface identifies a behaviour that can drive IInputAxisOwners.
     /// </summary>
-    public interface IInputAxisController 
+    public interface IInputAxisController
     {
         /// <summary>
-        /// Called by editor only.  Normally we should have one controller per 
+        /// Called by editor only.  Normally we should have one controller per
         /// IInputAxisOwner axis.  This will scan the object for IInputAxisOwner
-        /// behaviours, create missing controllers (in their 
+        /// behaviours, create missing controllers (in their
         /// default state), and remove any that are no longer relevant.
         /// </summary>
         void SynchronizeControllers();
@@ -23,7 +23,7 @@ namespace Unity.Cinemachine
         /// Available in Editor only.  Used to check if a controller synchronization is necessary.
         /// Normally we should have one controller per IInputAxisOwner axis.
         /// </summary>
-        /// <returns>True if there is one controller defined per IInputAxisOwner axis, 
+        /// <returns>True if there is one controller defined per IInputAxisOwner axis,
         /// false if there is a mismatch</returns>
         bool ControllersAreValid();
 #endif
@@ -31,7 +31,7 @@ namespace Unity.Cinemachine
 
     /// <summary>Use special property drawer for a list of InputAxisControllerBase.Controller objects</summary>
     internal class InputAxisControllerManagerAttribute : PropertyAttribute {}
-    
+
     [Serializable]
     internal class InputAxisControllerManager<T> where T : IInputAxisReader, new ()
     {
@@ -75,7 +75,7 @@ namespace Unity.Cinemachine
             for (int i = 0; i < Controllers.Count; ++i)
                 Controllers[i].Driver.Reset(ref m_Axes[i].DrivenAxis());
         }
-        
+
 #if UNITY_EDITOR
         public bool ControllersAreValid(GameObject root, bool scanRecursively)
         {
@@ -102,9 +102,9 @@ namespace Unity.Cinemachine
         /// <param name="controller">Controller to drive the axis.</param>
         public delegate void DefaultInitializer(
             in IInputAxisOwner.AxisDescriptor axis, InputAxisControllerBase<T>.Controller controller);
-        
+
         /// <summary>
-        /// Create missing controllers (in their default state) and remove any that 
+        /// Create missing controllers (in their default state) and remove any that
         /// are no longer relevant.
         /// </summary>
         public void CreateControllers(
@@ -133,7 +133,7 @@ namespace Unity.Cinemachine
                     int controllerIndex = GetControllerIndex(Controllers, t, m_Axes[i].Name);
                     if (controllerIndex < 0)
                     {
-                        var c = new InputAxisControllerBase<T>.Controller 
+                        var c = new InputAxisControllerBase<T>.Controller
                         {
                             Enabled = true,
                             Name = m_Axes[i].Name,
@@ -164,7 +164,7 @@ namespace Unity.Cinemachine
                 return -1;
             }
         }
-        
+
         void RegisterResetHandlers(GameObject root, bool scanRecursively)
         {
             // Rebuild the resetter list and register with them
@@ -179,7 +179,7 @@ namespace Unity.Cinemachine
                 m_AxisResetters[i].RegisterResetHandler(OnResetInput);
             }
         }
-    
+
         /// <summary>Read all the controllers and process their input.</summary>
         public void UpdateControllers(UnityEngine.Object context, float deltaTime)
         {
@@ -199,10 +199,10 @@ namespace Unity.Cinemachine
 
 
     /// <summary>
-    /// This is a base class for a behaviour that is used to drive IInputAxisOwner behaviours, 
-    /// which it discovers dynamically.  It is the bridge between the input system and 
+    /// This is a base class for a behaviour that is used to drive IInputAxisOwner behaviours,
+    /// which it discovers dynamically.  It is the bridge between the input system and
     /// Cinemachine cameras that require user input.  Add it to a Cinemachine camera that needs it.
-    /// If you want to read inputs from a third-party source, then you must specialize this class 
+    /// If you want to read inputs from a third-party source, then you must specialize this class
     /// with an appropriate implementation of IInputAxisReader.
     /// </summary>
     /// <typeparam name="T">The axis reader that will read the inputs.</typeparam>
@@ -210,15 +210,15 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     public abstract class InputAxisControllerBase<T> : MonoBehaviour, IInputAxisController where T : IInputAxisReader, new ()
     {
-        /// <summary>If set, a recursive search for IInputAxisOwners behaviours will be performed.  
-        /// Otherwise, only behaviours attached directly to this GameObject will be considered, 
+        /// <summary>If set, a recursive search for IInputAxisOwners behaviours will be performed.
+        /// Otherwise, only behaviours attached directly to this GameObject will be considered,
         /// and child objects will be ignored.</summary>
         [Tooltip("If set, a recursive search for IInputAxisOwners behaviours will be performed.  "
             + "Otherwise, only behaviours attached directly to this GameObject will be considered, "
             + "and child objects will be ignored")]
         public bool ScanRecursively = true;
-        
-        /// <summary>If set, input will not be processed while the Cinemachine Camera is 
+
+        /// <summary>If set, input will not be processed while the Cinemachine Camera is
         /// participating in a blend.</summary>
         [HideIfNoComponent(typeof(CinemachineVirtualCameraBase))]
         [Tooltip("If set, input will not be processed while the Cinemachine Camera is "
@@ -226,7 +226,7 @@ namespace Unity.Cinemachine
         public bool SuppressInputWhileBlending = true;
 
         /// <summary>
-        /// If set, then input will be processed using unscaled deltaTime, and not scaled deltaTime.  
+        /// If set, then input will be processed using unscaled deltaTime, and not scaled deltaTime.
         /// This allows input to continue even when the timescale is set to 0.
         /// </summary>
         public bool IgnoreTimeScale;
@@ -272,7 +272,7 @@ namespace Unity.Cinemachine
             get => m_ControllerManager.Controllers;
         }
 
-        /// <summary>Editor only: Called by Unity when the component is serialized 
+        /// <summary>Editor only: Called by Unity when the component is serialized
         /// or the inspector is changed.</summary>
         protected virtual void OnValidate() => m_ControllerManager.Validate();
 
@@ -297,8 +297,8 @@ namespace Unity.Cinemachine
 #endif
 
         /// <summary>
-        /// Normally we should have one controller per IInputAxisOwner axis.  
-        /// This will create missing controllers (in their default state) and remove any that 
+        /// Normally we should have one controller per IInputAxisOwner axis.
+        /// This will create missing controllers (in their default state) and remove any that
         /// are no longer relevant.  This is costly - do not call it every frame.
         /// </summary>
         public void SynchronizeControllers() => m_ControllerManager.CreateControllers(
@@ -312,7 +312,7 @@ namespace Unity.Cinemachine
         /// <param name="controller">Controller to drive the axis.</param>
         protected virtual void InitializeControllerDefaultsForAxis(
             in IInputAxisOwner.AxisDescriptor axis, Controller controller) {}
-           
+
         /// <summary>Read all the controllers and process their input.
         /// Default implementation calls UpdateControllers(IgnoreTimeScale ? Time.unscaledDeltaTime : Time.deltaTime)</summary>
         protected void UpdateControllers()
@@ -324,7 +324,7 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">The time interval for which to process the input</param>
         protected void UpdateControllers(float deltaTime)
         {
-            if (SuppressInputWhileBlending 
+            if (SuppressInputWhileBlending
                 && TryGetComponent<CinemachineVirtualCameraBase>(out var vcam)
                 && vcam.IsParticipatingInBlend())
                 return;

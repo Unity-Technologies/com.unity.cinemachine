@@ -34,7 +34,7 @@ namespace Unity.Cinemachine
             + "then Path Position represents distance along the path.")]
         public CinemachinePathBase.PositionUnits m_PositionUnits = CinemachinePathBase.PositionUnits.PathUnits;
 
-        /// <summary>Where to put the camera realtive to the path postion.  X is perpendicular 
+        /// <summary>Where to put the camera realtive to the path postion.  X is perpendicular
         /// to the path, Y is up, and Z is parallel to the path.</summary>
         [Tooltip("Where to put the camera relative to the path position.  X is perpendicular "
             + "to the path, Y is up, and Z is parallel to the path.  This allows the camera to "
@@ -172,14 +172,14 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
+        public override float GetMaxDampTime()
+        {
             var d2 = AngularDamping;
-            var a = Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping)); 
-            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
-            return Mathf.Max(a, b); 
+            var a = Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping));
+            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z));
+            return Mathf.Max(a, b);
         }
-        
+
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less that 0, no damping is done.</param>

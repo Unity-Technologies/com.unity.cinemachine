@@ -10,8 +10,8 @@ whatever - and Cinemachine will dynamically make the shot. You can use really te
 lenses and not have to update the cutscene if things change.
 
 ## Setup
-Cinemachine works out of the box with no dependencies other than Unity itself.  
-Just install it and you're ready to go.  It's pure c-sharp, fully open-source, 
+Cinemachine works out of the box with no dependencies other than Unity itself.
+Just install it and you're ready to go.  It's pure c-sharp, fully open-source,
 and the public API has complete XML documentation built right in.
 
 ## History

@@ -6,26 +6,26 @@ using UnityEngine.Events;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This is the base class for SimplePlayerController and SimplePlayerController2D.  
-    /// You can also use it as a base class for your custom controllers.  
+    /// This is the base class for SimplePlayerController and SimplePlayerController2D.
+    /// You can also use it as a base class for your custom controllers.
     /// It provides the following:
-    /// 
+    ///
     /// **Services:**
-    /// 
+    ///
     ///  - 2D motion axes (MoveX and MoveZ)
     ///  - Jump button
     ///  - Sprint button
     ///  - API for strafe mode
-    /// 
+    ///
     /// **Actions:**
-    /// 
+    ///
     ///  - PreUpdate - invoked at the beginning of `Update()`
     ///  - PostUpdate - invoked at the end of `Update()`
     ///  - StartJump - invoked when the player starts jumping
     ///  - EndJump - invoked when the player stops jumping
-    /// 
-    /// **Events:** 
-    /// 
+    ///
+    /// **Events:**
+    ///
     ///  - Landed - invoked when the player lands on the ground
     /// </summary>
     public abstract class SimplePlayerControllerBase : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
@@ -78,27 +78,27 @@ namespace Unity.Cinemachine.Samples
     }
 
     /// <summary>
-    /// Building on top of SimplePlayerControllerBase, this is the 3D character controller.  
+    /// Building on top of SimplePlayerControllerBase, this is the 3D character controller.
     /// It provides the following services and settings:
-    /// 
+    ///
     /// - Damping (applied to the player's velocity, and to the player's rotation)
     /// - Strafe Mode
     /// - Gravity
     /// - Input Frames (which reference frame is used fo interpreting input: Camera, World, or Player)
     /// - Ground Detection (using raycasts, or delegating to Character Controller)
     /// - Camera Override (camera is used only for determining the input frame)
-    /// 
-    /// This behaviour should be attached to the player GameObject's root.  It moves the GameObject's 
-    /// transform.  If the GameObject also has a Unity Character Controller component, the Simple Player 
-    /// Controller delegates grounded state and movement to it.  If the GameObject does not have a 
-    /// Character Controller, the Simple Player Controller manages its own movement and does raycasts 
+    ///
+    /// This behaviour should be attached to the player GameObject's root.  It moves the GameObject's
+    /// transform.  If the GameObject also has a Unity Character Controller component, the Simple Player
+    /// Controller delegates grounded state and movement to it.  If the GameObject does not have a
+    /// Character Controller, the Simple Player Controller manages its own movement and does raycasts
     /// to test for grounded state.
-    /// 
-    /// Simple Player Controller does its best to interpret User input in the context of the 
+    ///
+    /// Simple Player Controller does its best to interpret User input in the context of the
     /// selected reference frame.  Generally, this works well, but in Camera mode, the user
-    /// may potentially transition from being upright relative to the camera to being inverted.  
-    /// When this happens, there can be a discontinuity in the interpretation of the input.  
-    /// The Simple Player Controller has an ad-hoc technique of resolving this discontinuity, 
+    /// may potentially transition from being upright relative to the camera to being inverted.
+    /// When this happens, there can be a discontinuity in the interpretation of the input.
+    /// The Simple Player Controller has an ad-hoc technique of resolving this discontinuity,
     /// (you can see this in the code), but it is only used in this very specific situation.
     /// </summary>
     public class SimplePlayerController : SimplePlayerControllerBase
@@ -128,7 +128,7 @@ namespace Unity.Cinemachine.Samples
 
         [Tooltip("Layers to include in ground detection via Raycasts.")]
         public LayerMask GroundLayers = 1;
-        
+
         [Tooltip("Force of gravity in the down direction (m/s^2)")]
         public float Gravity = 10;
 
@@ -197,13 +197,13 @@ namespace Unity.Cinemachine.Samples
                 var damping = justLanded ? 0 : Damping;
                 if (Vector3.Angle(m_CurrentVelocityXZ, desiredVelocity) < 100)
                     m_CurrentVelocityXZ = Vector3.Slerp(
-                        m_CurrentVelocityXZ, desiredVelocity, 
+                        m_CurrentVelocityXZ, desiredVelocity,
                         Damper.Damp(1, damping, Time.deltaTime));
                 else
                     m_CurrentVelocityXZ += Damper.Damp(
                         desiredVelocity - m_CurrentVelocityXZ, damping, Time.deltaTime);
             }
-            
+
             // Apply the position change
             ApplyMotion();
 
@@ -276,7 +276,7 @@ namespace Unity.Cinemachine.Samples
             {
                 // Compute an alternative reference frame for the bottom hemisphere.
                 // The two reference frames are incompatible where they meet, especially
-                // when player up is pointing along the X axis of camera frame. 
+                // when player up is pointing along the X axis of camera frame.
                 // There is no one reference frame that works for all player directions.
                 frameB = frame * m_Upsidedown;
                 var axisB = Vector3.Cross(frameB * Vector3.up, playerUp);
@@ -318,7 +318,7 @@ namespace Unity.Cinemachine.Samples
                 // If we are falling, assume the jump pose
                 if (!grounded && now - m_TimeLastGrounded > kDelayBeforeInferringJump)
                     m_IsJumping = true;
- 
+
                 if (m_IsJumping)
                 {
                     StartJump?.Invoke();
@@ -375,9 +375,9 @@ namespace Unity.Cinemachine.Samples
         float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
         {
             float kExtraHeight = m_Controller == null ? 2 : 0; // start a little above the player in case it's moving down fast
-            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit, 
+            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit,
                     max + kExtraHeight, GroundLayers, QueryTriggerInteraction.Ignore))
-                return hit.distance - kExtraHeight; 
+                return hit.distance - kExtraHeight;
             return max + 1;
         }
     }

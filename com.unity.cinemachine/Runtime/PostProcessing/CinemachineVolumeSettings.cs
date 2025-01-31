@@ -59,7 +59,7 @@ namespace Unity.Cinemachine
             Camera
         };
 
-        /// <summary>If the profile has the appropriate overrides, will set the base focus 
+        /// <summary>If the profile has the appropriate overrides, will set the base focus
         /// distance to be the distance from the selected target to the camera.
         /// The Focus Offset field will then modify that distance</summary>
         [Tooltip("If the profile has the appropriate overrides, will set the base focus "
@@ -73,7 +73,7 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_FocusTarget")]
         public Transform FocusTarget;
 
-        /// <summary>Offset from target distance, to be used with Focus Tracks Target.  
+        /// <summary>Offset from target distance, to be used with Focus Tracks Target.
         /// Offsets the sharpest point away from the focus target</summary>
         [Tooltip("Offset from target distance, to be used with Focus Tracks Target.  "
             + "Offsets the sharpest point away from the focus target.")]
@@ -84,7 +84,7 @@ namespace Unity.Cinemachine
         /// If Focus tracking is enabled, this will return the calculated focus distance
         /// </summary>
         public float CalculatedFocusDistance { get; private set; }
-        
+
         /// <summary>
         /// This profile will be applied whenever this virtual camera is live
         /// </summary>
@@ -144,7 +144,7 @@ namespace Unity.Cinemachine
             FocusOffset = 0;
             Profile = null;
         }
-        
+
         protected override void OnEnable()
         {
             InvalidateCachedProfile();

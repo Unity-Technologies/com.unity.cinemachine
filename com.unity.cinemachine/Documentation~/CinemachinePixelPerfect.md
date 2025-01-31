@@ -14,6 +14,6 @@ When the [Cinemachine Brain](CinemachineBrain.md) component [blends](Cinemachine
 
 The following are the current limitations of the extension:
 
-- When a CinemachineCamera with the Pixel Perfect extension is set to follow a [Target Group](CinemachineTargetGroup.md), there may be visible choppiness when the CinemachineCamera is positioned with the Framing Transposer component. 
+- When a CinemachineCamera with the Pixel Perfect extension is set to follow a [Target Group](CinemachineTargetGroup.md), there may be visible choppiness when the CinemachineCamera is positioned with the Framing Transposer component.
 - If the __Upscale Render Texture__ option is enabled on the Pixel Perfect Camera, there are less possible pixel-perfect resolutions that match the original orthographic size of the CinemachineCameras. This may cause the framing of the CinemachineCameras to be off by quite a large margin after the pixel-perfect calculations.
 

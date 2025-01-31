@@ -15,7 +15,7 @@ Because manager cameras act like normal CinemachineCameras, you can nest them. I
 
 It is also possible to make your own manager camera that selects its current active child according to an arbitrary algorithm that you provide.  For instance, if you are making a 2D Platformer and want a camera rig that frames itself differently according to whether the character is moving right or left, or jumping, or falling, a custom CameraManager class might be a good approach.
 
-To do this, make a new class that inherits `CinemachineCameraManagerBase`.  This base class implements an array of CinemachineCamera children, and a blender. 
+To do this, make a new class that inherits `CinemachineCameraManagerBase`.  This base class implements an array of CinemachineCamera children, and a blender.
 
 Next, implement the abstract `ChooseCurrentCamera` method.  This is called every frame while the manager is active, and should return the child camera that ought to be active this frame.  Your custom class can make that decision any way it likes.  In the example, it would look at the player state to find out the facing direction and the jumping/falling state, and choose the appropriate child camera.
 

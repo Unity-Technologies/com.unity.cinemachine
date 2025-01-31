@@ -32,7 +32,7 @@ namespace Unity.Cinemachine
         [Tooltip("The position along the spline.  The actual value corresponding to a given point "
             + "on the spline will depend on the unity type.")]
         public float Position;
-        
+
         /// <summary>How to interpret the Spline Position:
         /// - Distance: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).
         /// - Normalized: Values range from 0 (start of Spline) to 1 (end of Spline).
@@ -41,12 +41,12 @@ namespace Unity.Cinemachine
         [Tooltip("How to interpret the Spline Position:\n"
             + "- <b>Distance</b>: Values range from 0 (start of Spline) to Length of the Spline (end of Spline).\n"
             + "- <b>Normalized</b>: Values range from 0 (start of Spline) to 1 (end of Spline).\n"
-            + "- <b>Knot</b>: Values are defined by knot indices and a fractional value representing the normalized " 
+            + "- <b>Knot</b>: Values are defined by knot indices and a fractional value representing the normalized "
             + "interpolation between the specific knot index and the next knot.\n")]
         public PathIndexUnit Units;
 
         /// <summary>
-        /// Change the units of the position, preserving the position on the spline.  
+        /// Change the units of the position, preserving the position on the spline.
         /// The value of Position may change in order to preserve the position on the spline.
         /// </summary>
         /// <param name="newUnits">The new units to use</param>
@@ -62,11 +62,11 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Computing spline length dynamically is costly.  This method computes the length on the first call
-        /// and caches it for subsequent calls. 
+        /// and caches it for subsequent calls.
         ///
         /// While we can auto-detect changes to the transform and some changes to the spline's knots, it would be
         /// too costly to continually check for subtle changes to the spline's control points.  Therefore, if such
-        /// subtle changes are made to the spline's control points at runtime, client is responsible 
+        /// subtle changes are made to the spline's control points at runtime, client is responsible
         /// for calling InvalidateCache().
         /// </summary>
         /// <returns>Cached version of the spline with transform incorporated</returns>
@@ -98,7 +98,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// While we can auto-detect changes to the transform and some changes to the spline's knots, it would be
         /// too costly to continually check for subtle changes to the spline's control points.  Therefore, if such
-        /// subtle changes are made to the spline's control points at runtime, client is responsible 
+        /// subtle changes are made to the spline's control points at runtime, client is responsible
         /// for calling InvalidateCache().
         /// </summary>
         public void InvalidateCache()
@@ -110,10 +110,10 @@ namespace Unity.Cinemachine
 
 
     /// <summary>
-    /// In order to properly handle the spline scale, we need to cache a spline that incorporates the scale 
+    /// In order to properly handle the spline scale, we need to cache a spline that incorporates the scale
     /// natively.  This class does that.
     /// Be sure to call Dispose() before discarding this object, otherwise there will be memory leaks.
-    /// </summary> 
+    /// </summary>
     internal class CachedScaledSpline : ISpline, IDisposable
     {
         NativeSpline m_NativeSpline;
@@ -137,10 +137,10 @@ namespace Unity.Cinemachine
         }
 
         /// <inheritdoc/>
-        public void Dispose() 
-        { 
-            if (m_IsAllocated) 
-                m_NativeSpline.Dispose(); 
+        public void Dispose()
+        {
+            if (m_IsAllocated)
+                m_NativeSpline.Dispose();
             m_IsAllocated = false;
         }
 
@@ -151,7 +151,7 @@ namespace Unity.Cinemachine
         public bool IsCrudelyValid(Spline spline, Transform transform)
         {
             var scale = transform != null ? transform.lossyScale : Vector3.one;
-            return spline == m_CachedSource && (m_CachedScale - scale).AlmostZero() 
+            return spline == m_CachedSource && (m_CachedScale - scale).AlmostZero()
                 && m_NativeSpline.Count == m_CachedSource.Count
                 //&& Mathf.Abs(m_CachedRawLength - spline.GetLength()) < 0.001f; // this would catch almost everything but is it too expensive?
                 ;

@@ -3,14 +3,14 @@ using UnityEngine;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This is a very basic 2D implementation of SimplePlayerControllerBase.  
-    /// 
-    /// It requires a [Rigidbody2D](https://docs.unity3d.com/ScriptReference/Rigidbody2D.html) component 
-    /// to be placed on the player GameObject.  Because it works with a Rigidbody2D, motion control is 
-    /// implemented in the `FixedUpdate()` method.  
-    /// 
+    /// This is a very basic 2D implementation of SimplePlayerControllerBase.
+    ///
+    /// It requires a [Rigidbody2D](https://docs.unity3d.com/ScriptReference/Rigidbody2D.html) component
+    /// to be placed on the player GameObject.  Because it works with a Rigidbody2D, motion control is
+    /// implemented in the `FixedUpdate()` method.
+    ///
     /// Ground detection only works if the player has a small trigger collider under its feet.
-    /// </summary> 
+    /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
     public class SimplePlayerController2D : SimplePlayerControllerBase
     {
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine.Samples
                     PlayerGeometry.rotation = Quaternion.Euler(new Vector3(0, 90, 0));
                 if (vel.x < -Speed * 0.5f)
                     PlayerGeometry.rotation = Quaternion.Euler(new Vector3(0, -90, 0));
-            }                
+            }
 #if UNITY_6000_1_OR_NEWER
             m_Rigidbody2D.linearVelocity = vel;
 #else
@@ -81,7 +81,7 @@ namespace Unity.Cinemachine.Samples
             #pragma warning restore CS0618
 #endif
             PostUpdate?.Invoke(
-                new Vector3(0, vel.y, Mathf.Abs(vel.x)), 
+                new Vector3(0, vel.y, Mathf.Abs(vel.x)),
                 m_IsSprinting ? JumpSpeed / SprintJumpSpeed : 1);
         }
 

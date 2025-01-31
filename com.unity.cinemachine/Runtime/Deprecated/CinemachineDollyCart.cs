@@ -17,7 +17,7 @@ namespace Unity.Cinemachine
         /// <summary>The path to follow</summary>
         [Tooltip("The path to follow")]
         public CinemachinePathBase m_Path;
-        
+
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethod
         {

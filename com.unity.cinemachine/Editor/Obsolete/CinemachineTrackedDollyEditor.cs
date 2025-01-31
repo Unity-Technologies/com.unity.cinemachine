@@ -41,14 +41,14 @@ namespace Unity.Cinemachine.Editor
 
             needWarning = false;
             for (int i = 0; !needWarning && i < targets.Length; ++i)
-                needWarning = (targets[i] as CinemachineTrackedDolly).m_AutoDolly.m_Enabled 
+                needWarning = (targets[i] as CinemachineTrackedDolly).m_AutoDolly.m_Enabled
                     && (targets[i] as CinemachineTrackedDolly).FollowTarget == null;
             if (needWarning)
                 EditorGUILayout.HelpBox("AutoDolly requires a Follow Target", MessageType.Warning);
 
             DrawRemainingPropertiesInInspector();
         }
-        
+
         [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineTrackedDolly))]
         private static void DrawTrackeDollyGizmos(CinemachineTrackedDolly target, GizmoType selectionType)
         {

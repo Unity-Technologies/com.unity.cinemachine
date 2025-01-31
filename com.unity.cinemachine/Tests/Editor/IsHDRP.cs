@@ -1,4 +1,4 @@
-#if CINEMACHINE_HDRP 
+#if CINEMACHINE_HDRP
 using NUnit.Framework;
 using UnityEngine.Rendering;
 

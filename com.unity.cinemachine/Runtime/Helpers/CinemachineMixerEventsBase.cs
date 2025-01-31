@@ -9,7 +9,7 @@ namespace Unity.Cinemachine
     public abstract class CinemachineMixerEventsBase : MonoBehaviour
     {
         /// <summary>
-        /// This event will fire whenever a virtual camera goes live.  
+        /// This event will fire whenever a virtual camera goes live.
         /// If a blend is involved, it will be fired at the start of the blend.
         /// </summary>
         [Space]
@@ -18,7 +18,7 @@ namespace Unity.Cinemachine
         public CinemachineCore.CameraEvent CameraActivatedEvent = new ();
 
         /// <summary>
-        /// This event will fire whenever a virtual stops being live.  
+        /// This event will fire whenever a virtual stops being live.
         /// If a blend is involved, then the event will fire after the last frame of the blend.
         /// </summary>
         [Tooltip("This event will fire whenever a virtual stops being live.  If a blend is "
@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
         public CinemachineCore.CameraEvent CameraDeactivatedEvent = new ();
 
         /// <summary>
-        /// This event will fire whenever a blend is created in the root frame of this Brain.  
+        /// This event will fire whenever a blend is created in the root frame of this Brain.
         /// The handler can modify any settings in the blend, except the cameras themselves.
         /// Note: timeline tracks will not generate these events.
         /// </summary>
@@ -36,7 +36,7 @@ namespace Unity.Cinemachine
         public CinemachineCore.BlendEvent BlendCreatedEvent = new ();
 
         /// <summary>
-        /// This event will fire whenever a virtual camera finishes blending in.  
+        /// This event will fire whenever a virtual camera finishes blending in.
         /// It will not fire if the blend length is zero.
         /// </summary>
         [Tooltip("This event will fire whenever a virtual camera finishes blending in.  "
@@ -44,8 +44,8 @@ namespace Unity.Cinemachine
         public CinemachineCore.CameraEvent BlendFinishedEvent = new ();
 
         /// <summary>
-        /// This event is fired when there is a camera cut.  A camera cut is a camera 
-        /// activation with a zero-length blend.  
+        /// This event is fired when there is a camera cut.  A camera cut is a camera
+        /// activation with a zero-length blend.
         /// </summary>
         [Tooltip("This event is fired when there is a camera cut.  A camera cut is a camera "
             + "activation with a zero-length blend.")]

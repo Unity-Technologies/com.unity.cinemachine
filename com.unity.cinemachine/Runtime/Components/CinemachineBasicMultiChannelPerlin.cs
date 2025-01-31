@@ -20,7 +20,7 @@ namespace Unity.Cinemachine
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Noise)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineBasicMultiChannelPerlin.html")]
-    public class CinemachineBasicMultiChannelPerlin 
+    public class CinemachineBasicMultiChannelPerlin
         : CinemachineComponentBase, CinemachineFreeLookModifier.IModifiableNoise
     {
         /// <summary>
@@ -60,9 +60,9 @@ namespace Unity.Cinemachine
 
         [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("mNoiseOffsets")]
         private Vector3 m_NoiseOffsets = Vector3.zero;
-        
-        (float, float) CinemachineFreeLookModifier.IModifiableNoise.NoiseAmplitudeFrequency 
-        { 
+
+        (float, float) CinemachineFreeLookModifier.IModifiableNoise.NoiseAmplitudeFrequency
+        {
             get => (AmplitudeGain, FrequencyGain);
             set { AmplitudeGain = value.Item1; FrequencyGain = value.Item2; }
         }

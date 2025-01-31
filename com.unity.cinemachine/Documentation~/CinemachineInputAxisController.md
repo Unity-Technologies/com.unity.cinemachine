@@ -35,7 +35,7 @@ This component makes it easy to control a `CinemachineCamera` in a single player
 
 ## Creating your own Input Axis Controller
 
-The default implementation of `CinemachineInputAxisController` can process input sources from the Input package and from Unity's legacy input system. 
+The default implementation of `CinemachineInputAxisController` can process input sources from the Input package and from Unity's legacy input system.
 
 For more complex scenarios (such as for a mobile device control), you can extend this default functionality and create your own Input Axis Controller using a script.
 
@@ -60,7 +60,7 @@ public class SliderInputController : InputAxisControllerBase<SliderInputControll
     [Serializable]
     public class SliderReader : IInputAxisReader
     {
-        
+
         public Slider m_Slider;
 
         public float GetValue(Object context, IInputAxisOwner.AxisDescriptor.Hints hint)

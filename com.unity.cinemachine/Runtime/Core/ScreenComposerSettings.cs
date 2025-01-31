@@ -7,7 +7,7 @@ namespace Unity.Cinemachine
     [Serializable]
     public struct ScreenComposerSettings
     {
-        /// <summary>Screen position for target. The camera will adjust to position the 
+        /// <summary>Screen position for target. The camera will adjust to position the
         /// tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge</summary>
         [Tooltip("Screen position for target. The camera will adjust to position the "
         + "tracked object here.  0 is screen center, and +0.5 or -0.5 is screen edge")]
@@ -20,7 +20,7 @@ namespace Unity.Cinemachine
         {
             /// <summary>Enables the Dead Zone settings</summary>
             public bool Enabled;
-            /// <summary>The camera will not adjust if the target is within this range of the screen position.  
+            /// <summary>The camera will not adjust if the target is within this range of the screen position.
             /// Full screen size is 1.</summary>
             [Tooltip("The camera will not adjust if the target is within this range of the "
                 + "screen position.  Full screen size is 1.")]
@@ -42,7 +42,7 @@ namespace Unity.Cinemachine
             public bool Enabled;
             /// <summary>The target will not be allowed to be outside this region.
             /// When the target is within this region, the camera will gradually adjust to re-align
-            /// towards the desired position, depending on the damping speed.  
+            /// towards the desired position, depending on the damping speed.
             /// Full screen size is 1</summary>
             [Tooltip("The target will not be allowed to be outside this region. "
                 + "When the target is within this region, the camera will gradually adjust to re-align "
@@ -50,7 +50,7 @@ namespace Unity.Cinemachine
                 + "Full screen size is 1")]
             [DelayedVector]
             public Vector2 Size;
-            /// <summary>A zero Offset means that the hard limits will be centered around the target screen position.  
+            /// <summary>A zero Offset means that the hard limits will be centered around the target screen position.
             /// A nonzero Offset will uncenter the hard limits relative to the target screen position.
             /// </summary>
             [Tooltip("A zero Offset means that the hard limits will be centered around the target screen position.  "
@@ -104,7 +104,7 @@ namespace Unity.Cinemachine
                     DeadZone.Size = deadZoneSize;
                 }
                 ScreenPosition = new Vector2(
-                    Mathf.Clamp(value.x - 0.5f + deadZoneSize.x * 0.5f, -1.5f,  1.5f), 
+                    Mathf.Clamp(value.x - 0.5f + deadZoneSize.x * 0.5f, -1.5f,  1.5f),
                     Mathf.Clamp(value.y - 0.5f + deadZoneSize.y * 0.5f, -1.5f,  1.5f));
                 HardLimits.Size = new Vector2(
                     Mathf.Clamp(HardLimits.Size.x, deadZoneSize.x, 3),
@@ -135,7 +135,7 @@ namespace Unity.Cinemachine
                 // GML todo: set bias
             }
         }
-        
+
         /// <summary>
         /// Linear interpolation between 2 settings objects.
         /// </summary>
@@ -148,14 +148,14 @@ namespace Unity.Cinemachine
             return new ScreenComposerSettings
             {
                 ScreenPosition = Vector2.Lerp(a.ScreenPosition, b.ScreenPosition, t),
-                DeadZone = new () 
-                { 
+                DeadZone = new ()
+                {
                     Enabled = a.DeadZone.Enabled || b.DeadZone.Enabled,
-                    Size = Vector2.Lerp(a.EffectiveDeadZoneSize, b.EffectiveDeadZoneSize, t) 
+                    Size = Vector2.Lerp(a.EffectiveDeadZoneSize, b.EffectiveDeadZoneSize, t)
                 },
                 HardLimits = new ()
-                { 
-                    Enabled = a.HardLimits.Enabled || b.HardLimits.Enabled, 
+                {
+                    Enabled = a.HardLimits.Enabled || b.HardLimits.Enabled,
                     Size = Vector2.Lerp(a.EffectiveHardLimitSize, b.EffectiveHardLimitSize, t),
                     Offset = Vector2.Lerp(a.HardLimits.Offset, b.HardLimits.Offset, t)
                 }
@@ -181,8 +181,8 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>The default screen composition</summary>
-        public static ScreenComposerSettings Default => new () 
-        { 
+        public static ScreenComposerSettings Default => new ()
+        {
             DeadZone = new () { Enabled = false, Size = new Vector2(0.2f, 0.2f) },
             HardLimits = new () { Enabled = false, Size = new Vector2(0.8f, 0.8f) }
         };

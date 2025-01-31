@@ -8,7 +8,7 @@ Use the Cinemachine Post Processing [extension](concept-procedural-motion.md#ext
 
 The Cinemachine Post Processing extension holds a Post-Processing Profile asset to apply to a CinemachineCamera when it is activated. If the camera is blending with another CinemachineCamera, then the blend weight is applied to the Post Process effects also.
 
-Before attaching post processing profiles to CinemachineCameras, you first need to set up your project to use post processing. 
+Before attaching post processing profiles to CinemachineCameras, you first need to set up your project to use post processing.
 
 To set up a project to use Post Processing V2 with Cinemachine:
 

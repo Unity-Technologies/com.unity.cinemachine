@@ -17,14 +17,14 @@ namespace Unity.Cinemachine
     [CameraPipeline(CinemachineCore.Stage.Body)]
     [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineOrbitalFollow.html")]
-    public class CinemachineOrbitalFollow 
+    public class CinemachineOrbitalFollow
         : CinemachineComponentBase, IInputAxisOwner, IInputAxisResetSource
         , CinemachineFreeLookModifier.IModifierValueSource
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
     {
-        /// <summary>Offset from the object's center in local space.  
-        /// Use this to fine-tune the orbit when the desired focus of the orbit is not 
+        /// <summary>Offset from the object's center in local space.
+        /// Use this to fine-tune the orbit when the desired focus of the orbit is not
         /// the tracked object's center</summary>
         [Tooltip("Offset from the target object's center in target-local space. Use this to fine-tune the "
             + "orbit when the desired focus of the orbit is not the tracked object's center.")]
@@ -36,10 +36,10 @@ namespace Unity.Cinemachine
         /// <summary>How to construct the surface on which the camera will travel</summary>
         public enum OrbitStyles
         {
-            /// <summary>Camera is at a fixed distance from the target, 
+            /// <summary>Camera is at a fixed distance from the target,
             /// defining a sphere</summary>
             Sphere,
-            /// <summary>Camera surface is built by extruding a line connecting 3 circular 
+            /// <summary>Camera surface is built by extruding a line connecting 3 circular
             /// orbits around the target</summary>
             ThreeRing
         }
@@ -63,20 +63,20 @@ namespace Unity.Cinemachine
             /// <summary>Static reference frame.  Axis center value is not dynamically updated.</summary>
             AxisCenter,
 
-            /// <summary>Axis center is dynamically adjusted to be behind the parent 
+            /// <summary>Axis center is dynamically adjusted to be behind the parent
             /// object's forward.</summary>
             ParentObject,
 
-            /// <summary>Axis center is dynamically adjusted to be behind the 
+            /// <summary>Axis center is dynamically adjusted to be behind the
             /// Tracking Target's forward.</summary>
             TrackingTarget,
 
-            /// <summary>Axis center is dynamically adjusted to be behind the 
+            /// <summary>Axis center is dynamically adjusted to be behind the
             /// LookAt Target's forward.</summary>
             LookAtTarget
         }
 
-        /// <summary>Defines the reference frame for horizontal recentering.  The axis center 
+        /// <summary>Defines the reference frame for horizontal recentering.  The axis center
         /// will be dynamically updated to be behind the selected object.</summary>
         [Tooltip("Defines the reference frame for horizontal recentering.  The axis center "
             + "will be dynamically updated to be behind the selected object.")]
@@ -139,7 +139,7 @@ namespace Unity.Cinemachine
             VerticalAxis = DefaultVertical;
             RadialAxis = DefaultRadial;
         }
-        
+
         static InputAxis DefaultHorizontal => new () { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Recentering = InputAxis.RecenteringSettings.Default };
         static InputAxis DefaultVertical => new () { Value = 17.5f, Range = new Vector2(-10, 45), Wrap = false, Center = 17.5f, Recentering = InputAxis.RecenteringSettings.Default };
         static InputAxis DefaultRadial => new () { Value = 1, Range = new Vector2(1, 1), Wrap = false, Center = 1, Recentering = InputAxis.RecenteringSettings.Default };
@@ -190,13 +190,13 @@ namespace Unity.Cinemachine
             get => Radius;
             set => Radius = value;
         }
-        
+
         /// <summary>
         /// For inspector.
         /// Get the camera offset corresponding to the normalized position, which ranges from -1...1.
         /// </summary>
         /// <returns>Camera position in target local space</returns>
-        internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t) 
+        internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t)
             => m_OrbitCache.SplineValue(Mathf.Clamp01((t + 1) * 0.5f));
 
         Vector4 GetCameraPoint()
@@ -223,7 +223,7 @@ namespace Unity.Cinemachine
 
             return new Vector4(pos.x, pos.y, pos.z, t);
         }
-        
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -275,7 +275,7 @@ namespace Unity.Cinemachine
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
             var localDir = Quaternion.Inverse(orient) * dir;
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow 
+            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow
                 ? 0 : UnityVectorExtensions.NormalizeAngle(r.x));
             HorizontalAxis.Value = HorizontalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.y));
             RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
@@ -288,7 +288,7 @@ namespace Unity.Cinemachine
             HorizontalAxis.Value = GetHorizontalAxis();
             VerticalAxis.Value = GetVerticalAxisClosestValue(out var splinePoint);
             RadialAxis.Value = RadialAxis.ClampValue(distance / splinePoint.magnitude);
-            
+
             // local functions
             float GetHorizontalAxis()
             {
@@ -318,7 +318,7 @@ namespace Unity.Cinemachine
                 return t <= 0.5f
                     ? Mathf.Lerp(VerticalAxis.Range.x, VerticalAxis.Center, MapTo01(t, 0f, 0.5f))  // [0, 0.5] -> [0, 1] -> [Range.x, Center]
                     : Mathf.Lerp(VerticalAxis.Center, VerticalAxis.Range.y, MapTo01(t, 0.5f, 1f)); // [0.5, 1] -> [0, 1] -> [Center, Range.Y]
-                
+
                 // local functions
                 float SteepestDescent(Vector3 cameraOffset)
                 {
@@ -376,7 +376,7 @@ namespace Unity.Cinemachine
                         return best;
                     }
                 }
-                
+
                 static float MapTo01(float valueToMap, float fMin, float fMax) => (valueToMap - fMin) / (fMax - fMin);
             }
         }
@@ -392,7 +392,7 @@ namespace Unity.Cinemachine
             if (target == FollowTarget)
                 m_TargetTracker.OnTargetObjectWarped(positionDelta);
         }
-        
+
         /// <summary>Positions the virtual camera according to the transposer rules.</summary>
         /// <param name="curState">The current camera state</param>
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
@@ -437,7 +437,7 @@ namespace Unity.Cinemachine
             {
                 // Handle the common case where lookAt and follow targets are not the same point.
                 // If we don't do this, we can get inappropriate vertical damping when offset changes.
-                var lookAtOfset = orient 
+                var lookAtOfset = orient
                     * (curState.ReferenceLookAt - (FollowTargetPosition + FollowTargetRotation * TargetOffset));
                 offset = curState.RawPosition - (pos + lookAtOfset);
             }
@@ -465,17 +465,17 @@ namespace Unity.Cinemachine
             RadialAxis.UpdateRecentering(deltaTime, gotInputZ);
         }
 
-        void UpdateHorizontalCenter(Quaternion referenceOrientation) 
+        void UpdateHorizontalCenter(Quaternion referenceOrientation)
         {
             // Get the recentering target's forward vector
             var fwd = Vector3.forward;
             switch (RecenteringTarget)
             {
-                case ReferenceFrames.AxisCenter: 
+                case ReferenceFrames.AxisCenter:
                     if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
                         HorizontalAxis.Center = 0;
                     return;
-                case ReferenceFrames.ParentObject: 
+                case ReferenceFrames.ParentObject:
                     if (transform.parent != null)
                         fwd = transform.parent.forward;
                     break;
@@ -515,7 +515,7 @@ namespace Unity.Cinemachine
             [Tooltip("Height of the horizontal orbit circle, relative to the target position")]
             public float Height;
         }
-        
+
         /// <summary>
         /// Settings to define the 3-orbit FreeLook rig using OrbitalFollow.
         /// </summary>
@@ -534,7 +534,7 @@ namespace Unity.Cinemachine
             [Tooltip("Value to take at the bottom of the axis range")]
             public Orbit Bottom;
 
-            /// <summary>Controls how taut is the line that connects the rigs' orbits, which 
+            /// <summary>Controls how taut is the line that connects the rigs' orbits, which
             /// determines final placement on the Y axis</summary>
             [Tooltip("Controls how taut is the line that connects the rigs' orbits, "
                 + "which determines final placement on the Y axis")]
@@ -543,7 +543,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Default orbit rig</summary>
             public static Settings Default => new Settings
-            { 
+            {
                 SplineCurvature = 0.5f,
                 Top = new Orbit { Height = 5, Radius = 2 },
                 Center = new Orbit { Height = 2.25f, Radius = 4 },
@@ -572,9 +572,9 @@ namespace Unity.Cinemachine
                     || OrbitSettings.Center.Height != other.Center.Height || OrbitSettings.Center.Radius != other.Center.Radius
                     || OrbitSettings.Bottom.Height != other.Bottom.Height || OrbitSettings.Bottom.Radius != other.Bottom.Radius;
             }
-            
+
             /// <summary>
-            /// Update the cache according to the new orbit settings.  
+            /// Update the cache according to the new orbit settings.
             /// This does a bunch of expensive calculations so should only be called when necessary.
             /// </summary>
             /// <param name="orbits"></param>
@@ -596,8 +596,8 @@ namespace Unity.Cinemachine
 
             /// <summary>Get the value of a point on the spline curve</summary>
             /// <param name="t">Where on the spline arc, with 0...1 t==0.5 being the center orbit.</param>
-            /// <returns>Point on the spline along the surface defined by the orbits.  
-            /// XYZ is the point itself, and W ranges from 0 on the bottom to 2 on the top, 
+            /// <returns>Point on the spline along the surface defined by the orbits.
+            /// XYZ is the point itself, and W ranges from 0 on the bottom to 2 on the top,
             /// with 1 being the center.</returns>
             public Vector4 SplineValue(float t)
             {

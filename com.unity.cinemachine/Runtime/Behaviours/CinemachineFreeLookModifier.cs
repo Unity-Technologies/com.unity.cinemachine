@@ -8,7 +8,7 @@ namespace Unity.Cinemachine
     /// This is an add-on for CinemachineCameras containing the OrbitalFollow component.
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
-    [SaveDuringPlay] 
+    [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine FreeLook Modifier")] // Hide in menu
     [ExecuteAlways]
     [DisallowMultipleComponent]
@@ -16,7 +16,7 @@ namespace Unity.Cinemachine
     public class CinemachineFreeLookModifier : CinemachineExtension
     {
         /// <summary>
-        /// Interface for CinemachineComponentBase-derived to expose a normalized value that 
+        /// Interface for CinemachineComponentBase-derived to expose a normalized value that
         /// can be consumed by CinemachineFreeLookModifier to drive the rig selection.
         /// </summary>
         public interface IModifierValueSource
@@ -36,7 +36,7 @@ namespace Unity.Cinemachine
             /// <summary>Get/Set the position damping value</summary>
             Vector3 PositionDamping { get; set; }
         }
-    
+
         /// <summary>
         /// Interface for CinemachineComponentBase-derived to allow its screen composition to be driven
         /// </summary>
@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Interface for an object that will modify some aspect of a FreeLook camera
-        /// based on the vertical axis value. 
+        /// based on the vertical axis value.
         /// </summary>
         [Serializable]
         public abstract class Modifier
@@ -93,20 +93,20 @@ namespace Unity.Cinemachine
             /// <summary>Called from OnEnable and from the inspector.  Refresh any performance-sensitive stuff.</summary>
             /// <param name="vcam">the virtual camera owner</param>
             public virtual void RefreshCache(CinemachineVirtualCameraBase vcam) {}
-            
+
             /// <summary>
-            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to
             /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
             /// </summary>
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public virtual void BeforePipeline(
-                CinemachineVirtualCameraBase vcam, 
-                ref CameraState state, float deltaTime, 
+                CinemachineVirtualCameraBase vcam,
+                ref CameraState state, float deltaTime,
                 float modifierValue) {}
 
             /// <summary>
@@ -116,7 +116,7 @@ namespace Unity.Cinemachine
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public virtual void AfterPipeline(
@@ -146,7 +146,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera 
+        /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera
         /// at the end of the camera pipeline.
         /// </summary>
         public class TiltModifier : Modifier
@@ -165,7 +165,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Reset(CinemachineVirtualCameraBase vcam) 
+            public override void Reset(CinemachineVirtualCameraBase vcam)
                 => Tilt = new TopBottomRigs<float>() { Top = -5, Bottom = 5 };
 
             /// <summary>
@@ -175,7 +175,7 @@ namespace Unity.Cinemachine
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void AfterPipeline(
@@ -183,8 +183,8 @@ namespace Unity.Cinemachine
                 ref CameraState state, float deltaTime,
                 float modifierValue)
             {
-                float tilt = modifierValue > 0 
-                    ? Mathf.Lerp(0, Tilt.Top, modifierValue) 
+                float tilt = modifierValue > 0
+                    ? Mathf.Lerp(0, Tilt.Top, modifierValue)
                     : Mathf.Lerp(Tilt.Bottom, 0, modifierValue + 1);
 
                 // Tilt in local X
@@ -207,10 +207,10 @@ namespace Unity.Cinemachine
             [Tooltip("Value to take at the bottom of the axis range")]
             [LensSettingsHideModeOverrideProperty]
             public LensSettings Bottom;
-        
+
             /// <summary>Called from OnValidate to validate this component</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Validate(CinemachineVirtualCameraBase vcam) 
+            public override void Validate(CinemachineVirtualCameraBase vcam)
             {
                 Top.Validate();
                 Bottom.Validate();
@@ -218,11 +218,11 @@ namespace Unity.Cinemachine
 
             /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Reset(CinemachineVirtualCameraBase vcam) 
+            public override void Reset(CinemachineVirtualCameraBase vcam)
             {
                 if (vcam == null)
                     Top = Bottom = LensSettings.Default;
-                else 
+                else
                 {
                     var state = vcam.State;
                     Top = Bottom = state.Lens;
@@ -232,18 +232,18 @@ namespace Unity.Cinemachine
             }
 
             /// <summary>
-            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to
             /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
             /// </summary>
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void BeforePipeline(
-                CinemachineVirtualCameraBase vcam, 
-                ref CameraState state, float deltaTime, float modifierValue) 
+                CinemachineVirtualCameraBase vcam,
+                ref CameraState state, float deltaTime, float modifierValue)
             {
                 Top.CopyCameraMode(ref state.Lens);
                 Bottom.CopyCameraMode(ref state.Lens);
@@ -253,7 +253,7 @@ namespace Unity.Cinemachine
                     state.Lens.Lerp(Bottom, -modifierValue);
             }
         }
-    
+
         /// <summary>
         /// Builtin FreeLook modifier for positional damping. Modifies positional damping at the start of the camera pipeline.
         /// </summary>
@@ -273,7 +273,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Reset(CinemachineVirtualCameraBase vcam) 
+            public override void Reset(CinemachineVirtualCameraBase vcam)
             {
                 if (CachedComponent != null)
                     Damping.Top = Damping.Bottom = CachedComponent.PositionDamping;
@@ -282,23 +282,23 @@ namespace Unity.Cinemachine
             Vector3 m_CenterDamping;
 
             /// <summary>
-            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to
             /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
             /// </summary>
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void BeforePipeline(
-                CinemachineVirtualCameraBase vcam, 
-                ref CameraState state, float deltaTime, float modifierValue) 
+                CinemachineVirtualCameraBase vcam,
+                ref CameraState state, float deltaTime, float modifierValue)
             {
                 if (CachedComponent != null)
                 {
                     m_CenterDamping = CachedComponent.PositionDamping;
-                    CachedComponent.PositionDamping = modifierValue >= 0 
+                    CachedComponent.PositionDamping = modifierValue >= 0
                         ? Vector3.Lerp(m_CenterDamping, Damping.Top, modifierValue)
                         : Vector3.Lerp(Damping.Bottom, m_CenterDamping, modifierValue + 1);
                 }
@@ -311,7 +311,7 @@ namespace Unity.Cinemachine
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void AfterPipeline(
@@ -324,7 +324,7 @@ namespace Unity.Cinemachine
                     CachedComponent.PositionDamping = m_CenterDamping;
             }
         }
-    
+
         /// <summary>
         /// Builtin Freelook modifier for screen composition. Modifies composition at the start of the camera pipeline.
         /// </summary>
@@ -344,7 +344,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Reset(CinemachineVirtualCameraBase vcam) 
+            public override void Reset(CinemachineVirtualCameraBase vcam)
             {
                 if (CachedComponent != null)
                     Composition.Top = Composition.Bottom = CachedComponent.Composition;
@@ -353,18 +353,18 @@ namespace Unity.Cinemachine
             ScreenComposerSettings m_SavedComposition;
 
             /// <summary>
-            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to
             /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
             /// </summary>
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void BeforePipeline(
-                CinemachineVirtualCameraBase vcam, 
-                ref CameraState state, float deltaTime, float modifierValue) 
+                CinemachineVirtualCameraBase vcam,
+                ref CameraState state, float deltaTime, float modifierValue)
             {
                 if (CachedComponent != null)
                 {
@@ -382,7 +382,7 @@ namespace Unity.Cinemachine
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void AfterPipeline(
@@ -397,7 +397,7 @@ namespace Unity.Cinemachine
                 }
             }
         }
-    
+
         /// <summary>
         /// Builtin FreeLook modifier for camera distance.  Applies distance to the camera at the start of the camera pipeline.
         /// </summary>
@@ -417,7 +417,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Reset(CinemachineVirtualCameraBase vcam) 
+            public override void Reset(CinemachineVirtualCameraBase vcam)
             {
                 if (CachedComponent != null)
                     Distance.Top = Distance.Bottom = CachedComponent.Distance;
@@ -426,23 +426,23 @@ namespace Unity.Cinemachine
             float m_CenterDistance;
 
             /// <summary>
-            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to
             /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
             /// </summary>
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void BeforePipeline(
-                CinemachineVirtualCameraBase vcam, 
-                ref CameraState state, float deltaTime, float modifierValue) 
+                CinemachineVirtualCameraBase vcam,
+                ref CameraState state, float deltaTime, float modifierValue)
             {
                 if (CachedComponent != null)
                 {
                     m_CenterDistance = CachedComponent.Distance;
-                    CachedComponent.Distance = modifierValue >= 0 
+                    CachedComponent.Distance = modifierValue >= 0
                         ? Mathf.Lerp(m_CenterDistance, Distance.Top, modifierValue)
                         : Mathf.Lerp(Distance.Bottom, m_CenterDistance, modifierValue + 1);
                 }
@@ -455,7 +455,7 @@ namespace Unity.Cinemachine
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void AfterPipeline(
@@ -468,9 +468,9 @@ namespace Unity.Cinemachine
                     CachedComponent.Distance = m_CenterDistance;
             }
         }
-    
+
         /// <summary>
-        /// Builtin modifier for noise components such as <see cref="CinemachineBasicMultiChannelPerlin"/>.  
+        /// Builtin modifier for noise components such as <see cref="CinemachineBasicMultiChannelPerlin"/>.
         /// Applies scaling to amplitude and frequency.
         /// </summary>
         public class NoiseModifier : ComponentModifier<IModifiableNoise>
@@ -489,7 +489,7 @@ namespace Unity.Cinemachine
                 [Tooltip("Multiplier for the noise frequency")]
                 public float Frequency;
             }
-    
+
             /// <summary>Values for the top and bottom rigs</summary>
             [HideFoldout]
             public TopBottomRigs<NoiseSettings> Noise;
@@ -498,7 +498,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Called when the modifier is created.  Initialize fields with appropriate values.</summary>
             /// <param name="vcam">the virtual camera owner</param>
-            public override void Reset(CinemachineVirtualCameraBase vcam) 
+            public override void Reset(CinemachineVirtualCameraBase vcam)
             {
                 if (CachedComponent != null)
                 {
@@ -508,18 +508,18 @@ namespace Unity.Cinemachine
             }
 
             /// <summary>
-            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to 
+            /// Called from extension's PrePipelineMutateCameraState().  Perform any necessary actions to
             /// modify relevant camera settings.  Original camera settings should be restored in <see cref="AfterPipeline"/>.
             /// </summary>
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void BeforePipeline(
-                CinemachineVirtualCameraBase vcam, 
-                ref CameraState state, float deltaTime, float modifierValue) 
+                CinemachineVirtualCameraBase vcam,
+                ref CameraState state, float deltaTime, float modifierValue)
             {
                 if (CachedComponent != null)
                 {
@@ -542,13 +542,13 @@ namespace Unity.Cinemachine
             /// <param name="vcam">vcam owner</param>
             /// <param name="state">current vcam state.  May be modified in this function</param>
             /// <param name="deltaTime">current applicable deltaTime</param>
-            /// <param name="modifierValue">The normalized value of the modifier variable.  
+            /// <param name="modifierValue">The normalized value of the modifier variable.
             /// This is the FreeLook's vertical axis.
             /// Ranges from -1 to 1, where 0 is center rig.</param>
             public override void AfterPipeline(
                 CinemachineVirtualCameraBase vcam,
                 ref CameraState state, float deltaTime,
-                float modifierValue) 
+                float modifierValue)
             {
                 // Restore the settings
                 if (CachedComponent != null)
@@ -621,7 +621,7 @@ namespace Unity.Cinemachine
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">The current applicable deltaTime</param>
         public override void PrePipelineMutateCameraStateCallback(
-            CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
+            CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime)
         {
             if (m_ValueSource != null && vcam == ComponentOwner)
             {
@@ -645,7 +645,7 @@ namespace Unity.Cinemachine
                     Modifiers[i]?.BeforePipeline(vcam, ref curState, deltaTime, m_CurrentValue);
             }
         }
-            
+
         /// <summary>
         /// Callback to perform the requested rig modifications.
         /// </summary>

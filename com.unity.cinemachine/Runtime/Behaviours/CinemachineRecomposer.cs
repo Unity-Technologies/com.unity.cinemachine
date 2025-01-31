@@ -88,7 +88,7 @@ namespace Unity.Cinemachine
         /// <param name="curState">Input state that must be mutated</param>
         /// <param name="deltaTime">The current applicable deltaTime</param>
         public override void PrePipelineMutateCameraStateCallback(
-            CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime) 
+            CinemachineVirtualCameraBase vcam, ref CameraState curState, float deltaTime)
         {
             vcam.FollowTargetAttachment = FollowAttachment;
             vcam.LookAtTargetAttachment = LookAtAttachment;

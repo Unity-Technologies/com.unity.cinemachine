@@ -94,16 +94,16 @@ namespace Unity.Cinemachine.Editor
                 var isDraggedOrHovered = isDragged || HandleUtility.nearestControl == cdHandleId;
                 if (isDraggedOrHovered)
                 {
-                    CinemachineSceneToolHelpers.DrawLabel(camPos, 
+                    CinemachineSceneToolHelpers.DrawLabel(camPos,
                         property.displayName + " (" + composer.CameraDistance.ToString("F1") + ")");
                 }
-                
-                Handles.color = isDraggedOrHovered ? 
+
+                Handles.color = isDraggedOrHovered ?
                     Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
                 Handles.DrawLine(camPos, composer.FollowTargetPosition + composer.TargetOffset);
 
                 CinemachineSceneToolHelpers.SoloOnDrag(isDragged, composer.VirtualCamera, cdHandleId);
-                
+
                 Handles.color = originalColor;
             }
         }
@@ -129,7 +129,7 @@ namespace Unity.Cinemachine.Editor
                     return;
 
                 CinemachineSceneToolHelpers.DoTrackedObjectOffsetTool(
-                    composer.VirtualCamera, 
+                    composer.VirtualCamera,
                     new SerializedObject(composer).FindProperty(() => composer.TargetOffset),
                     CinemachineCore.Stage.Body);
             }

@@ -16,7 +16,7 @@ namespace Unity.Cinemachine.Editor
 
         void OnEnable() => m_EffectList = new EffectListEditor(this);
         void OnDisable() => m_EffectList?.Clear();
-        
+
         public override VisualElement CreateInspectorGUI()
         {
             var ux = new VisualElement();
@@ -57,26 +57,26 @@ namespace Unity.Cinemachine.Editor
             {
                 var path = AssetDatabase.GenerateUniqueAssetPath("PostProcessing Profile");
                 path = EditorUtility.SaveFilePanelInProject(
-                    "Create PostProcessing Profile", Path.GetFileName(path), "asset", 
+                    "Create PostProcessing Profile", Path.GetFileName(path), "asset",
                     "This asset will contain the post processing settings");
                 if (path.Length > 0)
                 {
                     profileProp.objectReferenceValue = CreatePostProcessProfile(path);
                     serializedObject.ApplyModifiedProperties();
-                }                
+                }
             }) { text = "New", style = { marginRight = 0 }} );
             var cloneButton = row.Contents.AddChild(new Button(() =>
             {
                 var origin = profileProp.objectReferenceValue as PostProcessProfile;
                 var path = AssetDatabase.GenerateUniqueAssetPath(AssetDatabase.GetAssetPath(origin));
                 path = EditorUtility.SaveFilePanelInProject(
-                    "Clone PostProcessing Profile", Path.GetFileName(path), "asset", 
+                    "Clone PostProcessing Profile", Path.GetFileName(path), "asset",
                     "This asset will contain the post processing settings", Path.GetDirectoryName(path));
                 if (path.Length > 0)
                 {
                     profileProp.objectReferenceValue = CopyPostProcessProfile(origin, path);
                     serializedObject.ApplyModifiedProperties();
-                }                
+                }
             }) { text = "Clone", style = { marginLeft = 0 }} );
             cloneButton.TrackPropertyWithInitialCallback(profileProp, (p) => cloneButton.SetVisible(p.objectReferenceValue != null));
 

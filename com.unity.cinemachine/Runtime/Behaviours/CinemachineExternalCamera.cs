@@ -14,8 +14,8 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineExternalCamera.html")]
     public class CinemachineExternalCamera : CinemachineVirtualCameraBase
     {
-        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
-        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will
         /// make an arbitrary choice.</summary>
         [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
             + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
@@ -39,12 +39,12 @@ namespace Unity.Cinemachine
         public override CameraState State => m_State;
 
         /// <summary>The object that the camera is looking at</summary>
-        override public Transform LookAt 
+        override public Transform LookAt
         {
             get => LookAtTarget;
             set => LookAtTarget = value;
         }
-        
+
         /// <summary>This vcam defines no targets</summary>
         [HideInInspector]
         public override Transform Follow { get; set; }

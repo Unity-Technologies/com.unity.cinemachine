@@ -10,7 +10,7 @@ namespace Unity.Cinemachine.Editor
     ///  define and name them, and create masks to filter only the layers you want.
     /// </summary>
     [Serializable]
-    public class CinemachineImpulseChannels : ScriptableObject 
+    public class CinemachineImpulseChannels : ScriptableObject
     {
         static CinemachineImpulseChannels sInstance = null;
         private static bool alreadySearched = false;
@@ -42,7 +42,7 @@ namespace Unity.Cinemachine.Editor
                 if (InstanceIfExists == null)
                 {
                     string newAssetPath = EditorUtility.SaveFilePanelInProject(
-                            "Create Impulse Channel Definition asset", "CinemachineImpulseChannels", "asset", 
+                            "Create Impulse Channel Definition asset", "CinemachineImpulseChannels", "asset",
                             "This editor-only file will contain the Impulse channels for this project");
                     if (!string.IsNullOrEmpty(newAssetPath))
                     {

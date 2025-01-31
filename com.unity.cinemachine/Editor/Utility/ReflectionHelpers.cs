@@ -168,7 +168,7 @@ namespace Unity.Cinemachine
                 if (ScanFields(ref obj, updater))
                 {
                     doneSomething = true;
-                    if (UnityEditor.PrefabUtility.IsPartOfAnyPrefab(go)) 
+                    if (UnityEditor.PrefabUtility.IsPartOfAnyPrefab(go))
                         UnityEditor.PrefabUtility.RecordPrefabInstancePropertyModifications(c);
                 }
             }

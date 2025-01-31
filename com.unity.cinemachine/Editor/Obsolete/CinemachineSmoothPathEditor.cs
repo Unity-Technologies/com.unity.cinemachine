@@ -254,7 +254,7 @@ namespace Unity.Cinemachine.Editor
         {
             var isActive = Selection.activeGameObject == path.gameObject;
             CinemachinePathEditor.DrawPathGizmo(
-                path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, 
+                path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor,
                 isActive, LocalSpaceSamplePath);
         }
 
@@ -316,10 +316,10 @@ namespace Unity.Cinemachine.Editor
                     {
                         if (numRotSamples >= numSamples)
                             break;
-                        float roll 
-                            = (s_BezierWeightsCache[i].x * path.m_Waypoints[wp].roll) 
-                            + (s_BezierWeightsCache[i].y * path.m_ControlPoints1[wp].roll) 
-                            + (s_BezierWeightsCache[i].z * path.m_ControlPoints2[wp].roll) 
+                        float roll
+                            = (s_BezierWeightsCache[i].x * path.m_Waypoints[wp].roll)
+                            + (s_BezierWeightsCache[i].y * path.m_ControlPoints1[wp].roll)
+                            + (s_BezierWeightsCache[i].z * path.m_ControlPoints2[wp].roll)
                             + (s_BezierWeightsCache[i].w * path.m_Waypoints[nextWp].roll);
 
                         float t = ((float)i) / samplesPerSegment;

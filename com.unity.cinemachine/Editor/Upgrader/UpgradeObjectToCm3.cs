@@ -16,10 +16,10 @@ namespace Unity.Cinemachine.Editor
     partial class UpgradeObjectToCm3
     {
         /// <summary>
-        /// In-place upgrade a GameObject.  Obsolete components are disabled (not deleted), 
+        /// In-place upgrade a GameObject.  Obsolete components are disabled (not deleted),
         /// and replacement components are added.  GameObject structure may be re-organized
         /// (hidden objects deleted, components moved).
-        /// 
+        ///
         /// In a second pass, call DeleteObsoleteComponents().
         /// </summary>
         /// <param name="go">The GameObject to upgrade</param>
@@ -102,17 +102,17 @@ namespace Unity.Cinemachine.Editor
                      ConvertInputAxis(go, "Look Orbit X", ref orbital.m_XAxis);
                 }
 
-                if (ReplaceComponent<Cinemachine3rdPersonFollow, CinemachineThirdPersonFollow>(go)) 
+                if (ReplaceComponent<Cinemachine3rdPersonFollow, CinemachineThirdPersonFollow>(go))
                     go.GetComponent<Cinemachine3rdPersonFollow>().UpgradeToCm3(go.GetComponent<CinemachineThirdPersonFollow>());
 
-                if (ReplaceComponent<CinemachineSameAsFollowTarget, CinemachineRotateWithFollowTarget>(go)) 
+                if (ReplaceComponent<CinemachineSameAsFollowTarget, CinemachineRotateWithFollowTarget>(go))
                     go.GetComponent<CinemachineSameAsFollowTarget>().UpgradeToCm3(go.GetComponent<CinemachineRotateWithFollowTarget>());
 
                 if (ReplaceComponent<CinemachineTrackedDolly, CinemachineSplineDolly>(go))
                     go.GetComponent<CinemachineTrackedDolly>().UpgradeToCm3(go.GetComponent<CinemachineSplineDolly>());
 
 #if CINEMACHINE_PHYSICS
-                if (ReplaceComponent<CinemachineCollider, CinemachineDeoccluder>(go)) 
+                if (ReplaceComponent<CinemachineCollider, CinemachineDeoccluder>(go))
                     go.GetComponent<CinemachineCollider>().UpgradeToCm3(go.GetComponent<CinemachineDeoccluder>());
 #endif
 
@@ -158,14 +158,14 @@ namespace Unity.Cinemachine.Editor
         {
             if (animationClip == null || trackAnimator == null)
                 return;
-            
+
             var existingEditorBindings = AnimationUtility.GetCurveBindings(animationClip);
             foreach (var previousBinding in existingEditorBindings)
             {
                 // if type is not in class upgrade map, then we won't change binding
                 if (!ClassUpgradeMap.ContainsKey(previousBinding.type))
                     continue;
-                    
+
                 var newBinding = previousBinding;
                 // upgrade type based on mapping
                 newBinding.type = ClassUpgradeMap[previousBinding.type];
@@ -210,8 +210,8 @@ namespace Unity.Cinemachine.Editor
                     var mapping = m_APIUpgradeMaps[previousBinding.type][newBinding.propertyName];
                     newBinding.propertyName = mapping.Item1;
                     // type can differ from previously set type, because some components became several separate ones
-                    newBinding.type = mapping.Item2; 
-                    
+                    newBinding.type = mapping.Item2;
+
                     // special handling for references
                     if (mapping.Item1.Contains("managedReferences"))
                     {
@@ -233,7 +233,7 @@ namespace Unity.Cinemachine.Editor
                 }
 
 #if DEBUG_HELPERS
-                Debug.Log(previousBinding.path + "." + previousBinding.type.Name + "." + previousBinding.propertyName 
+                Debug.Log(previousBinding.path + "." + previousBinding.type.Name + "." + previousBinding.propertyName
                     + " -> " + newBinding.path + "." + newBinding.type.Name + "." + newBinding.propertyName);
 #endif
                 var curve = AnimationUtility.GetEditorCurve(animationClip, previousBinding); //keep existing curves
@@ -249,21 +249,21 @@ namespace Unity.Cinemachine.Editor
         /// <param name="go">The GameObject being upgraded</param>
         public void DeleteObsoleteComponents(GameObject go)
         {
-            if (go == null) 
+            if (go == null)
                 return;
-            
+
             foreach (var t in ObsoleteComponentTypesToDelete)
             {
                 var components = go.GetComponentsInChildren(t, true);
-                foreach (var c in components) 
+                foreach (var c in components)
                     Undo.DestroyObjectImmediate(c);
             }
             if (PrefabUtility.IsPartOfAnyPrefab(go))
                 PrefabUtility.RecordPrefabInstancePropertyModifications(go);
         }
- 
+
         /// Disable an obsolete component and add a replacement
-        static bool ReplaceComponent<TOld, TNew>(GameObject go) 
+        static bool ReplaceComponent<TOld, TNew>(GameObject go)
             where TOld : MonoBehaviour
             where TNew : MonoBehaviour
         {
@@ -314,7 +314,7 @@ namespace Unity.Cinemachine.Editor
         static GameObject UpgradeVcam(CinemachineVirtualCamera vcam)
         {
             var go = vcam.gameObject;
-            var cmCamera = UpgradeVcamBaseToCmCamera(vcam);        
+            var cmCamera = UpgradeVcamBaseToCmCamera(vcam);
 
             cmCamera.Follow = vcam.m_Follow;
             cmCamera.LookAt = vcam.m_LookAt;
@@ -326,11 +326,11 @@ namespace Unity.Cinemachine.Editor
                 var evts = Undo.AddComponent<CinemachineLegacyCameraEvents>(go);
                 evts.OnCameraLive = vcam.m_OnCameraLiveEvent;
             }
-                
+
             // Transfer the component pipeline
             var pipeline = vcam.GetComponentPipeline();
-            if (pipeline != null) 
-                foreach (var c in pipeline) 
+            if (pipeline != null)
+                foreach (var c in pipeline)
                     if (c != null)
                         CopyValues(c, Undo.AddComponent(go, c.GetType()) as CinemachineComponentBase);
 
@@ -419,7 +419,7 @@ namespace Unity.Cinemachine.Editor
                 var evts = Undo.AddComponent<CinemachineLegacyCameraEvents>(go);
                 evts.OnCameraLive = freelook.m_OnCameraLiveEvent;
             }
-                    
+
             var freeLookModifier = Undo.AddComponent<CinemachineFreeLookModifier>(go);
             ConvertFreelookLens(freelook, cmCamera, freeLookModifier);
             ConvertFreelookBody(freelook, go, freeLookModifier);
@@ -436,7 +436,7 @@ namespace Unity.Cinemachine.Editor
             UnparentAndDestroy(middleRig.transform);
             UnparentAndDestroy(bottomRig.GetComponentOwner());
             UnparentAndDestroy(bottomRig.transform);
-                    
+
             return notUpgradable;
         }
 
@@ -444,9 +444,9 @@ namespace Unity.Cinemachine.Editor
         /// Differences in these fields will be ignored because the FreeLookModifier
         /// will take care of them
         /// </summary>
-        static string[] s_FreelookIgnoreFieldsList = { 
-            "m_ScreenX", "m_ScreenY", "m_DeadZoneWidth", "m_DeadZoneHeight", 
-            "m_SoftZoneWidth", "m_SoftZoneHeight", "m_BiasX", "m_BiasY", 
+        static string[] s_FreelookIgnoreFieldsList = {
+            "m_ScreenX", "m_ScreenY", "m_DeadZoneWidth", "m_DeadZoneHeight",
+            "m_SoftZoneWidth", "m_SoftZoneHeight", "m_BiasX", "m_BiasY",
             "m_AmplitudeGain", "m_FrequencyGain", };
 
         static bool IsFreelookUpgradable(CinemachineFreeLook freelook)
@@ -466,9 +466,9 @@ namespace Unity.Cinemachine.Editor
             var midAim = middleRig.GetCinemachineComponent(CinemachineCore.Stage.Aim);
 
             return
-                parentLookAt == topRig.LookAt && parentLookAt == middleRig.LookAt && parentLookAt == bottomRig.LookAt 
-                && IsCompatibleNoise(topNoise, middleNoise) 
-                && IsCompatibleNoise(middleNoise, bottomNoise) 
+                parentLookAt == topRig.LookAt && parentLookAt == middleRig.LookAt && parentLookAt == bottomRig.LookAt
+                && IsCompatibleNoise(topNoise, middleNoise)
+                && IsCompatibleNoise(middleNoise, bottomNoise)
                 && PublicFieldsEqual(topRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_FreelookIgnoreFieldsList)
                 && PublicFieldsEqual(bottomRig.GetCinemachineComponent(CinemachineCore.Stage.Aim), midAim, s_FreelookIgnoreFieldsList);
 
@@ -500,9 +500,9 @@ namespace Unity.Cinemachine.Editor
                     var name = pi.Name;
                     if (ignoreList.Contains(name))
                         continue; // ignore
-                            
+
                     var field = aType.GetField(name);
-                    if (!field.GetValue(a).Equals(field.GetValue(b))) 
+                    if (!field.GetValue(a).Equals(field.GetValue(b)))
                     {
 #if DEBUG_HELPERS
                         Debug.Log("Rig values differ: " + name);
@@ -515,7 +515,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         static void ConvertFreelookLens(
-            CinemachineFreeLook freelook, 
+            CinemachineFreeLook freelook,
             CinemachineCamera cmCamera, CinemachineFreeLookModifier freeLookModifier)
         {
             if (freelook.m_CommonLens)
@@ -538,7 +538,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         static void ConvertFreelookBody(
-            CinemachineFreeLook freelook, 
+            CinemachineFreeLook freelook,
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
             var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineOrbitalTransposer>();
@@ -550,11 +550,11 @@ namespace Unity.Cinemachine.Editor
             // Use middle rig as template
             var orbital = Undo.AddComponent<CinemachineOrbitalFollow>(go);
             middle.UpgradeToCm3(orbital);
-            orbital.HorizontalAxis.Recentering = new () 
-            { 
-                Enabled = freelook.m_RecenterToTargetHeading.m_enabled, 
-                Time = freelook.m_RecenterToTargetHeading.m_RecenteringTime, 
-                Wait = freelook.m_RecenterToTargetHeading.m_WaitTime 
+            orbital.HorizontalAxis.Recentering = new ()
+            {
+                Enabled = freelook.m_RecenterToTargetHeading.m_enabled,
+                Time = freelook.m_RecenterToTargetHeading.m_RecenteringTime,
+                Wait = freelook.m_RecenterToTargetHeading.m_WaitTime
             };
 
             orbital.OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing;
@@ -584,11 +584,11 @@ namespace Unity.Cinemachine.Editor
             orbital.VerticalAxis.Wrap = false;
             orbital.VerticalAxis.Value = freelook.m_YAxis.Value;
 
-            orbital.VerticalAxis.Recentering = new () 
-            { 
-                Enabled = freelook.m_YAxisRecentering.m_enabled, 
-                Time = freelook.m_YAxisRecentering.m_RecenteringTime, 
-                Wait = freelook.m_YAxisRecentering.m_WaitTime 
+            orbital.VerticalAxis.Recentering = new ()
+            {
+                Enabled = freelook.m_YAxisRecentering.m_enabled,
+                Time = freelook.m_YAxisRecentering.m_RecenteringTime,
+                Wait = freelook.m_YAxisRecentering.m_WaitTime
             };
 
             // Do we need a modifier?
@@ -599,7 +599,7 @@ namespace Unity.Cinemachine.Editor
             {
                 freeLookModifier.Modifiers.Add(new CinemachineFreeLookModifier.PositionDampingModifier
                 {
-                    Damping = new CinemachineFreeLookModifier.TopBottomRigs<Vector3> 
+                    Damping = new CinemachineFreeLookModifier.TopBottomRigs<Vector3>
                     {
                         Top = topDamping,
                         Bottom = bottomDamping,
@@ -609,7 +609,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         static void ConvertFreelookAim(
-            CinemachineFreeLook freelook, 
+            CinemachineFreeLook freelook,
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
             // We assume that the middle aim is a suitable template
@@ -645,14 +645,14 @@ namespace Unity.Cinemachine.Editor
         }
 
         static void ConvertFreelookNoise(
-            CinemachineFreeLook freelook, 
+            CinemachineFreeLook freelook,
             GameObject go, CinemachineFreeLookModifier freeLookModifier)
         {
             // Noise can be on any subset of the rigs
             var top = freelook.GetRig(0).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var middle = freelook.GetRig(1).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             var bottom = freelook.GetRig(2).GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
-            var template = middle != null && middle.NoiseProfile != null 
+            var template = middle != null && middle.NoiseProfile != null
                 ? middle : (top != null && top.NoiseProfile != null? top : bottom);
             if (template == null || template.NoiseProfile == null)
                 return;
@@ -713,7 +713,7 @@ namespace Unity.Cinemachine.Editor
                     spline.Spline = new Spline(waypoints.Length, path.Looped);
                     for (var i = 0; i < waypoints.Length; i++)
                     {
-                        var fwd = waypoints[i].tangent; 
+                        var fwd = waypoints[i].tangent;
                         var len = fwd.magnitude;
                         spline.Spline.Add(new BezierKnot
                         {
@@ -741,7 +741,7 @@ namespace Unity.Cinemachine.Editor
                     spline.Spline = new Spline(waypoints.Length, smoothPath.Looped);
                     for (var i = 0; i < waypoints.Length; i++)
                     {
-                        var fwd = smoothPath.EvaluateLocalTangent(i); 
+                        var fwd = smoothPath.EvaluateLocalTangent(i);
                         var len = fwd.magnitude / 3f; // divide by magic number to match spline tangent scale correctly
                         spline.Spline.Add(new BezierKnot
                         {

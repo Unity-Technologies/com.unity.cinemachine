@@ -27,18 +27,18 @@ namespace Unity.Cinemachine.Editor
         bool IsPrefabBase { get; set; }
 
         /// <summary>Update state information on undo/redo</summary>
-        void UpdateCameraState() 
-        { 
-            if (Target != null) 
-                Target.InternalUpdateCameraState(Vector3.up, -1); 
+        void UpdateCameraState()
+        {
+            if (Target != null)
+                Target.InternalUpdateCameraState(Vector3.up, -1);
         }
 
-        /// <summary>Inspector panel is being enabled.  
+        /// <summary>Inspector panel is being enabled.
         /// Implementation should call the base class implementation</summary>
         protected virtual void OnEnable()
         {
             Undo.undoRedoPerformed += UpdateCameraState;
-            
+
             IsPrefabBase = Target.gameObject.scene.name == null; // causes a small GC alloc
             if (sExtensionTypes == null)
             {
@@ -64,7 +64,7 @@ namespace Unity.Cinemachine.Editor
         protected virtual void OnDisable()
         {
             Undo.undoRedoPerformed -= UpdateCameraState;
-            
+
             if (CinemachineCore.SoloCamera == Target)
             {
                 CinemachineCore.SoloCamera = null;
@@ -85,10 +85,10 @@ namespace Unity.Cinemachine.Editor
 
             DrawGlobalControlsInInspector();
         }
-        
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
-        /// Draw a message prompting the user to add a CinemachineInputProvider.  
+        /// Draw a message prompting the user to add a CinemachineInputProvider.
         /// Does nothing if Input package not installed.
         /// </summary>
         protected void DrawInputProviderButtonInInspector()
@@ -106,7 +106,7 @@ namespace Unity.Cinemachine.Editor
 
             EditorGUILayout.Space();
             InspectorUtility.HelpBoxWithButton(
-                "The InputSystem package is installed, but it is not used to control this vcam.", 
+                "The InputSystem package is installed, but it is not used to control this vcam.",
                 MessageType.Info,
                 new GUIContent("Add Input Provider"), () =>
                 {
@@ -126,7 +126,7 @@ namespace Unity.Cinemachine.Editor
         }
 #else
         /// <summary>
-        /// Draw a message prompting the user to add a CinemachineInputProvider.  
+        /// Draw a message prompting the user to add a CinemachineInputProvider.
         /// Does nothing if Input package not installed.
         /// </summary>
         protected void DrawInputProviderButtonInInspector() {}
@@ -163,7 +163,7 @@ namespace Unity.Cinemachine.Editor
             if (EditorGUI.EndChangeCheck())
                 serializedObject.ApplyModifiedProperties();
         }
-        
+
         /// <summary>
         /// Draw the Extensions dropdown in the inspector
         /// </summary>
@@ -194,7 +194,7 @@ namespace Unity.Cinemachine.Editor
         {
             if (Selection.objects.Length > 1)
                 return;
-            
+
             // Is the camera navel-gazing?
             CameraState state = Target.State;
             if (state.HasLookAt() && (state.ReferenceLookAt - state.GetCorrectedPosition()).AlmostZero())
@@ -267,7 +267,7 @@ namespace Unity.Cinemachine.Editor
             SaveDuringPlay.Enabled = EditorGUILayout.Toggle(
                 CinemachineCorePrefs.s_SaveDuringPlayLabel, SaveDuringPlay.Enabled);
 
-            int index = CinemachineCorePrefs.ShowInGameGuides.Value 
+            int index = CinemachineCorePrefs.ShowInGameGuides.Value
                 ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
             var newIndex = EditorGUILayout.Popup(m_GuidesLabel, index, s_GuidesChoices);
             if (index != newIndex)
@@ -284,9 +284,9 @@ namespace Unity.Cinemachine.Editor
                     MessageType.Info);
         }
 
-        internal bool IsHorizontalFOVUsed() 
+        internal bool IsHorizontalFOVUsed()
         {
-            // This should be a global UX setting, but the best we can do now is to query 
+            // This should be a global UX setting, but the best we can do now is to query
             // the associated camera (if any) for the lens FOV display mode
             Camera camera = null;
             var brain = CinemachineCore.FindPotentialTargetBrain(Target);

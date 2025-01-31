@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
 
             var noProfile = ux.AddChild(new HelpBox(
                 "A Noise Profile is required.  You may choose from among the NoiseSettings assets defined "
-                + "in the project, or from one of the presets.", 
+                + "in the project, or from one of the presets.",
                 HelpBoxMessageType.Warning));
 
             var perlin = target as CinemachineBasicMultiChannelPerlin;

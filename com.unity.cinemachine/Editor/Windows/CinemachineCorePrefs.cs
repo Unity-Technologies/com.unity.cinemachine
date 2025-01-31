@@ -9,19 +9,19 @@ namespace Unity.Cinemachine.Editor
         public class GameViewGuidesItem : CinemachineSettings.BoolItem
         {
             public GameViewGuidesItem(string key, bool defaultValue) : base(key, defaultValue) {}
-            protected override bool ReadPrefs() 
+            protected override bool ReadPrefs()
             {
                 var value = base.ReadPrefs();
                 CinemachineDebug.GameViewGuidesEnabled = value;
                 return value;
             }
-            protected override void WritePrefs(bool value) 
+            protected override void WritePrefs(bool value)
             {
                 base.WritePrefs(value);
                 CinemachineDebug.GameViewGuidesEnabled = value;
             }
         }
-        
+
         static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Core_Folded", true);
 
         public static CinemachineSettings.BoolItem StoryboardGlobalMute = new ("CNMCN_StoryboardMute_Enabled", false);
@@ -33,10 +33,10 @@ namespace Unity.Cinemachine.Editor
         public static CinemachineSettings.ColorItem BoundaryObjectGizmoColour = new ("CNMCN_Core_BoundaryObject_Gizmo_Colour", Color.yellow);
 
         public static readonly GUIContent s_StoryboardGlobalMuteLabel = new(
-            "Storyboard Global Mute", 
+            "Storyboard Global Mute",
             "If checked, all storyboards are globally muted.");
         public static readonly GUIContent s_ShowInGameGuidesLabel = new(
-            "Show Game View Guides", 
+            "Show Game View Guides",
             "Enable the display of overlays in the Game View.  You can adjust colours and opacity in Cinemachine Preferences.");
         public static readonly GUIContent s_SaveDuringPlayLabel = new(
             "Save During Play",
@@ -92,7 +92,7 @@ namespace Unity.Cinemachine.Editor
                 if (GUILayout.Button("Reset"))
                     InactiveGizmoColour.Reset();
                 EditorGUILayout.EndHorizontal();
-                
+
                 EditorGUILayout.BeginHorizontal();
                 EditorGUI.BeginChangeCheck();
                 BoundaryObjectGizmoColour.Value = EditorGUILayout.ColorField(k_CoreBoundaryObjectGizmosColour, BoundaryObjectGizmoColour.Value);

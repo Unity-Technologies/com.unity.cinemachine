@@ -31,7 +31,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     GameObject go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
                     var group = go.GetComponent<CinemachineTargetGroup>();
-                   
+
                     group.RotationMode = CinemachineTargetGroup.RotationModes.GroupAverage;
                     group.AddMember(target, 1, 1);
                     property.objectReferenceValue = group.Transform;
@@ -46,27 +46,27 @@ namespace Unity.Cinemachine.Editor
         {
             var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
             row.Add(new PropertyField(property) { style = { flexGrow = 1 }});
-            row.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
+            row.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) =>
             {
-                evt.menu.AppendAction("Convert to TargetGroup", 
-                    (action) => 
+                evt.menu.AppendAction("Convert to TargetGroup",
+                    (action) =>
                     {
                         var go = ObjectFactory.CreateGameObject("Target Group", typeof(CinemachineTargetGroup));
                         var group = go.GetComponent<CinemachineTargetGroup>();
                         var target = property.objectReferenceValue as Transform;
-                   
+
                         group.RotationMode = CinemachineTargetGroup.RotationModes.GroupAverage;
                         group.AddMember(target, 1, 1);
                         property.objectReferenceValue = group.Transform;
                         property.serializedObject.ApplyModifiedProperties();
-                    }, 
-                    (status) => 
+                    },
+                    (status) =>
                     {
                         var target = property.objectReferenceValue as Transform;
                         var disable = target == null || target.TryGetComponent<CinemachineTargetGroup>(out var _);
                         return disable ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
                     }
-                );                
+                );
             })));
             return row;
         }

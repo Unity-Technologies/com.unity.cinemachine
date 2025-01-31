@@ -6,7 +6,7 @@ namespace Unity.Cinemachine.Samples
     /// This class inherits CinemachineCameraManagerBase, which is a convenient base class for
     /// making complex cameras by transitioning between a number of worker cameras, depending
     /// on some arbitrary game state.
-    /// 
+    ///
     /// In this case, we monitor the player's facing direction and motion, and select a camera
     /// with the appropriate settings.  CinemachineCameraManagerBase takes care of handling the blends.
     /// </summary>
@@ -46,7 +46,7 @@ namespace Unity.Cinemachine.Samples
             if (m_Player == null)
                 Debug.LogError("PlatformerCamera2D: Default target must be set to Player with a Rigidbody2D");
         }
-   
+
         PlayerState GetPlayerState()
         {
             bool isLeft = false;

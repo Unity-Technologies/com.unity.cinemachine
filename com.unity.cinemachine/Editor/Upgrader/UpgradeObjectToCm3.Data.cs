@@ -28,16 +28,16 @@ namespace Unity.Cinemachine.Editor
             typeof(CinemachineFreeLook),
             typeof(CinemachineVirtualCamera),
         };
-        
+
         /// <summary>
-        /// Any component that may be referenced by vcams or freelooks 
+        /// Any component that may be referenced by vcams or freelooks
         /// </summary>
         public static readonly List<Type> Referencables = new()
         {
             typeof(CinemachinePathBase),
             typeof(CinemachineDollyCart),
         };
-        
+
         public static bool HasReferencableComponent(UnityEngine.GameObject go)
         {
             foreach (var referencable in Referencables)
@@ -79,7 +79,7 @@ namespace Unity.Cinemachine.Editor
             typeof(CinemachineConfiner),
 #endif
         };
-        
+
         /// <summary>
         /// Maps class upgrades.
         /// </summary>
@@ -103,7 +103,7 @@ namespace Unity.Cinemachine.Editor
             { typeof(CinemachineCollider), typeof(CinemachineDeoccluder) },
 #endif
         };
-        
+
         /// <summary>
         /// Maps API changes.
         /// Some API changes need special care, because type could be different for different properties,

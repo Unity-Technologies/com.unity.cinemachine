@@ -22,7 +22,7 @@ namespace Unity.Cinemachine.Editor
         const string k_DuplicateComponent = "This component is redundant and will be ignored.";
 
         /// <summary>
-        /// Add help box for CinemachineComponentBase or CinemachineExtension editors, 
+        /// Add help box for CinemachineComponentBase or CinemachineExtension editors,
         /// prompting to solve a missing CinemachineCamera component or a missing tracking target
         /// </summary>
         public static void AddMissingCmCameraHelpBox(this UnityEditor.Editor editor, VisualElement ux)
@@ -57,7 +57,7 @@ namespace Unity.Cinemachine.Editor
             {
                 if (editor == null || editor.target == null)
                     return;  // target was deleted
-                
+
                 var noCamera = false;
                 var noTarget = false;
                 var noLookAtTarget = false;
@@ -74,7 +74,7 @@ namespace Unity.Cinemachine.Editor
                         {
                             case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
                             case RequiredTargetAttribute.RequiredTargets.LookAt: noLookAtTarget |= c.LookAtTarget == null; break;
-                            case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
+                            case RequiredTargetAttribute.RequiredTargets.GroupLookAt:
                                 noLookAtTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                         }
                         if (vcam != null && vcam.GetCinemachineComponent(c.Stage) != c)
@@ -91,7 +91,7 @@ namespace Unity.Cinemachine.Editor
                             {
                                 case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
                                 case RequiredTargetAttribute.RequiredTargets.LookAt: noLookAtTarget |= vcam.LookAt == null; break;
-                                case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
+                                case RequiredTargetAttribute.RequiredTargets.GroupLookAt:
                                     noLookAtTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
                             }
                         }
@@ -136,7 +136,7 @@ namespace Unity.Cinemachine.Editor
             if (s_AllAxisControllerTypes == null)
             {
                 var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(IInputAxisController),
-                    (t) => !t.IsAbstract && typeof(MonoBehaviour).IsAssignableFrom(t) 
+                    (t) => !t.IsAbstract && typeof(MonoBehaviour).IsAssignableFrom(t)
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 s_AllAxisControllerTypes = new();
                 var iter = allTypes.GetEnumerator();
@@ -146,7 +146,7 @@ namespace Unity.Cinemachine.Editor
             ContextualMenuManipulator menu = null;
             if (s_AllAxisControllerTypes.Count > 1)
             {
-                menu = new ContextualMenuManipulator((evt) => 
+                menu = new ContextualMenuManipulator((evt) =>
                 {
                     for (int i = 0; i < s_AllAxisControllerTypes.Count; ++i)
                     {
@@ -157,10 +157,10 @@ namespace Unity.Cinemachine.Editor
             }
 
             var help = ux.AddChild(InspectorUtility.HelpBoxWithButton(
-                text, HelpBoxMessageType.Info, "Add Input Controller", 
-                () => 
+                text, HelpBoxMessageType.Info, "Add Input Controller",
+                () =>
                 {
-                    if (s_AllAxisControllerTypes.Count == 1) 
+                    if (s_AllAxisControllerTypes.Count == 1)
                         AddController(s_AllAxisControllerTypes[0]);
                 },
                 menu));
@@ -196,7 +196,7 @@ namespace Unity.Cinemachine.Editor
                 }
             };
         }
-            
+
         public static void OnGUI_DrawOnscreenTargetMarker(Vector3 worldPoint, Camera camera)
         {
             var c = camera.WorldToScreenPoint(worldPoint);
@@ -219,7 +219,7 @@ namespace Unity.Cinemachine.Editor
         {
             var c = groupBounds.center; c.z -= groupBounds.extents.z; groupBounds.center = c;
             var e = groupBounds.extents; e.z = 0; groupBounds.extents = e;
-                
+
             c = camera.WorldToScreenPoint(cameraViewMatrix.MultiplyPoint3x4(c));
             if (c.z < 0)
                 return;
@@ -279,7 +279,7 @@ namespace Unity.Cinemachine.Editor
             var a = editor.target.GetType().GetCustomAttribute<RequiredTargetAttribute>();
             if (a != null)
                 requiredTargets = a.RequiredTarget;
-                
+
             bool noCamera = false;
             bool noTarget = false;
             var targets = editor.targets;
@@ -295,7 +295,7 @@ namespace Unity.Cinemachine.Editor
                     {
                         case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
                         case RequiredTargetAttribute.RequiredTargets.LookAt: noTarget |= c.LookAtTarget == null; break;
-                        case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
+                        case RequiredTargetAttribute.RequiredTargets.GroupLookAt:
                             noTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                     }
                 }
@@ -310,7 +310,7 @@ namespace Unity.Cinemachine.Editor
                         {
                             case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
                             case RequiredTargetAttribute.RequiredTargets.LookAt: noTarget |= vcam.LookAt == null; break;
-                            case RequiredTargetAttribute.RequiredTargets.GroupLookAt: 
+                            case RequiredTargetAttribute.RequiredTargets.GroupLookAt:
                                 noTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
                         }
                     }

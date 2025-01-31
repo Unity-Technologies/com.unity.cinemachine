@@ -43,9 +43,9 @@ namespace Unity.Cinemachine.Editor
 
             public override void OnOpen()
             {
-                var ux = editorWindow.rootVisualElement.AddChild(new VisualElement() 
+                var ux = editorWindow.rootVisualElement.AddChild(new VisualElement()
                 {
-                    style = { alignContent = Align.Center, alignItems = Align.FlexStart } 
+                    style = { alignContent = Align.Center, alignItems = Align.FlexStart }
                 });
                 ux.RegisterCallback<GeometryChangedEvent>((e) => m_windowSize = e.newRect.size);
 
@@ -87,9 +87,9 @@ namespace Unity.Cinemachine.Editor
                     for (int i = 0; i < Editor.targets.Length; ++i)
                         CinemachineUpgradeManager.UpgradeSingleObject(((MonoBehaviour)Editor.targets[i]).gameObject);
                     editorWindow.Close();
-                }) { 
-                    text = text, 
-                    style = { flexGrow = 0, alignSelf = Align.Center } 
+                }) {
+                    text = text,
+                    style = { flexGrow = 0, alignSelf = Align.Center }
                 }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.ObjectsUsePrefabs(Editor.targets));
 
                 // Upgrade current scene
@@ -105,9 +105,9 @@ namespace Unity.Cinemachine.Editor
                     Undo.SetCurrentGroupName(text);
                     CinemachineUpgradeManager.UpgradeObjectsInCurrentScene();
                     editorWindow.Close();
-                }) { 
-                    text = text, 
-                    style = { flexGrow = 0, alignSelf = Align.Center } 
+                }) {
+                    text = text,
+                    style = { flexGrow = 0, alignSelf = Align.Center }
                 }).SetEnabled(PrefabStageUtility.GetCurrentPrefabStage() == null && !CinemachineUpgradeManager.CurrentSceneUsesPrefabs());
 
                 // Upgrade project
@@ -122,7 +122,7 @@ namespace Unity.Cinemachine.Editor
                     CinemachineUpgradeManager.UpgradeProject();
                     editorWindow.Close();
                 }) { text = "Convert entire project...", style = { flexGrow = 0, alignSelf = Align.Center } });
-                
+
                 ux.AddSpace();
             }
         }

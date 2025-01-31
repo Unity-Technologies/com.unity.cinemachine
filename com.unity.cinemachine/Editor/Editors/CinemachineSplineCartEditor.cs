@@ -39,7 +39,7 @@ namespace Unity.Cinemachine.Editor
                 }
                 splineIsChildHelp.SetVisible(isChild);
             });
-            
+
             return ux;
         }
     }

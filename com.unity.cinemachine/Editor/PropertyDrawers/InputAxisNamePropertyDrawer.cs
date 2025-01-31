@@ -12,7 +12,7 @@ namespace Unity.Cinemachine.Editor
         {
             var row = InspectorUtility.PropertyRow(property, out _, preferredLabel);
             var error = row.Contents.AddChild(InspectorUtility.MiniHelpIcon(
-                "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes", 
+                "Invalid axis name.  See Project Settings > Input Manager for a list of defined axes",
                 HelpBoxMessageType.Error));
 
             row.TrackPropertyWithInitialCallback(property, (p) =>

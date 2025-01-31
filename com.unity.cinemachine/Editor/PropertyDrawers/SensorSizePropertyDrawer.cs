@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Editor
     [CustomPropertyDrawer(typeof(SensorSizePropertyAttribute))]
     partial class SensorSizePropertyDrawer : PropertyDrawer
     {
-        static readonly List<string> s_PresetNames = new () 
+        static readonly List<string> s_PresetNames = new ()
         {
             "8mm",
             "Super 8mm",
@@ -51,9 +51,9 @@ namespace Unity.Cinemachine.Editor
             sensorSize.style.flexBasis = 0;
 
             var presets = row.Contents.AddChild(new PopupField<string>
-            { 
-                choices = s_PresetNames, 
-                tooltip = "Sensor Presets", 
+            {
+                choices = s_PresetNames,
+                tooltip = "Sensor Presets",
                 style = { flexBasis = 0, flexGrow = 1, marginLeft = 5, marginTop = 0, marginBottom = 0 }
             });
             presets.RegisterValueChangedCallback((evt) =>
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine.Editor
                 var index = s_PresetSizes.FindIndex(e => Mathf.Approximately(v.x, e.x) && Mathf.Approximately(v.y, e.y));
                 presets.SetValueWithoutNotify(index >= 0 ? s_PresetNames[index] : "Custom");
             });
-            
+
             return row;
         }
     }

@@ -27,7 +27,7 @@ The rig and the camera position are defined by three pivot points (the origin, t
 - The **origin (A)**: The origin is the tracking target's position. When the target pivots horizontally, the rig rotates with it around this point.
 - The **shoulder (B)**: By default, it is offset to one side, to create an over-the-shoulder follow position. Vertical rotations of the tracking target are transferred here, so the rig rotates horizontally about the origin, and vertically about the shoulder.
 - The **hand (C)**: Vertically offset in relation to the shoulder. The arm length affects the tracking target's screen position when the camera rotates vertically. By default, it is offset from the shoulder, so that vertical rotations will keep the character nicely positioned on the screen. For 1st-person cameras, this can be set to 0.
-- The **camera (D)**: The camera's rotation will always be parallel to the tracking target's rotation, but positioned at Camera Distance behind the hand. The camera always looks directly at the hand. 
+- The **camera (D)**: The camera's rotation will always be parallel to the tracking target's rotation, but positioned at Camera Distance behind the hand. The camera always looks directly at the hand.
 
 Note the rotations on the rig;</br>
 
@@ -35,7 +35,7 @@ Note the rotations on the rig;</br>
    ![](images/CMShoulderOffsetexample.png)
 
 - **C rotates vertically around B**. C's position is calculated from the Vertical Arm Length from B. Positive values result with C above B, and negative values result with C below B.</br>
-   ![](images/CMVerticalDistanceexample.png) 
+   ![](images/CMVerticalDistanceexample.png)
 
 
 ## Controlling the Camera

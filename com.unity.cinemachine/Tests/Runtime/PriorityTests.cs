@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Tests
         {
             base.TearDown();
         }
-        
+
         static IEnumerable PriorityValues
         {
             // Values must be in descending order - just so CheckPriorityOrder algorithm is simpler
@@ -57,9 +57,9 @@ namespace Unity.Cinemachine.Tests
             // Re-enable all cm cameras
             foreach (var cmCamera in cmCameras)
                 cmCamera.enabled = true;
-            
+
             yield return null;
-                
+
             // Check that the first CinemachineCamera in the list is equal to activeCamera.
             activeCamera = m_Brain.ActiveVirtualCamera as CinemachineCamera;
             Assert.NotNull(activeCamera);

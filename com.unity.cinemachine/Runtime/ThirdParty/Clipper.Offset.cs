@@ -70,8 +70,8 @@ namespace Unity.Cinemachine
 
     private const double TwoPi = Math.PI * 2;
 
-    public ClipperOffset(double miterLimit = 2.0, 
-      double arcTolerance = 0.0, bool 
+    public ClipperOffset(double miterLimit = 2.0,
+      double arcTolerance = 0.0, bool
       preserveCollinear = false, bool reverseSolution = false)
     {
       MiterLimit = miterLimit;

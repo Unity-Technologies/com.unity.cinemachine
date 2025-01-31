@@ -28,12 +28,12 @@ namespace Unity.Cinemachine
     public abstract class CinemachineVirtualCameraBase : MonoBehaviour, ICinemachineCamera
     {
         /// <summary>
-        /// Priority can be used to control which Cm Camera is live when multiple CM Cameras are 
-        /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there 
-        /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated 
-        /// highest-priority CinemachineCamera will control the main camera. 
-        /// 
-        /// The default priority value is 0. Often it is sufficient to leave the default setting.  
+        /// Priority can be used to control which Cm Camera is live when multiple CM Cameras are
+        /// active simultaneously.  The most-recently-activated CinemachineCamera will take control, unless there
+        /// is another Cm Camera active with a higher priority.  In general, the most-recently-activated
+        /// highest-priority CinemachineCamera will control the main camera.
+        ///
+        /// The default priority value is 0. Often it is sufficient to leave the default setting.
         /// In special cases where you want a CinemachineCamera to have a higher or lower priority value than 0, you can set it here.
         /// </summary>
         [NoSaveDuringPlay]
@@ -58,7 +58,7 @@ namespace Unity.Cinemachine
         /// <summary>Helper for upgrading from CM2</summary>
         internal protected virtual bool IsDprecated => false;
 
-        /// <summary>A sequence number that represents object activation order of vcams.  
+        /// <summary>A sequence number that represents object activation order of vcams.
         /// Used for priority sorting.</summary>
         internal int ActivationId;
 
@@ -66,9 +66,9 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
-        /// attachment to the target.  Range is 0...1.  
+        /// attachment to the target.  Range is 0...1.
         /// 1 is full attachment, and is the normal state.
-        /// 0 is no attachment, and virtual camera will behave as if no Follow 
+        /// 0 is no attachment, and virtual camera will behave as if no Follow
         /// targets are set.
         /// </summary>
         [NonSerialized]
@@ -76,7 +76,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// This must be set every frame at the start of the pipeline to relax the virtual camera's
-        /// attachment to the target.  Range is 0...1.  
+        /// attachment to the target.  Range is 0...1.
         /// 1 is full attachment, and is the normal state.
         /// 0 is no attachment, and virtual camera will behave as if no LookAt
         /// targets are set.
@@ -328,9 +328,9 @@ namespace Unity.Cinemachine
             if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
                 vcamParent.InvokePostPipelineStageCallback(vcam, stage, ref newState, deltaTime);
         }
-        
+
         /// <summary>
-        /// Invokes the PrePipelineMutateCameraStateCallback for this camera, 
+        /// Invokes the PrePipelineMutateCameraStateCallback for this camera,
         /// and up the hierarchy for all parent cameras (if any).
         /// Implementation must be sure to call this after each pipeline stage, to allow
         /// other services to hook into the pipeline.
@@ -392,9 +392,9 @@ namespace Unity.Cinemachine
 
         /// <summary>Get the name of the Virtual Camera.  Base implementation
         /// returns a cache of the owner GameObject's name.</summary>
-        public string Name 
+        public string Name
         {
-            get 
+            get
             {
 #if UNITY_EDITOR
                 // Allow vcam name changes when not playing
@@ -408,7 +408,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Gets a brief debug description of this virtual camera, for use when displaying debug info</summary>
         public virtual string Description => "";
-        
+
         /// <summary>Returns false if the object has been deleted</summary>
         public bool IsValid => !(this == null);
 
@@ -436,7 +436,7 @@ namespace Unity.Cinemachine
         /// <summary>Get the Follow target for the Body component in the Cinemachine pipeline.</summary>
         public abstract Transform Follow { get; set; }
 
-        /// <summary>Set this to force the next update to ignore state from the previous frame.  
+        /// <summary>Set this to force the next update to ignore state from the previous frame.
         /// This is useful, for example, if you want to cancel damping or other time-based processing.</summary>
         public virtual bool PreviousStateIsValid { get; set; }
 
@@ -453,7 +453,7 @@ namespace Unity.Cinemachine
             CameraUpdateManager.UpdateVirtualCamera(this, worldUp, deltaTime);
         }
 
-        /// <summary>Internal use only.  
+        /// <summary>Internal use only.
         /// Called by CinemachineCore at designated update time
         /// so the vcam can position itself and track its targets.
         /// Do not call this method.  Let the framework do it at the appropriate time</summary>
@@ -462,7 +462,7 @@ namespace Unity.Cinemachine
         public abstract void InternalUpdateCameraState(Vector3 worldUp, float deltaTime);
 
         /// <inheritdoc />
-        public virtual void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) 
+        public virtual void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt)
         {
             if (evt.IncomingCamera == (ICinemachineCamera)this)
                 OnTransitionFromCamera(evt.OutgoingCamera, evt.WorldUp, evt.DeltaTime);
@@ -538,7 +538,7 @@ namespace Unity.Cinemachine
                 PerformLegacyUpgrade(m_StreamingVersion);
             m_StreamingVersion = CinemachineCore.kStreamingVersion;
         }
-        
+
         /// <summary>Base class implementation adds the virtual camera from the priority queue.</summary>
         protected virtual void OnEnable()
         {
@@ -640,13 +640,13 @@ namespace Unity.Cinemachine
         /// Use this method to push a camera to the top of its priority peers.
         /// If it and its peers share the highest priority, then this vcam will become Live.</summary>
         public void Prioritize() => UpdateVcamPoolStatus(); // Force a re-sort
-        
+
         /// <summary>This is called to notify the component that a target got warped,
         /// so that the component can update its internal state to make the camera
         /// also warp seamlessly.</summary>
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
-        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta) 
+        public virtual void OnTargetObjectWarped(Transform target, Vector3 positionDelta)
             => OnTargetObjectWarped(this, target, positionDelta);
 
         void OnTargetObjectWarped(CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
@@ -709,9 +709,9 @@ namespace Unity.Cinemachine
 
 #if UNITY_EDITOR
         [UnityEditor.InitializeOnLoad]
-        class OnDomainReload 
-        { 
-            static OnDomainReload() 
+        class OnDomainReload
+        {
+            static OnDomainReload()
             {
 #if UNITY_2023_1_OR_NEWER
                 var vcams = FindObjectsByType<CinemachineVirtualCameraBase>
@@ -736,7 +736,7 @@ namespace Unity.Cinemachine
         public bool LookAtTargetChanged { get; private set; }
 
         /// <summary>
-        /// Call this from InternalUpdateCameraState() to check for changed 
+        /// Call this from InternalUpdateCameraState() to check for changed
         /// targets and update the target cache.  This is needed for tracking
         /// when a target object changes.
         /// </summary>
@@ -770,19 +770,19 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Get Follow target as ICinemachineTargetGroup, 
+        /// <summary>Get Follow target as ICinemachineTargetGroup,
         /// or null if target is not a ICinemachineTargetGroup</summary>
         public ICinemachineTargetGroup FollowTargetAsGroup => m_CachedFollowTargetGroup;
 
-        /// <summary>Get Follow target as CinemachineVirtualCameraBase, 
+        /// <summary>Get Follow target as CinemachineVirtualCameraBase,
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase FollowTargetAsVcam => m_CachedFollowTargetVcam;
 
-        /// <summary>Get LookAt target as ICinemachineTargetGroup, 
+        /// <summary>Get LookAt target as ICinemachineTargetGroup,
         /// or null if target is not a ICinemachineTargetGroup</summary>
         public ICinemachineTargetGroup LookAtTargetAsGroup => m_CachedLookAtTargetGroup;
 
-        /// <summary>Get LookAt target as CinemachineVirtualCameraBase, 
+        /// <summary>Get LookAt target as CinemachineVirtualCameraBase,
         /// or null if target is not a CinemachineVirtualCameraBase</summary>
         public CinemachineVirtualCameraBase LookAtTargetAsVcam => m_CachedLookAtTargetVcam;
 
@@ -794,7 +794,7 @@ namespace Unity.Cinemachine
         /// <summary>Returns true if this camera is currently live for some CinemachineBrain.</summary>
         public bool IsLive => CinemachineCore.IsLive(this);
 
-        /// <summary>Check to see whether this camera is currently participating in a blend 
+        /// <summary>Check to see whether this camera is currently participating in a blend
         /// within its parent manager or in a CinemacineBrain</summary>
         /// <returns>True if the camera is participating in a blend</returns>
         public bool IsParticipatingInBlend()
@@ -812,10 +812,10 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Temporarily cancel damping for this frame.  The camera will sanp to its target 
+        /// Temporarily cancel damping for this frame.  The camera will sanp to its target
         /// position when it is updated.
         /// </summary>
-        /// <param name="updateNow">If true, snap the camera to its target immediately, otherwise wait 
+        /// <param name="updateNow">If true, snap the camera to its target immediately, otherwise wait
         /// until the end of the frame when cameras are normally updated.</param>
         public void CancelDamping(bool updateNow = false)
         {

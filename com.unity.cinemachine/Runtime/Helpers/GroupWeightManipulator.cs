@@ -5,7 +5,7 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// A class to get around the limitation in timeline that array members can't be animated.
-    /// A fixed number of slots are made available, rather than a dynamic array.  
+    /// A fixed number of slots are made available, rather than a dynamic array.
     /// If you want to add more slots, just modify this code.
     /// </summary>
     [RequireComponent(typeof(CinemachineTargetGroup))]

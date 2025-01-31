@@ -45,7 +45,7 @@ namespace Unity.Cinemachine
     /// behaviour, which will select the most eligible CinemachineCamera based on its priority
     /// or on other criteria, and will manage blending.
     /// </summary>
-    /// 
+    ///
     [DisallowMultipleComponent]
     [ExecuteAlways]
     [SaveDuringPlay]
@@ -64,8 +64,8 @@ namespace Unity.Cinemachine
             + "Unity Camera's lens settings, and will be used to drive the Unity camera when the vcam is active.")]
         public LensSettings Lens = LensSettings.Default;
 
-        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
-        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will
         /// make an arbitrary choice.</summary>
         [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
             + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
@@ -120,7 +120,7 @@ namespace Unity.Cinemachine
                 transform.position += positionDelta;
                 m_State.RawPosition += positionDelta;
             }
-            
+
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
             {
@@ -149,7 +149,7 @@ namespace Unity.Cinemachine
 
             base.ForceCameraPosition(pos, rot);
         }
-        
+
         /// <summary>
         /// Query components and extensions for the maximum damping time.
         /// </summary>
@@ -176,7 +176,7 @@ namespace Unity.Cinemachine
             bool forceUpdate = false;
 
             // Can't inherit position if already live, because there will be a pop
-            if ((State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+            if ((State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && fromCam != null && !CinemachineCore.IsLiveInBlend(this))
             {
                 var state = fromCam.State;
@@ -216,7 +216,7 @@ namespace Unity.Cinemachine
             // Do our stuff
             var lookAt = LookAt;
             if (lookAt != null)
-                m_State.ReferenceLookAt = (LookAtTargetAsVcam != null) 
+                m_State.ReferenceLookAt = (LookAtTargetAsVcam != null)
                     ? LookAtTargetAsVcam.State.GetFinalPosition() : TargetPositionCache.GetTargetPosition(lookAt);
             m_State.BlendHint = (CameraState.BlendHints)BlendHint;
             InvokeComponentPipeline(ref m_State, deltaTime);
@@ -224,7 +224,7 @@ namespace Unity.Cinemachine
             // Push the raw position back to the game object's transform, so it
             // moves along with the camera.
             transform.ConservativeSetPositionAndRotation(m_State.RawPosition, m_State.RawOrientation);
-            
+
             // Signal that it's all done
             PreviousStateIsValid = true;
         }
@@ -278,7 +278,7 @@ namespace Unity.Cinemachine
         internal bool PipelineCacheInvalidated => m_Pipeline == null;
 
         /// For unit tests
-        internal Type PeekPipelineCacheType(CinemachineCore.Stage stage) 
+        internal Type PeekPipelineCacheType(CinemachineCore.Stage stage)
             => m_Pipeline[(int)stage] == null ? null : m_Pipeline[(int)stage].GetType();
 
         void UpdatePipelineCache()

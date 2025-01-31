@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
             float floatFieldWidth = EditorGUIUtility.singleLineHeight * 3.5f;
             var ux = new VisualElement() { style = { flexDirection = FlexDirection.Row }};
 
-            ux.Add(new PropertyField(property.FindPropertyRelative(() => def.Object), string.Empty) 
+            ux.Add(new PropertyField(property.FindPropertyRelative(() => def.Object), string.Empty)
                 { style = { flexGrow = 1, flexBasis = floatFieldWidth }});
             ux.Add(new InspectorUtility.CompactPropertyField(
                 property.FindPropertyRelative(() => def.Radius), "R")

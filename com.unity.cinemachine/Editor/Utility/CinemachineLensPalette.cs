@@ -90,13 +90,13 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Get the index of the preset that matches the lens settings</summary>
         /// <param name="verticalFOV">Vertical field of view</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
-        public int GetMatchingPreset(float verticalFOV) 
+        public int GetMatchingPreset(float verticalFOV)
             => Presets.FindIndex(x => Mathf.Approximately(x.VerticalFOV, verticalFOV));
 
         /// <summary>Get the index of the first preset that matches the preset name</summary>
         /// <param name="presetName">Name of the preset</param>
         /// <returns>the preset index, or -1 if no matching preset</returns>
-        public int GetPresetIndex(string presetName) 
+        public int GetPresetIndex(string presetName)
             => Presets.FindIndex(x => x.Name == presetName);
     }
 }

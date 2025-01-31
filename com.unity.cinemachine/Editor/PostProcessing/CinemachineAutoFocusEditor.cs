@@ -22,7 +22,7 @@ namespace Unity.Cinemachine.Editor
             ux.AddChild(new HelpBox(
                 "Note: focus control requires an active Volume containing a Depth Of Field override "
                     + "having Focus Mode activated and set to Physical Camera, "
-                    + "and Focus Distance Mode activated and set to Camera", 
+                    + "and Focus Distance Mode activated and set to Camera",
                 HelpBoxMessageType.Info));
 #else
             ux.AddChild(new HelpBox(

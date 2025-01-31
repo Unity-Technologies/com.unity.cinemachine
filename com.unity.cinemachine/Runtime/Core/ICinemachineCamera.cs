@@ -44,7 +44,7 @@ namespace Unity.Cinemachine
         void UpdateCameraState(Vector3 worldUp, float deltaTime);
 
         /// <summary>
-        /// Notification that this camera is being activated.  This is sent to the newly activated camera.  
+        /// Notification that this camera is being activated.  This is sent to the newly activated camera.
         /// Multiple camera may be active simultaneously for a while, if blending.
         /// evt.IncomingCamera will always be "this".
         /// </summary>

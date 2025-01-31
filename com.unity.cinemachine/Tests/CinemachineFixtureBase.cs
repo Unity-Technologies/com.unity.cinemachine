@@ -9,14 +9,14 @@ namespace Unity.Cinemachine.Tests
     public class CinemachineFixtureBase
     {
         List<GameObject> m_GameObjectsToDestroy;
-        
+
         [SetUp]
         public virtual void SetUp()
         {
             Unity.Collections.NativeLeakDetection.Mode = Unity.Collections.NativeLeakDetectionMode.EnabledWithStackTrace;
             m_GameObjectsToDestroy = new List<GameObject>();
         }
-        
+
         [TearDown]
         public virtual void TearDown()
         {
@@ -27,7 +27,7 @@ namespace Unity.Cinemachine.Tests
             m_GameObjectsToDestroy = null;
             Unity.Collections.NativeLeakDetection.Mode = Unity.Collections.NativeLeakDetectionMode.Disabled;
         }
-        
+
         /// <summary>
         /// Creates gameObject and keeps track of it, so it is cleaned up properly at [TearDown].
         /// Uses appropriate method depending on whether the test is playing.
@@ -43,11 +43,11 @@ namespace Unity.Cinemachine.Tests
             var go = new GameObject(name);
 #endif
             m_GameObjectsToDestroy.Add(go);
-        
+
             foreach(var c in components)
                 if (c.IsSubclassOf(typeof(Component)))
                     AddComponent(go, c);
-            
+
             return go;
         }
 

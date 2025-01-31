@@ -22,13 +22,13 @@ namespace Unity.Cinemachine
                 + "if a child rig needs a target and doesn't specify one itself.")]
             public bool Enabled;
 
-            /// <summary>Default target for the camera children, which may be used if the child rig 
+            /// <summary>Default target for the camera children, which may be used if the child rig
             /// does not specify a target of its own.</summary>
             [NoSaveDuringPlay]
             [Tooltip("Default target for the camera children, which may be used if the child rig "
                 + "does not specify a target of its own.")]
             public CameraTarget Target;
-        }        
+        }
 
         /// <summary>If enabled, a default target will be available.  It will be used
         /// if a child rig needs a target and doesn't specify one itself.</summary>
@@ -64,7 +64,7 @@ namespace Unity.Cinemachine
             DefaultTarget = default;
             InvalidateCameraCache();
         }
-        
+
         /// <summary>
         /// Standard MonoBehaviour OnEnable.  Derived classes must call base class implementation.
         /// </summary>
@@ -96,20 +96,20 @@ namespace Unity.Cinemachine
             => m_BlendManager.IsLive(cam);
 
         /// <summary>The list of child cameras.  These are just the immediate children in the hierarchy.</summary>
-        public List<CinemachineVirtualCameraBase> ChildCameras 
-        { 
-            get 
-            { 
-                UpdateCameraCache(); 
-                return m_ChildCameras; 
+        public List<CinemachineVirtualCameraBase> ChildCameras
+        {
+            get
+            {
+                UpdateCameraCache();
+                return m_ChildCameras;
             }
         }
 
         /// <inheritdoc />
-        public override bool PreviousStateIsValid 
-        { 
+        public override bool PreviousStateIsValid
+        {
             get => base.PreviousStateIsValid;
-            set 
+            set
             {
                 base.PreviousStateIsValid = value;
                 // Only propagate to the children when we're invalidating the state
@@ -127,7 +127,7 @@ namespace Unity.Cinemachine
         /// It is also possible to set the current blend, but this is not a recommended usage
         /// unless it is to set the active blend to null, which will force completion of the blend.
         /// </summary>
-        public CinemachineBlend ActiveBlend 
+        public CinemachineBlend ActiveBlend
         {
             get => PreviousStateIsValid ? m_BlendManager.ActiveBlend : null;
             set => m_BlendManager.ActiveBlend = value;
@@ -142,18 +142,18 @@ namespace Unity.Cinemachine
         /// is non-null and no specific LookAt defined for this camera</summary>
         public override Transform LookAt
         {
-            get 
+            get
             {
                 if (!DefaultTarget.Enabled)
                     return null;
-                return ResolveLookAt(DefaultTarget.Target.CustomLookAtTarget 
-                    ? DefaultTarget.Target.LookAtTarget : DefaultTarget.Target.TrackingTarget); 
+                return ResolveLookAt(DefaultTarget.Target.CustomLookAtTarget
+                    ? DefaultTarget.Target.LookAtTarget : DefaultTarget.Target.TrackingTarget);
             }
-            set 
+            set
             {
                 DefaultTarget.Enabled = true;
-                DefaultTarget.Target.CustomLookAtTarget = true; 
-                DefaultTarget.Target.LookAtTarget = value; 
+                DefaultTarget.Target.CustomLookAtTarget = true;
+                DefaultTarget.Target.LookAtTarget = value;
             }
         }
 
@@ -161,16 +161,16 @@ namespace Unity.Cinemachine
         /// is non-null and no specific Follow defined for this camera</summary>
         public override Transform Follow
         {
-            get 
-            { 
+            get
+            {
                 if (!DefaultTarget.Enabled)
                     return null;
-                return ResolveFollow(DefaultTarget.Target.TrackingTarget); 
+                return ResolveFollow(DefaultTarget.Target.TrackingTarget);
             }
-            set 
-            { 
+            set
+            {
                 DefaultTarget.Enabled = true;
-                DefaultTarget.Target.TrackingTarget = value; 
+                DefaultTarget.Target.TrackingTarget = value;
             }
         }
 
@@ -205,7 +205,7 @@ namespace Unity.Cinemachine
                     OutgoingCamera = m_TransitioningFrom,
                     IncomingCamera = LiveChild,
                     IsCut = false,
-                    WorldUp = worldUp, 
+                    WorldUp = worldUp,
                     DeltaTime = deltaTime
                 });
             }
@@ -214,7 +214,7 @@ namespace Unity.Cinemachine
             m_TransitioningFrom = null;
             PreviousStateIsValid = true;
         }
-        
+
         /// <summary>Find a blend curve for blending from one child camera to another.</summary>
         /// <param name="outgoing">The camera we're blending from.</param>
         /// <param name="incoming">The camera we're blending to.</param>
@@ -223,7 +223,7 @@ namespace Unity.Cinemachine
         {
             return CinemachineBlenderSettings.LookupBlend(outgoing, incoming, DefaultBlend, CustomBlends, this);
         }
-            
+
         /// <summary>
         /// Choose the appropriate current camera from among the ChildCameras, based on current state.
         /// If the returned camera is different from the current camera, an appropriate transition will be made.
@@ -232,7 +232,7 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Delta time for time-based effects (ignore if less than or equal to 0)</param>
         /// <returns>The current child camera that should be active. Must be present in ChildCameras.</returns>
         protected abstract CinemachineVirtualCameraBase ChooseCurrentCamera(Vector3 worldUp, float deltaTime);
-        
+
         /// <summary>This is called to notify the vcam that a target got warped,
         /// so that the vcam can update its internal state to make the camera
         /// also warp seamlessly.</summary>
@@ -272,9 +272,9 @@ namespace Unity.Cinemachine
             InternalUpdateCameraState(worldUp, deltaTime);
         }
 
-        /// <summary>Force a rebuild of the child camera cache.  
+        /// <summary>Force a rebuild of the child camera cache.
         /// Call this if CinemachineCamera children are added or removed dynamically</summary>
-        public void InvalidateCameraCache() 
+        public void InvalidateCameraCache()
         {
             m_ChildCameras = null;
             PreviousStateIsValid = false;

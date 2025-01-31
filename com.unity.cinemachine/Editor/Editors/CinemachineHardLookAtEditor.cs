@@ -67,7 +67,7 @@ namespace Unity.Cinemachine.Editor
                     return;
 
                 CinemachineSceneToolHelpers.DoTrackedObjectOffsetTool(
-                    hardLookAt.VirtualCamera, 
+                    hardLookAt.VirtualCamera,
                     new SerializedObject(hardLookAt).FindProperty(() => hardLookAt.LookAtOffset),
                     CinemachineCore.Stage.Aim);
             }

@@ -184,7 +184,7 @@ namespace Unity.Cinemachine.Editor
                     isLeaf = false;
                     var list = obj as IList;
                     object length = list.Count;
-                    
+
                     // restore list size
                     if (OnLeafField != null && OnLeafField(
                         fullName + ".Length", length.GetType(), ref length))
@@ -208,7 +208,7 @@ namespace Unity.Cinemachine.Editor
                             doneSomething = true;
                         }
                     }
-                    
+
                     if (doneSomething)
                         obj = list;
                 }
@@ -360,7 +360,7 @@ namespace Unity.Cinemachine.Editor
                         //Debug.Log("Put " + m_ObjectFullPath + "." + fullName + " = " + savedStringValue + " --- was " + StringFromLeafObject(value));
                         var newValue = LeafObjectFromString(type, savedStringValue.Trim(), roots);
 
-                        // Ignore path mismatches due to reparenting during the game, but don't ignore if the value was deliberately set to null 
+                        // Ignore path mismatches due to reparenting during the game, but don't ignore if the value was deliberately set to null
                         if (newValue != null || savedStringValue.Length == 0)
                         {
                             value = newValue;
@@ -487,7 +487,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Editor preferences key for SaveDuringPlay enabled</summary>
         public static string kEnabledKey = "SaveDuringPlay_Enabled";
 
-        /// <summary>Enabled status for SaveDuringPlay.  
+        /// <summary>Enabled status for SaveDuringPlay.
         /// This is a global setting, saved in Editor Prefs</summary>
         public static bool Enabled
         {

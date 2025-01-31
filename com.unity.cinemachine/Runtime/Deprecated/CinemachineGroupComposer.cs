@@ -116,7 +116,7 @@ namespace Unity.Cinemachine
             m_MinimumFOV = 3;
             m_MaximumFOV = 60;
             m_MinimumOrthoSize = 1;
-            m_MaximumOrthoSize = 5000;            
+            m_MaximumOrthoSize = 5000;
         }
 
         // State for damping
@@ -133,9 +133,9 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(base.GetMaxDampTime(), m_FrameDamping); 
+        public override float GetMaxDampTime()
+        {
+            return Mathf.Max(base.GetMaxDampTime(), m_FrameDamping);
         }
 
         /// <summary>Applies the composer rules and orients the camera accordingly</summary>

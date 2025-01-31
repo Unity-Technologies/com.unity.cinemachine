@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
             m_PreviousActiveCamera = null;
             m_WasBlending = false;
         }
-        
+
         /// <summary>Get the current active virtual camera.</summary>
         public ICinemachineCamera ActiveVirtualCamera => DeepCamBFromBlend(m_CurrentLiveCameras);
 
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Checks if the vcam is live as part of an outgoing blend.  
+        /// Checks if the vcam is live as part of an outgoing blend.
         /// Does not check whether the vcam is also the current active vcam.
         /// </summary>
         /// <param name="vcam">The virtual camera to check</param>
@@ -110,9 +110,9 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Compute the current blend, taking into account
-        /// the in-game camera and all the active overrides.  
+        /// the in-game camera and all the active overrides.
         /// </summary>
-        public void ComputeCurrentBlend() 
+        public void ComputeCurrentBlend()
         {
             ProcessOverrideFrames(ref m_CurrentLiveCameras, 0);
         }
@@ -123,7 +123,7 @@ namespace Unity.Cinemachine
         /// <param name="up">Current world up</param>
         /// <param name="deltaTime">Current delta time for this update frame</param>
         /// </summary>
-        public void RefreshCurrentCameraState(Vector3 up, float deltaTime) 
+        public void RefreshCurrentCameraState(Vector3 up, float deltaTime)
             => m_CurrentLiveCameras.UpdateCameraState(up, deltaTime);
 
         /// <summary>

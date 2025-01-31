@@ -106,7 +106,7 @@ namespace Unity.Cinemachine
         /// Find a blend curve for blending from one ICinemachineCamera to another.
         /// If there is a specific blend defined for these cameras it will be used, otherwise
         /// a default blend will be created, which could be a cut.
-        /// 
+        ///
         /// CinemachineCore.GetBlendOverride will be called at the end, so that the
         /// client may override the choice of blend.
         /// </summary>
@@ -114,7 +114,7 @@ namespace Unity.Cinemachine
         /// <param name="incoming">The camera we're blending to.</param>
         /// <param name="defaultBlend">Blend to return if no custom blend found.</param>
         /// <param name="customBlends">The custom blends asset to search, or null.</param>
-        /// <param name="owner">The object that is requesting the blend, for 
+        /// <param name="owner">The object that is requesting the blend, for
         /// GetBlendOverride callback context.</param>
         /// <returns>The blend to use for this camera transition.</returns>
         public static CinemachineBlendDefinition LookupBlend(

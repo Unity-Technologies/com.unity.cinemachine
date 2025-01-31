@@ -4,7 +4,7 @@ using System.Collections.Generic;
 namespace Unity.Cinemachine
 {
     /// <summary>Owns Camera Registry.
-    /// Provides services to update cinemachine cameras and keep track of 
+    /// Provides services to update cinemachine cameras and keep track of
     /// whether and how they have been updated each frame.</summary>
     internal static class CameraUpdateManager
     {
@@ -36,7 +36,7 @@ namespace Unity.Cinemachine
             SmartLate = Smart | Late
         }
         public static UpdateFilter s_CurrentUpdateFilter;
-       
+
         /// <summary>
         /// List of all active CinemachineCameras for all brains.
         /// This list is kept sorted by priority.
@@ -47,11 +47,11 @@ namespace Unity.Cinemachine
         /// without generating garbage</summary>
         /// <param name="index">Index of the camera to access, range 0-VirtualCameraCount</param>
         /// <returns>The virtual camera at the specified index</returns>
-        public static CinemachineVirtualCameraBase GetVirtualCamera(int index) 
+        public static CinemachineVirtualCameraBase GetVirtualCamera(int index)
             => s_CameraRegistry.GetActiveCamera(index);
 
         /// <summary>Called when a CinemachineCamera is enabled.</summary>
-        public static void AddActiveCamera(CinemachineVirtualCameraBase vcam) 
+        public static void AddActiveCamera(CinemachineVirtualCameraBase vcam)
             => s_CameraRegistry.AddActiveCamera(vcam);
 
         /// <summary>Called when a CinemachineCamera is disabled.</summary>
@@ -181,11 +181,11 @@ namespace Unity.Cinemachine
                 };
                 s_UpdateStatus.Add(vcam, status);
             }
-            
+
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
                 ? Time.frameCount - status.lastUpdateFrame
                 : s_FixedFrameCount - status.lastUpdateFixedFrame;
-            
+
             if (deltaTime >= 0)
             {
                 if (frameDelta == 0 && status.lastUpdateMode == updateClock)

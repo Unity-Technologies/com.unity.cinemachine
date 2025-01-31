@@ -46,7 +46,7 @@ namespace Unity.Cinemachine
 
             public Vector2 ConfinePoint(in Vector2 pointToConfine)
             {
-                if (m_Solution.Count <= 0) 
+                if (m_Solution.Count <= 0)
                     return pointToConfine; // empty confiner -> no need to confine
 
                 Vector2 pInConfinerSpace = m_AspectStretcher.Stretch(pointToConfine);
@@ -61,8 +61,8 @@ namespace Unity.Cinemachine
 
                 // If the poly has bones and if the position to confine is not outside of the original
                 // bounding shape, then it is possible that the bone in a neighbouring section
-                // is closer than the bone in the correct section of the polygon, if the current section 
-                // is very large and the neighbouring section is small.  In that case, we'll need to 
+                // is closer than the bone in the correct section of the polygon, if the current section
+                // is very large and the neighbouring section is small.  In that case, we'll need to
                 // add an extra check when calculating the nearest point.
                 bool checkIntersectOriginal = m_HasBones && IsInsideOriginal(p);
 
@@ -98,7 +98,7 @@ namespace Unity.Cinemachine
 
                 var result = new Vector2(closest.X * k_IntToFloatScaler, closest.Y * k_IntToFloatScaler);
                 return m_AspectStretcher.Unstretch(result);
-                
+
                 // local functions
                 IntPoint IntPointLerp(IntPoint a, IntPoint b, float lerp)
                 {
@@ -108,12 +108,12 @@ namespace Unity.Cinemachine
                         Y = Mathf.RoundToInt(a.Y + (b.Y - a.Y) * lerp),
                     };
                 }
-                
+
                 bool IsInsideOriginal(IntPoint point)
                 {
                     for (int p = 0; p < m_OriginalPolygon.Count; p++)
                     {
-                        if (Clipper.PointInPolygon(point, m_OriginalPolygon[p]) != PointInPolygonResult.IsOutside) 
+                        if (Clipper.PointInPolygon(point, m_OriginalPolygon[p]) != PointInPolygonResult.IsOutside)
                             return true;
                     }
                     return false;
@@ -132,7 +132,7 @@ namespace Unity.Cinemachine
                     var dot = s0pX * sX + s0pY * sY;
                     return Mathf.Clamp01((float) (dot / len2));
                 }
-                
+
                 bool DoesIntersectOriginal(IntPoint l1, IntPoint l2)
                 {
                     for (int p = 0; p < m_OriginalPolygon.Count; ++p)
@@ -203,7 +203,7 @@ namespace Unity.Cinemachine
 
                 var t2 = ((p3.X - p1.X) * dy12 + (p1.Y - p3.Y) * dx12) / -denominator;
                 return (t1 >= 0 && t1 <= 1 && t2 >= 0 && t2 < 1) ? 2 : 1; // 2 = segments intersect, 1 = lines intersect
-                
+
                 // local function
                 double IntPointDiffSqrMagnitude(IntPoint point1, IntPoint point2)
                 {
@@ -260,7 +260,7 @@ namespace Unity.Cinemachine
             // If the user has set a max frustum height, respect it
             if (m_Cache.userSetMaxFrustumHeight > 0)
                 frustumHeight = Mathf.Min(m_Cache.userSetMaxFrustumHeight, frustumHeight);
-            
+
             // Special case: we are shrank to the mid point of the original input confiner area.
             if (State == BakingState.BAKED && frustumHeight >= m_Cache.theoreticalMaxFrustumHeight)
                 return new BakedSolution(m_AspectStretcher.Aspect, frustumHeight, false, m_PolygonRect,
@@ -270,7 +270,7 @@ namespace Unity.Cinemachine
             var offsetter = new ClipperOffset(k_MiterLimit);
             offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
             var solution = offsetter.Execute(-1f * frustumHeight * k_FloatToIntScaler);
-            if (solution.Count == 0) 
+            if (solution.Count == 0)
                 solution = m_Cache.theoreticalMaxCandidate;
 
             // Add in the skeleton
@@ -310,7 +310,7 @@ namespace Unity.Cinemachine
             public bool IsNull => polygons == null;
         }
 
-        public enum BakingState 
+        public enum BakingState
         {
             BAKING, BAKED, TIMEOUT
         }
@@ -346,7 +346,7 @@ namespace Unity.Cinemachine
 
             m_PolygonRect = GetPolygonBoundingBox(inputPath);
             m_AspectStretcher = new AspectStretcher(aspectRatio, m_PolygonRect.center.x);
-            
+
             // Don't compute further than what is the theoretical upper-bound (it may be a little bit more)
             m_Cache.theoreticalMaxFrustumHeight = Mathf.Max(m_PolygonRect.width / aspectRatio, m_PolygonRect.height) / 2f;
 
@@ -365,7 +365,7 @@ namespace Unity.Cinemachine
                 }
                 m_OriginalPolygon.Add(path);
             }
-            
+
             // calculate mid point and use it as the most shrank down version at theoretical max
             m_MidPoint = MidPointOfIntRect(Clipper.GetBounds(m_OriginalPolygon));
             m_Cache.theoreticalMaxCandidate = new List<List<IntPoint>> { new() { m_MidPoint } };
@@ -376,13 +376,13 @@ namespace Unity.Cinemachine
                 State = BakingState.BAKED; // if we don't need skeleton, then we don't need to bake
                 return;
             }
-            
+
             m_Cache.offsetter = new ClipperOffset(k_MiterLimit);
             m_Cache.offsetter.AddPaths(m_OriginalPolygon, JoinType.Miter, EndType.Polygon);
 
             // exact comparison to 0 is intentional!
             m_Cache.maxFrustumHeight = m_Cache.userSetMaxFrustumHeight;
-            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoreticalMaxFrustumHeight) 
+            if (m_Cache.maxFrustumHeight == 0 || m_Cache.maxFrustumHeight > m_Cache.theoreticalMaxFrustumHeight)
             {
                 m_Cache.maxFrustumHeight = m_Cache.theoreticalMaxFrustumHeight;
                 m_Cache.userSetMaxCandidate = m_Cache.theoreticalMaxCandidate;
@@ -391,11 +391,11 @@ namespace Unity.Cinemachine
             {
                 m_Cache.userSetMaxCandidate = new List<List<IntPoint>>(
                     m_Cache.offsetter.Execute(-1 * m_Cache.userSetMaxFrustumHeight * k_FloatToIntScaler));
-                if (m_Cache.userSetMaxCandidate.Count == 0) 
+                if (m_Cache.userSetMaxCandidate.Count == 0)
                     m_Cache.userSetMaxCandidate = m_Cache.theoreticalMaxCandidate;
             }
             m_Cache.stepSize = m_Cache.maxFrustumHeight;
-            
+
             var solution = new List<List<IntPoint>>(m_Cache.offsetter.Execute(0));
             m_Cache.solutions = new List<PolygonSolution>();
             m_Cache.solutions.Add(new PolygonSolution
@@ -415,7 +415,7 @@ namespace Unity.Cinemachine
             m_Cache.bakeTime = 0;
             State = BakingState.BAKING;
             bakeProgress = 0;
-            
+
             // local functions
             Rect GetPolygonBoundingBox(in List<List<Vector2>> polygons)
             {
@@ -437,39 +437,39 @@ namespace Unity.Cinemachine
 
             IntPoint MidPointOfIntRect(IntRect bounds) => new((bounds.left + bounds.right) / 2, (bounds.top + bounds.bottom) / 2);
         }
-        
+
         /// <summary>
         /// Creates shrinkable polygons from input parameters.
-        /// The algorithm is divide and conquer. It iteratively shrinks down the input 
-        /// polygon towards its shrink directions. If the polygon intersects with itself, 
-        /// then we divide the polygon into two polygons at the intersection point, and 
+        /// The algorithm is divide and conquer. It iteratively shrinks down the input
+        /// polygon towards its shrink directions. If the polygon intersects with itself,
+        /// then we divide the polygon into two polygons at the intersection point, and
         /// continue the algorithm on these two polygons separately. We need to keep track of
         /// the connectivity information between sub-polygons.
         /// </summary>
         public void BakeConfiner(float maxComputationTimePerFrameInSeconds)
         {
-            if (State != BakingState.BAKING) 
+            if (State != BakingState.BAKING)
                 return;
-            
+
             var startTime = Time.realtimeSinceStartup;
-            
+
             // Binary search for state changes so we can compute the skeleton
             while (m_Cache.solutions.Count < 1000)
             {
-                m_Cache.stepSize = Mathf.Min(m_Cache.stepSize, 
+                m_Cache.stepSize = Mathf.Min(m_Cache.stepSize,
                     m_Cache.maxFrustumHeight - m_Cache.leftCandidate.frustumHeight);
 #if false
                 Debug.Log($"States = {solutions.Count}, "
                           + $"Frustum height = {currentFrustumHeight}, stepSize = {stepSize}");
 #endif
-                m_Cache.currentFrustumHeight = 
+                m_Cache.currentFrustumHeight =
                     m_Cache.leftCandidate.frustumHeight + m_Cache.stepSize;
-                
-                var candidate = 
-                    Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < UnityVectorExtensions.Epsilon 
-                        ? m_Cache.userSetMaxCandidate 
+
+                var candidate =
+                    Math.Abs(m_Cache.currentFrustumHeight - m_Cache.maxFrustumHeight) < UnityVectorExtensions.Epsilon
+                        ? m_Cache.userSetMaxCandidate
                         : m_Cache.offsetter.Execute(-1f * m_Cache.currentFrustumHeight * k_FloatToIntScaler);
-                if (candidate.Count == 0) 
+                if (candidate.Count == 0)
                     candidate = m_Cache.userSetMaxCandidate;
 
                 if (m_Cache.leftCandidate.StateChanged(in candidate))
@@ -490,11 +490,11 @@ namespace Unity.Cinemachine
                     };
 
                     // decrease stepSize if we have a right candidate
-                    if (!m_Cache.rightCandidate.IsNull) 
+                    if (!m_Cache.rightCandidate.IsNull)
                         m_Cache.stepSize = Mathf.Max(m_Cache.stepSize / 2f, k_MinStepSize);
                 }
-                
-                // if we have a right candidate, and left and right are sufficiently close, 
+
+                // if we have a right candidate, and left and right are sufficiently close,
                 // then we have located a state change point
                 if (!m_Cache.rightCandidate.IsNull && m_Cache.stepSize <= k_MinStepSize)
                 {
@@ -504,17 +504,17 @@ namespace Unity.Cinemachine
 
                     m_Cache.leftCandidate = m_Cache.rightCandidate;
                     m_Cache.rightCandidate = new PolygonSolution();
-                    
+
                     // Back to max step
                     m_Cache.stepSize = m_Cache.maxFrustumHeight;
                 }
-                else if (m_Cache.rightCandidate.IsNull || 
+                else if (m_Cache.rightCandidate.IsNull ||
                          m_Cache.leftCandidate.frustumHeight >= m_Cache.maxFrustumHeight)
                 {
                     m_Cache.solutions.Add(m_Cache.leftCandidate);
                     break; // stop searching, because we are at the bound
                 }
-                
+
                 // Pause after max time per iteration reached
                 var elapsedTime = Time.realtimeSinceStartup - startTime;
                 if (elapsedTime > maxComputationTimePerFrameInSeconds)
@@ -522,9 +522,9 @@ namespace Unity.Cinemachine
                     m_Cache.bakeTime += elapsedTime;
                     if (m_Cache.bakeTime > k_MaxComputationTimeForFullSkeletonBakeInSeconds)
                     {
-                        State = BakingState.TIMEOUT; 
+                        State = BakingState.TIMEOUT;
                     }
-                
+
                     bakeProgress = m_Cache.leftCandidate.frustumHeight / m_Cache.maxFrustumHeight;
                     return;
                 }

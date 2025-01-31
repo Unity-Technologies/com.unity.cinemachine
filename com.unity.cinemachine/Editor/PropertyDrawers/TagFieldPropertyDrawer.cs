@@ -12,13 +12,13 @@ namespace Unity.Cinemachine.Editor
             var row = new InspectorUtility.LabeledRow(property.displayName, property.tooltip);
 
             var enabled = row.Contents.AddChild(new Toggle() { style = { marginTop = 3, marginLeft = 2, marginBottom = 3 }});
-            enabled.RegisterValueChangedCallback((evt) => 
+            enabled.RegisterValueChangedCallback((evt) =>
             {
                 property.stringValue = evt.newValue ? "Untagged" : string.Empty;
                 property.serializedObject.ApplyModifiedProperties();
             });
 
-            var tagField = row.Contents.AddChild(new TagField("", property.stringValue) 
+            var tagField = row.Contents.AddChild(new TagField("", property.stringValue)
                 { tooltip = property.tooltip, style = { flexGrow = 1, marginTop = 0, marginBottom = 0, marginLeft = 5 }});
             tagField.RegisterValueChangedCallback((evt) =>
             {
@@ -26,7 +26,7 @@ namespace Unity.Cinemachine.Editor
                 property.serializedObject.ApplyModifiedProperties();
             });
 
-            row.TrackPropertyWithInitialCallback(property, (p) => 
+            row.TrackPropertyWithInitialCallback(property, (p) =>
             {
                 var isEmpty = string.IsNullOrEmpty(p.stringValue);
                 enabled.SetValueWithoutNotify(!isEmpty);

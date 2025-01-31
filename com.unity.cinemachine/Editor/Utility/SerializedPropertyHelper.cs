@@ -63,7 +63,7 @@ namespace Unity.Cinemachine.Editor
             var attrs = MemberInfo(exp).GetCustomAttributes(typeof(UnityEngine.TooltipAttribute), false);
             return attrs.Length > 0 ? ((UnityEngine.TooltipAttribute)attrs[0]).tooltip : string.Empty;
         }
-        
+
         /// <summary>
         /// This is a way to get a field name string in such a manner that the compiler will
         /// generate errors for invalid fields.  Much better than directly using strings.
@@ -77,7 +77,7 @@ namespace Unity.Cinemachine.Editor
                 return ((FieldInfo)member).FieldType;
             throw new ArgumentException ( "Input MemberInfo must be of type FieldInfo" );
         }
-        
+
         /// <summary>
         /// A compiler-assisted (non-string-based) way to call SerializedProperty.FindProperty
         /// </summary>

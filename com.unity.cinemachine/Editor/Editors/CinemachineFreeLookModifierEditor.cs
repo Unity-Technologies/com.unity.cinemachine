@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
                 new HelpBox("<b>Component will be ignored because no modifiable targets are present.</b>\n\n"
                     + "Modifiable target components include: "
                     + InspectorUtility.GetAssignableBehaviourNames(
-                        typeof(CinemachineFreeLookModifier.IModifierValueSource)), 
+                        typeof(CinemachineFreeLookModifier.IModifierValueSource)),
                     HelpBoxMessageType.Warning));
 
             var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
@@ -44,12 +44,12 @@ namespace Unity.Cinemachine
 
             // Convert the add button to a popup selector
             var button = list.Q<Button>("unity-list-view__add-button");
-            var manipulator = new ContextualMenuManipulator((evt) => 
+            var manipulator = new ContextualMenuManipulator((evt) =>
             {
                 for (int i = 0; i < ModifierMenuItems.s_ModifierNames.Count; ++i)
                 {
                     var type = ModifierMenuItems.s_AllModifiers[i];
-                    evt.menu.AppendAction(ModifierMenuItems.s_ModifierNames[i], 
+                    evt.menu.AppendAction(ModifierMenuItems.s_ModifierNames[i],
                         (action) =>
                         {
                             Undo.RecordObject(Target, "add modifier");
@@ -57,7 +57,7 @@ namespace Unity.Cinemachine
                             m.RefreshCache(Target.ComponentOwner);
                             m.Reset(Target.ComponentOwner);
                             Target.Modifiers.Add(m);
-                        }, 
+                        },
                         (status) =>
                         {
                             // Enable item if not already present
@@ -107,7 +107,7 @@ namespace Unity.Cinemachine
                     childProperty.NextVisible(false);
                 }
 
-                foldout.TrackAnyUserActivity(() => 
+                foldout.TrackAnyUserActivity(() =>
                 {
                     var showWarning = m != null && !m.HasRequiredComponent;
                     noComponentsMsg.SetVisible(showWarning);
@@ -131,16 +131,16 @@ namespace Unity.Cinemachine
                         return s_ModifierNames[j];
                 return "(none)"; // should never get here
             }
-        
+
             // These lists are synchronized
             public static List<Type> s_AllModifiers = new ();
             public static List<string> s_ModifierNames = new ();
 
-            // This code dynamically discovers eligible classes and builds the menu data 
+            // This code dynamically discovers eligible classes and builds the menu data
             static ModifierMenuItems()
             {
                 // Get all Modifier types
-                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineFreeLookModifier.Modifier), 
+                var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineFreeLookModifier.Modifier),
                     (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
                 s_AllModifiers.Clear();

@@ -10,7 +10,7 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     [CustomEditor(typeof(CinemachineVirtualCameraBase), true, isFallback = true)]
     [CanEditMultipleObjects]
-    public class CinemachineVirtualCameraBaseEditor : UnityEditor.Editor 
+    public class CinemachineVirtualCameraBaseEditor : UnityEditor.Editor
     {
         //protected virtual void OnEnable() => Undo.undoRedoPerformed += ResetTarget;
         //protected virtual void OnDisable() => Undo.undoRedoPerformed -= ResetTarget;

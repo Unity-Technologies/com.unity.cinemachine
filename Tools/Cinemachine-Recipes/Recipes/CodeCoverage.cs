@@ -27,7 +27,7 @@ public class CodeCoverage :RecipeBase
     {
         return this.Jobs.ToDependencies(this);
     }
-    
+
     private List<IJobBuilder> GetJobs()
     {
         List<IJobBuilder> builders = new();
@@ -43,7 +43,7 @@ public class CodeCoverage :RecipeBase
                 .WithUpmCiArtifacts()
                 .WithDescription($"Generate codecov data for {settings.Wrench.Packages[PackageName].DisplayName} on {Platform.System}")
                 .WithDependencies(settings.Wrench.WrenchJobs[PackageName][JobTypes.Pack]);
-                            
+
         builders.Add(job);
         return builders;
     }

@@ -6,14 +6,14 @@ using UnityEngine.Splines;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This behaviour can be attached to a GameObject with a SplineContainer.  
+    /// This behaviour can be attached to a GameObject with a SplineContainer.
     /// It proivdes a function to apply smoothing to the spline.
     /// Smoothing auto-adjusts the knot tangents to maintain second-order smoothness of the spline, making it suitable
     /// for camera paths.
-    /// 
-    /// Smoothing is costly, because the entire path has to be considered when adjusting each knot.  
-    /// 
-    /// In Editor mode, an option is provided to automatically smooth the spline whenever it is modified.  
+    ///
+    /// Smoothing is costly, because the entire path has to be considered when adjusting each knot.
+    ///
+    /// In Editor mode, an option is provided to automatically smooth the spline whenever it is modified.
     /// In runtime mode, smoothing must be invoked manually by calling SmoothSplineNow().
     /// </summary>
     [ExecuteAlways]
@@ -44,10 +44,10 @@ namespace Unity.Cinemachine
 #endif
 
         /// <summary>
-        /// Apply smoothing to the spline.  
-        /// Knot settings will be adjusted to produce second-order smoothness of the path, making it 
+        /// Apply smoothing to the spline.
+        /// Knot settings will be adjusted to produce second-order smoothness of the path, making it
         /// suitable for use as a camera path.
-        /// 
+        ///
         /// This is an expensive operation.  Use with caution.
         /// </summary>
         public void SmoothSplineNow()

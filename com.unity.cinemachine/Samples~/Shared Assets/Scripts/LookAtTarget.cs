@@ -17,9 +17,9 @@ namespace Unity.Cinemachine.Samples
         public bool LockRotationY;
         [Tooltip("Lock rotation along the z axis to the initial value.")]
         public bool LockRotationZ;
-        
+
         Vector3 m_Rotation;
-        
+
         void OnEnable()
         {
             m_Rotation = transform.rotation.eulerAngles;

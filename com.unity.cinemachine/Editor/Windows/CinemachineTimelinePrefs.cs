@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
         public class ScrubbingCacheItem : CinemachineSettings.BoolItem
         {
             public ScrubbingCacheItem(string key, bool defaultValue) : base(key, defaultValue) {}
-            protected override void WritePrefs(bool value) 
+            protected override void WritePrefs(bool value)
             {
                 base.WritePrefs(value);
                 TargetPositionCache.UseCache = value;

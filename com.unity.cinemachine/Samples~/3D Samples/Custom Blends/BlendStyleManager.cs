@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Samples
                 var stateA = CamA.State;
                 var stateB = CamB.State;
 
-                // Standard blend - first we disable cylindrical position 
+                // Standard blend - first we disable cylindrical position
                 stateA.BlendHint &= ~CameraState.BlendHints.CylindricalPositionBlend;
                 stateB.BlendHint &= ~CameraState.BlendHints.CylindricalPositionBlend;
                 var state = CameraState.Lerp(stateA, stateB, t);

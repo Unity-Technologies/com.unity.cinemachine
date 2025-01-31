@@ -28,7 +28,7 @@ namespace Unity.Cinemachine.Editor
     }
 
     /// <summary>
-    /// Provides dragging on a visual element to change a value field with 
+    /// Provides dragging on a visual element to change a value field with
     /// isDelayed set, but for int and float driven fields can turn off isDelayed while dragging.
     /// </summary>
     class DelayedFriendlyFieldDragger<T> : BaseFieldMouseDragger, IDelayedFriendlyDragger

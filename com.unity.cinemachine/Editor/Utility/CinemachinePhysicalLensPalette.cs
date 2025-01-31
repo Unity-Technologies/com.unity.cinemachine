@@ -99,7 +99,7 @@ namespace Unity.Cinemachine.Editor
         /// <returns>the preset index, or -1 if no matching preset</returns>
         public int GetMatchingPreset(Preset p)
         {
-            return Presets.FindIndex(x => 
+            return Presets.FindIndex(x =>
                 Mathf.Approximately(x.FocalLength, p.FocalLength)
                 && x.PhysicalProperties.GateFit == p.PhysicalProperties.GateFit
                 && Mathf.Approximately(x.PhysicalProperties.LensShift.x, p.PhysicalProperties.LensShift.x)

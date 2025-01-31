@@ -31,13 +31,13 @@ namespace Unity.Cinemachine.Tests.Editor
         {
             base.TearDown();
         }
-        
+
         static IEnumerable ConvertTestCases
         {
             get
             {
                 s_AllCinemachineComponents = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
-                    (t) => !t.IsAbstract 
+                    (t) => !t.IsAbstract
                         && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                         && t.GetCustomAttribute<ObsoleteAttribute>() != null);
                 foreach (var cmComponent in s_AllCinemachineComponents)
@@ -62,7 +62,7 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.That(vcamGo.TryGetComponent(out CinemachineVirtualCamera _), Is.False);
             Assert.That(vcamGo.TryGetComponent(type, out _), Is.False);  // old component is deleted
             Assert.That(vcamGo.transform.childCount, Is.Zero);
-            Assert.That(vcamGo.GetComponent<CinemachineCamera>(), Is.Not.Null); 
+            Assert.That(vcamGo.GetComponent<CinemachineCamera>(), Is.Not.Null);
             Assert.That(vcamGo.GetComponent(UpgradeObjectToCm3.ClassUpgradeMap[type]), Is.Not.Null); // new component is added
         }
 

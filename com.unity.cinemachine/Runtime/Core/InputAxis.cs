@@ -27,16 +27,16 @@ namespace Unity.Cinemachine
             /// <summary>
             /// This provides a hint about the intended usage of the axis.
             /// </summary>
-            public enum Hints 
-            { 
+            public enum Hints
+            {
                 /// <summary>No hint</summary>
-                Default, 
+                Default,
                 /// <summary>Mapping should be the first dimension of a multi-dimensional action</summary>
-                X, 
+                X,
                 /// <summary>Mapping should be the second dimension of a multi-dimensional action</summary>
                 Y
             };
-            
+
             /// <summary>Indicates what is the intended usage of the axis.</summary>
             public Hints Hint;
         }
@@ -83,7 +83,7 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// Defines an input axis.  This is a field that can take on any value in a range, 
+    /// Defines an input axis.  This is a field that can take on any value in a range,
     /// with optional wrapping to form a loop.
     /// </summary>
     [Serializable]
@@ -108,7 +108,7 @@ namespace Unity.Cinemachine
         public bool Wrap;
 
         /// <summary>Defines the settings for automatic re-centering</summary>
-        [Serializable] 
+        [Serializable]
         public struct RecenteringSettings
         {
             /// <summary>If set, will enable automatic re-centering of the axis</summary>
@@ -132,23 +132,23 @@ namespace Unity.Cinemachine
             public void Validate()
             {
                 Wait = Mathf.Max(0, Wait);
-                Time = Mathf.Max(0, Time); 
+                Time = Mathf.Max(0, Time);
             }
         }
-        
+
         /// <summary>Controls automatic re-centering of axis</summary>
         [FoldoutWithEnabledButton]
         public RecenteringSettings Recentering;
-        
-        /// <summary>Some usages require restricted functionality.  
+
+        /// <summary>Some usages require restricted functionality.
         /// The possible restrictions are defined here.</summary>
         [Flags]
-        public enum RestrictionFlags 
-        { 
+        public enum RestrictionFlags
+        {
             /// <summary>No restrictions</summary>
-            None = 0, 
+            None = 0,
             /// <summary>Range and center are not editable by the user</summary>
-            RangeIsDriven = 1, 
+            RangeIsDriven = 1,
             /// <summary>Indicates that re-centering this axis is not possible</summary>
             NoRecentering = 2,
             /// <summary>Axis represents a momentary spring-back control</summary>
@@ -204,12 +204,12 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>An InputAxis set up as a normalized momentary control ranging from -1...1 with Center = 0</summary>
-        public static InputAxis DefaultMomentary => new () 
-        { 
-            Range = new Vector2(-1, 1), 
+        public static InputAxis DefaultMomentary => new ()
+        {
+            Range = new Vector2(-1, 1),
             Restrictions = RestrictionFlags.NoRecentering | RestrictionFlags.Momentary
         };
-        
+
         /// Internal state for re-centering
         struct RecenteringState
         {
@@ -271,8 +271,8 @@ namespace Unity.Cinemachine
                 Value = ClampValue(center);
                 CancelRecentering();
             }
-            else if (m_RecenteringState.m_ForceRecenter 
-                || (Recentering.Enabled && RecenteringState.CurrentTime 
+            else if (m_RecenteringState.m_ForceRecenter
+                || (Recentering.Enabled && RecenteringState.CurrentTime
                     - m_RecenteringState.m_LastValueChangeTime >= Recentering.Wait))
             {
                 var v = ClampValue(Value);
@@ -303,7 +303,7 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Trigger re-centering immediately, regardless of whether re-centering 
+        /// <summary>Trigger re-centering immediately, regardless of whether re-centering
         /// is enabled or the wait time has elapsed.</summary>
         public void TriggerRecentering() => m_RecenteringState.m_ForceRecenter = true;
 
@@ -318,7 +318,7 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// This object drives an input axis.  
+    /// This object drives an input axis.
     /// It reads raw input, applies it to the axis value, with acceleration and deceleration.
     /// </summary>
     [Serializable]
@@ -345,7 +345,7 @@ namespace Unity.Cinemachine
             AccelTime = Mathf.Max(0, AccelTime);
             DecelTime = Mathf.Max(0, DecelTime);
         }
-        
+
         /// <summary>Default value</summary>
         public static DefaultInputAxisDriver Default => new () { AccelTime = 0.2f, DecelTime = 0.2f };
 

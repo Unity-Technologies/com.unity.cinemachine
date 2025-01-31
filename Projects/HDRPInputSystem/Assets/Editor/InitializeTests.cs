@@ -15,7 +15,7 @@ public class OnLoad
             if (GraphicsSettings.currentRenderPipeline.GetType().ToString().Contains("HighDefinition")){
                 ConditionalIgnoreAttribute.AddConditionalIgnoreMapping("IgnoreHDRP2020", true);
             }
-        }           
+        }
     }
 }
 #endif

@@ -9,4 +9,4 @@ This means that aim control is not built into the camera, it must be provided by
  - ThirdPersonWithAimMode
  - ThirdPersonWithRoadieRun
 
-These samples make use of the [Third Person Aim extension](CinemachineThirdPersonAim.md) which uses raycasts to determine what the camera is aiming at, and ensures that this point is locked to screen center, even if there is procedural noise active on the camera.  
+These samples make use of the [Third Person Aim extension](CinemachineThirdPersonAim.md) which uses raycasts to determine what the camera is aiming at, and ensures that this point is locked to screen center, even if there is procedural noise active on the camera.

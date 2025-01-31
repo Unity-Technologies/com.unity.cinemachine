@@ -65,7 +65,7 @@ namespace Unity.Cinemachine.Editor
                         break;
                     case EvaluatorState.EvaluatorOnChildrenAndParent:
                         helpBox.text = "There is a Shot Quality Evaluator extension on the ClearShot camera, "
-                            + "and also on some of its child cameras.  You can't have both.  " 
+                            + "and also on some of its child cameras.  You can't have both.  "
                             + GetAvailableQualityEvaluatorNames();
                         helpBox.messageType = HelpBoxMessageType.Error;
                         helpBox.SetVisible(true);

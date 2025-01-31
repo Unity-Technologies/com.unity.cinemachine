@@ -32,14 +32,14 @@ namespace Unity.Cinemachine.Samples
                 return;
             }
             m_HelpButton.RegisterCallback(new EventCallback<ClickEvent>(OpenHelpBox));
-            
+
             m_HelpBox = uiDocument.rootVisualElement.Q("HelpTextBox");
-            if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle) 
+            if (uiDocument.rootVisualElement.Q("HelpTextBox__Title") is Label helpTitle)
                 helpTitle.text = string.IsNullOrEmpty(HelpTitle) ? SceneManager.GetActiveScene().name : HelpTitle;
 
             if (uiDocument.rootVisualElement.Q("HelpTextBox__ScrollView__Label") is Label helpLabel)
                 helpLabel.text = HelpText;
-            
+
             m_CloseButton = uiDocument.rootVisualElement.Q("HelpTextBox__CloseButton") as Button;
             if (m_CloseButton == null)
             {
@@ -47,7 +47,7 @@ namespace Unity.Cinemachine.Samples
                 return;
             }
             m_CloseButton.RegisterCallback<ClickEvent>(CloseHelpBox);
-            
+
             m_HelpBox.visible = VisibleAtStart;
             m_HelpButton.visible = !VisibleAtStart;
         }
@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Samples
             m_CloseButton.UnregisterCallback(new EventCallback<ClickEvent>(CloseHelpBox));
             m_HelpButton.visible = false;
         }
-        
+
         void OpenHelpBox(ClickEvent click)
         {
             if (m_HelpButton != null)
@@ -67,14 +67,14 @@ namespace Unity.Cinemachine.Samples
             if (m_HelpBox != null)
                 m_HelpBox.visible = true;
         }
-        
+
         void CloseHelpBox(ClickEvent click)
         {
             if (m_HelpButton != null)
                 m_HelpButton.visible = true;
             if (m_HelpBox != null)
                 m_HelpBox.visible = false;
-            
+
             VisibleAtStart = false;
             OnHelpDismissed.Invoke();
         }

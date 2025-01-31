@@ -5,7 +5,7 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// Base class for a CinemachineCamera extension module.
-    /// Hooks into the Cinemachine Pipeline.  Use this to add extra processing 
+    /// Hooks into the Cinemachine Pipeline.  Use this to add extra processing
     /// to the vcam, modifying its generated state
     /// </summary>
     public abstract class CinemachineExtension : MonoBehaviour
@@ -56,8 +56,8 @@ namespace Unity.Cinemachine
         {
             var extensions = Resources.FindObjectsOfTypeAll<CinemachineExtension>();
             // Sort by execution order
-            System.Array.Sort(extensions, (x, y) => 
-                UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(y)) 
+            System.Array.Sort(extensions, (x, y) =>
+                UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(y))
                     - UnityEditor.MonoImporter.GetExecutionOrder(UnityEditor.MonoScript.FromMonoBehaviour(x)));
             for (int i = 0; i < extensions.Length; ++i)
                 extensions[i].ConnectToVcam(true);
@@ -145,7 +145,7 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <returns>Highest damping setting in this extension</returns>
         public virtual float GetMaxDampTime() => 0;
-        
+
         /// <summary>Because extensions can be placed on manager cams and will in that
         /// case be called for all the vcam children, vcam-specific state information
         /// should be stored here.  Just define a class to hold your state info

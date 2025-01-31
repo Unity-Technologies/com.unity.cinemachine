@@ -6,7 +6,7 @@ namespace Unity.Cinemachine.Samples
     {
         public GameObject Player;
         SimplePlayerController m_PlayerController;
-    
+
         void Start()
         {
             m_PlayerController = Player.GetComponent<SimplePlayerController>();
@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Samples
 
         void OnTriggerEnter(Collider other)
         {
-            if (other.CompareTag(Player.tag)) 
+            if (other.CompareTag(Player.tag))
                 m_PlayerController.MoveZ.Value *= -1f; // flip direction
         }
     }

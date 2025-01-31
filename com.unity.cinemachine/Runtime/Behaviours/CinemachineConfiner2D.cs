@@ -8,15 +8,15 @@ using UnityEngine.Serialization;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// An add-on module for Cinemachine Camera that post-processes the final position 
-    /// of the virtual camera.  It will confine the camera's position such that the screen edges stay 
-    /// within a shape defined by a 2D polygon.  This will work for orthographic or perspective cameras, 
-    /// provided that the camera's forward vector remains parallel to the bounding shape's normal, 
+    /// An add-on module for Cinemachine Camera that post-processes the final position
+    /// of the virtual camera.  It will confine the camera's position such that the screen edges stay
+    /// within a shape defined by a 2D polygon.  This will work for orthographic or perspective cameras,
+    /// provided that the camera's forward vector remains parallel to the bounding shape's normal,
     /// i.e. that the camera is looking straight at the polygon, and not obliquely at it.
-    /// 
-    /// When confining the camera, the camera's view size at the polygon plane is considered, and 
-    /// also its aspect ratio. Based on this information and the input polygon, a second (smaller) 
-    /// polygon is computed to which the camera's transform is constrained. Computation of this secondary 
+    ///
+    /// When confining the camera, the camera's view size at the polygon plane is considered, and
+    /// also its aspect ratio. Based on this information and the input polygon, a second (smaller)
+    /// polygon is computed to which the camera's transform is constrained. Computation of this secondary
     /// polygon is nontrivial and expensive, so it should be done only when absolutely necessary.
     ///
     /// When the Orthographic Size or Field of View of the Cinemachine Camera's lens changes, Cinemachine will not
@@ -32,17 +32,17 @@ namespace Unity.Cinemachine
     /// It is the responsibility of the client to call the InvalidateBoundingShapeCache() method to trigger
     /// a recalculation. An inspector button is also provided for this purpose.
     ///
-    /// If the input polygon scales uniformly or translates, the cache remains valid. If the 
-    /// polygon rotates, then the cache degrades in quality (more or less depending on the aspect 
-    /// ratio - it's better if the ratio is close to 1:1) but can still be used. 
+    /// If the input polygon scales uniformly or translates, the cache remains valid. If the
+    /// polygon rotates, then the cache degrades in quality (more or less depending on the aspect
+    /// ratio - it's better if the ratio is close to 1:1) but can still be used.
     /// Regenerating it will eliminate the imperfections.
     ///
     /// When the Oversize Window is enabled an additional pre-calculation step is added to the caching process.
-    /// This cache is not a single polygon, but rather a family of polygons. The number of 
-    /// polygons in this family will depend on the complexity of the input polygon, and the maximum 
-    /// expected camera view size. The MaxWindowSize property is provided to give a hint to the 
-    /// algorithm to stop generating polygons for camera view sizes larger than the one specified. 
-    /// This can represent a substantial cost saving when regenerating the cache, so it is a good 
+    /// This cache is not a single polygon, but rather a family of polygons. The number of
+    /// polygons in this family will depend on the complexity of the input polygon, and the maximum
+    /// expected camera view size. The MaxWindowSize property is provided to give a hint to the
+    /// algorithm to stop generating polygons for camera view sizes larger than the one specified.
+    /// This can represent a substantial cost saving when regenerating the cache, so it is a good
     /// idea to set it carefully. Leaving it at 0 will cause the maximum number of polygons to be generated.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner 2D")]
@@ -69,7 +69,7 @@ namespace Unity.Cinemachine
         /// <summary>Size of the slow-down zone at the edge of the bounding shape.</summary>
         [Tooltip("Size of the slow-down zone at the edge of the bounding shape.")]
         public float SlowingDistance = 0;
-        
+
         /// <summary>
         /// Settings to optimize computation and memory costs in the event that the
         /// window size is expected to be larger than will fit inside the confining shape.
@@ -88,10 +88,10 @@ namespace Unity.Cinemachine
             public bool Enabled;
 
             /// <summary>
-            /// To optimize computation and memory costs, set this to the largest view size that the camera 
-            /// is expected to have.  The confiner will not compute a polygon cache for frustum sizes larger 
-            /// than this.  This refers to the size in world units of the frustum at the confiner plane 
-            /// (for orthographic cameras, this is just the orthographic size).  If set to 0, then this 
+            /// To optimize computation and memory costs, set this to the largest view size that the camera
+            /// is expected to have.  The confiner will not compute a polygon cache for frustum sizes larger
+            /// than this.  This refers to the size in world units of the frustum at the confiner plane
+            /// (for orthographic cameras, this is just the orthographic size).  If set to 0, then this
             /// parameter is ignored and a polygon cache will be calculated for all potential window sizes.
             /// </summary>
             [Tooltip("To optimize computation and memory costs, set this to the largest view size that the "
@@ -103,8 +103,8 @@ namespace Unity.Cinemachine
             public float MaxWindowSize;
 
             /// <summary>
-            /// For large window sizes, the confiner will potentially generate polygons with zero area.  
-            /// The padding may be used to add a small amount of area to these polygons, to prevent them from being 
+            /// For large window sizes, the confiner will potentially generate polygons with zero area.
+            /// The padding may be used to add a small amount of area to these polygons, to prevent them from being
             /// a series of disconnected dots.
             /// </summary>
             [Tooltip("For large window sizes, the confiner will potentially generate polygons with zero area.  "
@@ -124,22 +124,22 @@ namespace Unity.Cinemachine
         class VcamExtraState : VcamExtraStateBase
         {
             public ConfinerOven.BakedSolution BakedSolution;
-            
+
             public Vector3 PreviousDisplacement;
             public Vector3 DampedDisplacement;
             public Vector3 PreviousCameraPosition;
-            
+
             public float FrustumHeight;
         };
 
         List<VcamExtraState> m_ExtraStateCache;
         ShapeCache m_ShapeCache;
-        
+
         [SerializeField, HideInInspector, NoSaveDuringPlay, FormerlySerializedAs("m_MaxWindowSize")]
         float m_LegacyMaxWindowSize = -2; // -2 means there's no legacy upgrade to do
 
         const float k_CornerAngleThreshold = 10f;
-        
+
         void OnValidate()
         {
             const float maxComputationTimePerFrameInSeconds = 1f / 120f;
@@ -171,9 +171,9 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
+        public override float GetMaxDampTime()
             => Mathf.Max(Damping, SlowingDistance * 0.2f); // just an approximation - we don't know the time
-        
+
         /// <summary>This is called to notify the extension that a target got warped,
         /// so that the extension can update its internal state to make the camera
         /// also warp seamlessly.  Base class implementation does nothing.</summary>
@@ -181,7 +181,7 @@ namespace Unity.Cinemachine
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(
-            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta) 
+            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
         {
             var extra = GetExtraState<VcamExtraState>(vcam);
             if (extra.Vcam.Follow == target)
@@ -193,7 +193,7 @@ namespace Unity.Cinemachine
         /// Call this when when the Field of View or Orthographic Size changes.
         /// Calculating the lens cache is fast, but causes allocations.
         /// </summary>
-        public void InvalidateLensCache() 
+        public void InvalidateLensCache()
         {
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
@@ -229,8 +229,8 @@ namespace Unity.Cinemachine
         public void InvalidateCache() => InvalidateBoundingShapeCache();
 
         /// <summary>
-        /// Before it can be used, the bounding shape must be baked.  Baking happens whenever the bounding 
-        /// shape cache gets invalidated.  The expensive baking operation is spread out over a number of frames.  
+        /// Before it can be used, the bounding shape must be baked.  Baking happens whenever the bounding
+        /// shape cache gets invalidated.  The expensive baking operation is spread out over a number of frames.
         /// The confiner will have no effect until the bounding shape is baked.
         /// This property can be polled to determine whether the baking operation is complete.
         /// </summary>
@@ -241,17 +241,17 @@ namespace Unity.Cinemachine
         /// Normally, confiner baking will happen automatically when the camera is activated.  This expensive
         /// operation will be spread out over a number of frames, up to a maximum total baking time of 5 seconds.
         /// If it's not fully baked in 5 seconds, it will give up because the bounding shape is too complex to be baked.
-        /// 
+        ///
         /// Sometimes it is necessary to force the completion of baking immediately (for instance, if a level begins
         /// with a confined camera, it needs to be fully baked on the first frame).
-        /// 
+        ///
         /// In those cases, this method can be called to advance the baking.
         /// </summary>
         /// <param name="vcam">The virtual camera context.  This is needed for the lens information.</param>
-        /// <param name="maxTimeInSeconds">Maximum time in seconds to devote to baking during this blocking call.  
-        /// If it's not enough to finish the job, then this method can be called repeatedly over several frames.  
+        /// <param name="maxTimeInSeconds">Maximum time in seconds to devote to baking during this blocking call.
+        /// If it's not enough to finish the job, then this method can be called repeatedly over several frames.
         /// When the total accumulated time is more than 5 seconds, this method will do nothing.</param>
-        /// <returns>True if baking is complete, false if more baking is needed or if more 
+        /// <returns>True if baking is complete, false if more baking is needed or if more
         /// than 5 baking seconds have elapsed.</returns>
         public bool BakeBoundingShape(CinemachineVirtualCameraBase vcam, float maxTimeInSeconds)
         {
@@ -263,7 +263,7 @@ namespace Unity.Cinemachine
                 m_ShapeCache.ConfinerOven.BakeConfiner(maxTimeInSeconds);
             return m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKED;
         }
-        
+
         /// <summary>
         /// Callback to do the camera confining
         /// </summary>
@@ -272,7 +272,7 @@ namespace Unity.Cinemachine
         /// <param name="state">The current virtual camera state</param>
         /// <param name="deltaTime">The current applicable deltaTime</param>
         protected override void PostPipelineStageCallback(
-            CinemachineVirtualCameraBase vcam, 
+            CinemachineVirtualCameraBase vcam,
             CinemachineCore.Stage stage, ref CameraState state, float deltaTime)
         {
             if (stage == CinemachineCore.Stage.Body)
@@ -285,12 +285,12 @@ namespace Unity.Cinemachine
                 var camPos = state.GetCorrectedPosition();
 
                 // Make sure we have a solution for our current frustum size
-                if (confinerStateChanged || extra.BakedSolution == null || !extra.BakedSolution.IsValid()) 
+                if (confinerStateChanged || extra.BakedSolution == null || !extra.BakedSolution.IsValid())
                 {
                     // convert frustum height from world to baked space. deltaWorldToBaked.lossyScale is always uniform.
                     var deltaW = m_ShapeCache.DeltaWorldToBaked;
                     m_ShapeCache.AspectRatio = aspectRatio;
-                    extra.FrustumHeight = 
+                    extra.FrustumHeight =
                         CalculateHalfFrustumHeight(state.Lens, deltaW.MultiplyPoint3x4(camPos).z) * deltaW.lossyScale.x;
                     extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(extra.FrustumHeight);
                 }
@@ -331,7 +331,7 @@ namespace Unity.Cinemachine
                     extra.DampedDisplacement = Vector3.zero;
                 else
                 {
-                    // If a big change from previous frame's desired displacement is detected, 
+                    // If a big change from previous frame's desired displacement is detected,
                     // assume we are going around a corner and extract that difference for damping
                     if (prev.sqrMagnitude > 0.01f && Vector2.Angle(prev, displacement) > k_CornerAngleThreshold)
                         extra.DampedDisplacement += displacement - prev;
@@ -360,7 +360,7 @@ namespace Unity.Cinemachine
             p += dirUnit * max;
             return max - (ConfinePoint(p, extra, fwd) - p).magnitude;
         }
-        
+
         /// <summary>
         /// Calculates half frustum height for orthographic or perspective camera.
         /// For more info on frustum height, see <see cref="docs.unity3d.com/Manual/FrustumSizeAtDistance.html"/>.
@@ -392,17 +392,17 @@ namespace Unity.Cinemachine
             public List<List<Vector2>> OriginalPath;  // in baked space, not including offset
 
             // These account for offset and transform change since baking
-            public Matrix4x4 DeltaWorldToBaked; 
+            public Matrix4x4 DeltaWorldToBaked;
             public Matrix4x4 DeltaBakedToWorld;
 
             public float AspectRatio;
-            
+
             OversizeWindowSettings m_OversizeWindowSettings;
             internal float MaxComputationTimePerFrameInSeconds;
 
             Matrix4x4 m_BakedToWorld; // defines baked space
             Collider2D m_BoundingShape2D;
-            
+
 
             /// <summary>
             /// Invalidates shapeCache
@@ -427,12 +427,12 @@ namespace Unity.Cinemachine
             /// False, otherwise.</param>
             /// <returns>True, if input is valid. False, otherwise.</returns>
             public bool ValidateCache(
-                Collider2D boundingShape2D, 
-                OversizeWindowSettings oversize, float aspectRatio, 
+                Collider2D boundingShape2D,
+                OversizeWindowSettings oversize, float aspectRatio,
                 out bool confinerStateChanged)
             {
                 confinerStateChanged = false;
-                
+
                 if (IsValid(boundingShape2D, oversize, aspectRatio))
                 {
                     // Advance confiner baking
@@ -443,27 +443,27 @@ namespace Unity.Cinemachine
                         // If no longer baking, then confinerStateChanged
                         confinerStateChanged = ConfinerOven.State != ConfinerOven.BakingState.BAKING;
                     }
-                    
+
                     // Update in case the polygon's transform changed
                     CalculateDeltaTransformationMatrix();
-                    
+
                     // If delta world to baked scale is uniform, cache is valid.
                     Vector2 lossyScaleXY = DeltaWorldToBaked.lossyScale;
                     if (lossyScaleXY.IsUniform())
                         return true;
                 }
-                
+
                 Invalidate();
                 if (boundingShape2D == null)
                     return false;
-                
+
                 confinerStateChanged = true;
                 switch (boundingShape2D)
                 {
                     case PolygonCollider2D polygonCollider2D:
                     {
                         OriginalPath = new List<List<Vector2>>();
-                        
+
                         // Cache the current world-space shape
                         m_BakedToWorld = boundingShape2D.transform.localToWorldMatrix;
                         for (var i = 0; i < polygonCollider2D.pathCount; ++i)
@@ -539,21 +539,21 @@ namespace Unity.Cinemachine
 
             bool IsValid(in Collider2D boundingShape2D, in OversizeWindowSettings oversize, float aspectRatio)
             {
-                return boundingShape2D != null && m_BoundingShape2D != null 
+                return boundingShape2D != null && m_BoundingShape2D != null
                     && m_BoundingShape2D == boundingShape2D // same boundingShape?
                     && OriginalPath != null // first time?
-                    && ConfinerOven != null // cache not empty? 
+                    && ConfinerOven != null // cache not empty?
                     && Math.Abs(AspectRatio - aspectRatio) < Epsilon // aspect ratio changed?
                     && m_OversizeWindowSettings.Enabled == oversize.Enabled // oversize settings changed?
-                    && m_OversizeWindowSettings.Padding == oversize.Padding 
+                    && m_OversizeWindowSettings.Padding == oversize.Padding
                     && Mathf.Abs(m_OversizeWindowSettings.MaxWindowSize - oversize.MaxWindowSize) < Epsilon;
             }
 
             void CalculateDeltaTransformationMatrix()
             {
-                // Account for current collider offset (in local space) and 
+                // Account for current collider offset (in local space) and
                 // incorporate the world-space delta that the confiner has moved since baking
-                var m = Matrix4x4.Translate(-m_BoundingShape2D.offset) * 
+                var m = Matrix4x4.Translate(-m_BoundingShape2D.offset) *
                         m_BoundingShape2D.transform.worldToLocalMatrix;
                 DeltaWorldToBaked = m_BakedToWorld * m;
                 DeltaBakedToWorld = DeltaWorldToBaked.inverse;
@@ -589,13 +589,13 @@ namespace Unity.Cinemachine
                 InvalidateLensCache();
                 UnityEditor.EditorUtility.SetDirty(this);
             }
-            
+
             if (BoundingShape2D == null)
                 return false;
-            
+
             if (m_ShapeCache.ConfinerOven != null && m_ShapeCache.ConfinerOven.m_Skeleton.Count > 0)
                 return true; // there is a skeleton, that means some parts are collapsed -> oversized
-            
+
             m_ExtraStateCache ??= new();
             GetAllExtraStates(m_ExtraStateCache);
             for (int i = 0; i < m_ExtraStateCache.Count; ++i)
@@ -634,7 +634,7 @@ namespace Unity.Cinemachine
         }
 
         internal float BakeProgress() => m_ShapeCache.ConfinerOven != null ? m_ShapeCache.ConfinerOven.bakeProgress : 0f;
-        internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null && 
+        internal bool ConfinerOvenTimedOut() => m_ShapeCache.ConfinerOven != null &&
             m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.TIMEOUT;
 
         internal bool IsConfinerOvenNull() => m_ShapeCache.ConfinerOven == null;

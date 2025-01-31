@@ -16,7 +16,7 @@ namespace Unity.Cinemachine.Editor
                 vcamSel.BindProperty(property);
                 vcamSel.formatListItemCallback = (obj) => obj == null ? "(null)" : obj.name;
                 vcamSel.formatSelectedValueCallback = (obj) => obj == null ? "(null)" : obj.name;
-                vcamSel.TrackAnyUserActivity(() => 
+                vcamSel.TrackAnyUserActivity(() =>
                 {
                     if (manager != null && manager.ChildCameras != null)
                     {

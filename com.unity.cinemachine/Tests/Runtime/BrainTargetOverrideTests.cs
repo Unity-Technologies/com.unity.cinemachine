@@ -17,23 +17,23 @@ namespace Unity.Cinemachine.Tests
         public override void SetUp()
         {
             base.SetUp();
-            
+
             m_CameraHolderWithBrain = CreateGameObject("MainCamera 1", typeof(Camera), typeof(CinemachineBrain));
-            
+
             m_CameraHolderWithoutBrain = CreateGameObject("MainCamera 2", typeof(Camera));
             m_BrainAlone = CreateGameObject("BrainAlone for MainCamera 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>();
             m_BrainAlone.ControlledObject = m_CameraHolderWithoutBrain;
-            
+
             m_GoWithBrain = CreateGameObject("Empty 1", typeof(CinemachineBrain));
 
             m_GoWithoutBrain = CreateGameObject("Empty 2");
-            m_BrainAlone2 = CreateGameObject("BrainAlone for Empty 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>(); 
+            m_BrainAlone2 = CreateGameObject("BrainAlone for Empty 2", typeof(CinemachineBrain)).GetComponent<CinemachineBrain>();
             m_BrainAlone2.ControlledObject = m_GoWithoutBrain;
-            
+
             m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_Vcam.Priority.Value = 100;
             m_FollowObject = CreateGameObject("Follow Object");
-            
+
         }
 
         Vector3 m_Delta = new(10, 0, 0);
@@ -45,18 +45,18 @@ namespace Unity.Cinemachine.Tests
             m_FollowObject.transform.position += m_Delta;
             yield return null;
             AreBrainControlledTransformsTheSame();
-            
+
             void AreBrainControlledTransformsTheSame()
             {
                 Assert.That(m_CameraHolderWithBrain.GetComponent<Camera>().fieldOfView == m_CameraHolderWithoutBrain.GetComponent<Camera>().fieldOfView, Is.True);
                 Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_CameraHolderWithoutBrain.transform), Is.True);
                 Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_GoWithBrain.transform), Is.True);
                 Assert.That(EqualTransforms(m_CameraHolderWithBrain.transform, m_GoWithoutBrain.transform), Is.True);
-            
+
                 bool EqualTransforms(Transform a, Transform b) => a.position == b.position && a.rotation == b.rotation;
             }
         }
-        
+
         IEnumerator CheckDisconnectedBrains()
         {
             m_BrainAlone.ControlledObject = null;
@@ -67,7 +67,7 @@ namespace Unity.Cinemachine.Tests
             Assert.That(position == m_CameraHolderWithoutBrain.transform.position, Is.False);
             Assert.That(position == m_GoWithoutBrain.transform.position, Is.False);
         }
-        
+
         [UnityTest]
         public IEnumerator DoNothing()
         {
@@ -84,7 +84,7 @@ namespace Unity.Cinemachine.Tests
             yield return CheckThatBrainsAreControllingTheirTargets();
             yield return CheckDisconnectedBrains();
         }
-        
+
         [UnityTest]
         public IEnumerator PositionComposer()
         {

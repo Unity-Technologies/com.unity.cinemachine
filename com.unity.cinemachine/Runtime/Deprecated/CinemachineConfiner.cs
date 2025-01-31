@@ -55,11 +55,11 @@ namespace Unity.Cinemachine
             + "Higher numbers are more gradual.")]
         [Range(0, 10)]
         public float m_Damping = 0;
-        
+
 
         List<List<Vector2>> m_PathCache;
         int m_PathTotalPointCount;
-        
+
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the confiner, in the event that the camera has children</param>
@@ -123,9 +123,9 @@ namespace Unity.Cinemachine
 #elif CINEMACHINE_PHYSICS_2D && !CINEMACHINE_PHYSICS
                 return m_BoundingShape2D != null && m_BoundingShape2D.enabled && m_BoundingShape2D.gameObject.activeInHierarchy;
 #else
-                return (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null && m_BoundingVolume.enabled 
+                return (m_ConfineMode == Mode.Confine3D && m_BoundingVolume != null && m_BoundingVolume.enabled
                             && m_BoundingVolume.gameObject.activeInHierarchy)
-                       || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null && m_BoundingShape2D.enabled 
+                       || (m_ConfineMode == Mode.Confine2D && m_BoundingShape2D != null && m_BoundingShape2D.enabled
                             && m_BoundingShape2D.gameObject.activeInHierarchy);
 #endif
             }
@@ -189,7 +189,7 @@ namespace Unity.Cinemachine
                 InvalidateCache();
                 m_BoundingShape2DCache = m_BoundingShape2D;
             }
-            
+
             var colliderType = m_BoundingShape2D == null ? null : m_BoundingShape2D.GetType();
             if (colliderType == typeof(PolygonCollider2D))
             {
@@ -218,7 +218,7 @@ namespace Unity.Cinemachine
                     Vector2[] path = new Vector2[poly.pointCount];
                     var lossyScale = m_BoundingShape2D.transform.lossyScale;
                     var revertCompositeColliderScale = new Vector2(
-                        1f / lossyScale.x, 
+                        1f / lossyScale.x,
                         1f / lossyScale.y);
                     for (int i = 0; i < poly.pathCount; ++i)
                     {
@@ -282,7 +282,7 @@ namespace Unity.Cinemachine
             return closest - p;
 #endif
         }
-        
+
         Vector3 ConfineOrthoCameraToScreenEdges(ref CameraState state)
         {
             var rot = state.GetCorrectedOrientation();
@@ -318,7 +318,7 @@ namespace Unity.Cinemachine
             }
             return displacement;
         }
-    
+
         // Helper to upgrade to CM3
         internal Type UpgradeToCm3_GetTargetType()
         {

@@ -72,7 +72,7 @@ namespace Unity.Cinemachine
             [FormerlySerializedAs("m_DecayTime")]
             public float DecayTime; // Must be >= 0
 
-            /// <summary>If checked, signal amplitude scaling will also be applied to the time 
+            /// <summary>If checked, signal amplitude scaling will also be applied to the time
             /// envelope of the signal.  Bigger signals will last longer</summary>
             [Tooltip("If checked, signal amplitude scaling will also be applied to the time "
                 + "envelope of the signal.  Stronger signals will last longer.")]
@@ -224,9 +224,9 @@ namespace Unity.Cinemachine
             public float CustomDissipation;
 
             /// <summary>
-            /// The speed (m/s) at which the impulse propagates through space.  High speeds 
-            /// allow listeners to react instantaneously, while slower speeds allow listeners in the 
-            /// scene to react as if to a wave spreading from the source.  
+            /// The speed (m/s) at which the impulse propagates through space.  High speeds
+            /// allow listeners to react instantaneously, while slower speeds allow listeners in the
+            /// scene to react as if to a wave spreading from the source.
             /// </summary>
             public float PropagationSpeed;
 
@@ -290,7 +290,7 @@ namespace Unity.Cinemachine
                 {
                     float distance = use2D ? Vector2.Distance(listenerPosition, Position)
                         : Vector3.Distance(listenerPosition, Position);
-                    float time = Instance.CurrentTime - StartTime 
+                    float time = Instance.CurrentTime - StartTime
                         - distance / Mathf.Max(1, PropagationSpeed);
                     float scale = Envelope.GetValueAt(time) * DistanceDecay(distance);
                     if (scale != 0)
@@ -390,7 +390,7 @@ namespace Unity.Cinemachine
         public bool IgnoreTimeScale;
 
         /// <summary>
-        /// This is the Impulse system's current time.  
+        /// This is the Impulse system's current time.
         /// Takes into account whether impulse is ignoring time scale.
         /// </summary>
         public float CurrentTime => IgnoreTimeScale ? Time.realtimeSinceStartup : CinemachineCore.CurrentTime;

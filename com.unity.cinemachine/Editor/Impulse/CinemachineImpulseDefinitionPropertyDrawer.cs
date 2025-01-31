@@ -21,7 +21,7 @@ namespace Unity.Cinemachine.Editor
         float m_ShapePropertyHeight;
 
         SerializedProperty m_ImpulseTypeProperty;
-        
+
         SerializedProperty m_DissipationRateProperty;
         float m_SpreadPropertyHeight;
 
@@ -117,7 +117,7 @@ namespace Unity.Cinemachine.Editor
                 m_TimeTextWidth = GUI.skin.label.CalcSize(m_TimeText).x;
             }
 
-            var graphRect = fullRect; 
+            var graphRect = fullRect;
             graphRect.y += EditorGUIUtility.singleLineHeight + vSpace;
             graphRect.height -= EditorGUIUtility.singleLineHeight + vSpace;
 
@@ -167,7 +167,7 @@ namespace Unity.Cinemachine.Editor
             if (EditorGUI.EndChangeCheck())
                 timeProp.floatValue = Mathf.Max(timeProp.floatValue, 0);
             EditorGUIUtility.labelWidth = oldWidth;
-            
+
             EditorGUI.indentLevel = indentLevel;
         }
 
@@ -204,16 +204,16 @@ namespace Unity.Cinemachine.Editor
             EditorGUI.DrawRect(rect, new Color(0.2f, 0.2f, 0.2f, 1));
             var oldMatrix = Handles.matrix;
             Handles.matrix = Handles.matrix * Matrix4x4.Translate(rect.position);
-            Handles.color = new Color(0, 0, 0, 1); 
+            Handles.color = new Color(0, 0, 0, 1);
             Handles.DrawLine(new Vector3(0, m_ImpulseGraphZero, 0), new Vector3(rect.width, m_ImpulseGraphZero, 0));
-            Handles.color = new Color(1, 0.8f, 0, 1); 
+            Handles.color = new Color(1, 0.8f, 0, 1);
             Handles.DrawPolyLine(m_ImpulseGraphSnapshot);
             Handles.matrix = oldMatrix;
         }
 
         void DrawSpreadCombo(Rect fullRect, SerializedProperty property)
         {
-            var graphRect = fullRect; 
+            var graphRect = fullRect;
             graphRect.y += EditorGUIUtility.singleLineHeight + vSpace;
             graphRect.height -= EditorGUIUtility.singleLineHeight + vSpace;
 
@@ -254,9 +254,9 @@ namespace Unity.Cinemachine.Editor
             EditorGUI.DrawRect(rect, new Color(0.2f, 0.2f, 0.2f, 1));
             var oldMatrix = Handles.matrix;
             Handles.matrix = Handles.matrix * Matrix4x4.Translate(rect.position);
-            Handles.color = new Color(0, 0, 0, 1); 
+            Handles.color = new Color(0, 0, 0, 1);
             Handles.DrawLine(new Vector3(rect.width * 0.5f, 0, 0), new Vector3(rect.width * 0.5f, rect.height, 0));
-            Handles.color = new Color(0, 0.6f, 1, 1); 
+            Handles.color = new Color(0, 0.6f, 1, 1);
             Handles.DrawPolyLine(m_SpreadGraphSnapshot);
             Handles.matrix = oldMatrix;
         }
@@ -279,7 +279,7 @@ namespace Unity.Cinemachine.Editor
                 return ((HeaderAttribute)attrs[0]).header;
             return null;
         }
-        
+
         List<string> mHideProperties = new List<string>();
 
         float LegacyModeGetPropertyHeight(SerializedProperty prop, GUIContent label)

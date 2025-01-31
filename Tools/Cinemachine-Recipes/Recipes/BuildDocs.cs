@@ -21,7 +21,7 @@ public class BuildDocs : RecipeBase
         Platform = Settings.Wrench.Packages[PackageName].EditorPlatforms[SystemType.MacOS];
 
     private const string EditorVersion = "trunk";
-    
+
     public IEnumerable<Dependency> AsDependencies()
     {
         return this.Jobs.ToDependencies(this);
@@ -38,7 +38,7 @@ public class BuildDocs : RecipeBase
             )
             .WithDescription(
                 $"Generate codecov data for {Settings.Wrench.Packages[PackageName].DisplayName} on {Platform.System}");
-            
+
 
         builders.Add(job);
         return builders;

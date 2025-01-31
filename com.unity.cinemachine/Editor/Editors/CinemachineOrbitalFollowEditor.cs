@@ -28,8 +28,8 @@ namespace Unity.Cinemachine.Editor
             var row = ux.AddChild(InspectorUtility.PropertyRow(
                 serializedObject.FindProperty(() => Target.RecenteringTarget), out _));
 
-            var recenteringInactive = row.Contents.AddChild(new Label(" (inactive)") 
-            { 
+            var recenteringInactive = row.Contents.AddChild(new Label(" (inactive)")
+            {
                 tooltip = "Recentering is currently disabled, so the recentering target will be ignored.",
                 style = { alignSelf = Align.Center }
             });
@@ -81,7 +81,7 @@ namespace Unity.Cinemachine.Editor
                             targetPos + up * orbital.Orbits.Top.Height * scale,
                             up, orbital.Orbits.Top.Radius * scale);
                         Handles.DrawWireDisc(
-                            targetPos + up * orbital.Orbits.Center.Height * scale, 
+                            targetPos + up * orbital.Orbits.Center.Height * scale,
                             up, orbital.Orbits.Center.Radius * scale);
                         Handles.DrawWireDisc(
                             targetPos + up * orbital.Orbits.Bottom.Height * scale,
@@ -185,12 +185,12 @@ namespace Unity.Cinemachine.Editor
                         if (orbitRadiusHandleIsUsedOrHovered)
                             CinemachineSceneToolHelpers.DrawLabel(camPos,
                                 "Radius (" + orbitalFollow.Radius.ToString("F1") + ")");
-                            
-                        Handles.color = orbitRadiusHandleIsUsedOrHovered ? 
+
+                        Handles.color = orbitRadiusHandleIsUsedOrHovered ?
                             Handles.selectedColor : CinemachineSceneToolHelpers.HelperLineDefaultColor;
                         Handles.DrawLine(camPos, followPos);
                         Handles.DrawWireDisc(followPos, camTransform.up, orbitalFollow.Radius);
-                            
+
                         CinemachineSceneToolHelpers.SoloOnDrag(
                             orbitRadiusHandleIsDragged, orbitalFollow.VirtualCamera, rHandleId);
 
@@ -201,7 +201,7 @@ namespace Unity.Cinemachine.Editor
                     {
                         if (m_UpdateCache)
                             m_VerticalAxisCache = orbitalFollow.VerticalAxis.Value;
-                        
+
                         var draggedRig = CinemachineSceneToolHelpers.DoThreeOrbitRigHandle(
                             orbitalFollow.VirtualCamera, orbitalFollow.GetReferenceOrientation(),
                             new SerializedObject(orbitalFollow).FindProperty(() => orbitalFollow.Orbits),

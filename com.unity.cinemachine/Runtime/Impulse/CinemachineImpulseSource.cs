@@ -5,13 +5,13 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// An event-driven class that broadcasts an impulse signal to listeners.
-    /// 
+    ///
     /// This is the base class for custom impulse sources.  It contains an impulse
     /// definition, where the characteristics of the impulse signal are defined.
-    /// 
+    ///
     /// API methods are provided for actually broadcasting the impulse.  Call these
     /// methods from your custom code, or hook them up to game events in the Editor.
-    /// 
+    ///
     /// </summary>
     [SaveDuringPlay]
     [AddComponentMenu("Cinemachine/Helpers/Cinemachine Impulse Source")]
@@ -25,8 +25,8 @@ namespace Unity.Cinemachine
         public CinemachineImpulseDefinition ImpulseDefinition = new CinemachineImpulseDefinition();
 
         /// <summary>
-        /// The default direction and force of the Impulse Signal in the absence of any 
-        /// specified overrides.  Overrides can be specified by calling the appropriate 
+        /// The default direction and force of the Impulse Signal in the absence of any
+        /// specified overrides.  Overrides can be specified by calling the appropriate
         /// GenerateImpulse method in the API.
         /// </summary>
         [Header("Default Invocation")]
@@ -83,7 +83,7 @@ namespace Unity.Cinemachine
             GenerateImpulseAtPositionWithVelocity(transform.position, DefaultVelocity * force);
         }
 
-        /// <summary>Broadcast the Impulse Signal onto the appropriate channels, 
+        /// <summary>Broadcast the Impulse Signal onto the appropriate channels,
         /// with default velocity = (0, -1, 0), and a default position which is
         /// this transform's location.</summary>
         public void GenerateImpulse()
@@ -91,21 +91,21 @@ namespace Unity.Cinemachine
             GenerateImpulseWithVelocity(DefaultVelocity);
         }
 
-        /// <summary>Legacy API: Please use GenerateImpulseAtPositionWithVelocity() instead.  
+        /// <summary>Legacy API: Please use GenerateImpulseAtPositionWithVelocity() instead.
         /// Broadcast the Impulse Signal onto the appropriate channels,
         /// using a custom position and impact velocity</summary>
         /// <param name="position">The world-space position from which the impulse will emanate</param>
         /// <param name="velocity">The impact magnitude and direction</param>
-        public void GenerateImpulseAt(Vector3 position, Vector3 velocity) 
+        public void GenerateImpulseAt(Vector3 position, Vector3 velocity)
             => GenerateImpulseAtPositionWithVelocity(position, velocity);
 
-        /// <summary>Legacy API: Please use GenerateImpulseWithVelocity() instead.  
+        /// <summary>Legacy API: Please use GenerateImpulseWithVelocity() instead.
         /// Broadcast the Impulse Signal onto the appropriate channels, using
         /// a custom impact velocity, and this transfom's position.</summary>
         /// <param name="velocity">The impact magnitude and direction</param>
         public void GenerateImpulse(Vector3 velocity) => GenerateImpulseWithVelocity(velocity);
 
-        /// <summary>Legacy API: Please use GenerateImpulseWithForce() instead.  
+        /// <summary>Legacy API: Please use GenerateImpulseWithForce() instead.
         /// Broadcast the Impulse Signal onto the appropriate channels, using
         /// a custom impact force, with the standard direction, and this transfom's position.</summary>
         /// <param name="force">The impact magnitude.  1 is normal</param>

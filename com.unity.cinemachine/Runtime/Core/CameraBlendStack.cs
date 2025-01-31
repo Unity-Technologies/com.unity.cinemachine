@@ -20,8 +20,8 @@ namespace Unity.Cinemachine
         /// Use that id for subsequent calls.  Don't forget to
         /// call ReleaseCameraOverride after all overriding is finished, to
         /// free the OverrideStack resources.</param>
-        /// <param name="priority">The priority to assign to the override.  Higher priorities take 
-        /// precedence over lower ones.  This is not connected to the Priority field in the 
+        /// <param name="priority">The priority to assign to the override.  Higher priorities take
+        /// precedence over lower ones.  This is not connected to the Priority field in the
         /// individual CinemachineCameras, but the function is analogous.</param>
         /// <param name="camA">The camera to set, corresponding to weight=0.</param>
         /// <param name="camB">The camera to set, corresponding to weight=1.</param>
@@ -50,8 +50,8 @@ namespace Unity.Cinemachine
         /// </summary>
         Vector3 DefaultWorldUp { get; }
     }
-    
-    
+
+
     /// <summary>
     /// Implements an overridable stack of blend states.
     /// </summary>
@@ -74,7 +74,7 @@ namespace Unity.Cinemachine
             public StackFrame() : base(new ()) {}
             public bool Active => Source.IsValid;
 
-            // This is a little tricky, because we only want to take a new snapshot at the start 
+            // This is a little tricky, because we only want to take a new snapshot at the start
             // of a blend.  In other cases, we reuse the last snapshot taken, until a new blend starts.
             public ICinemachineCamera GetSnapshotIfAppropriate(ICinemachineCamera cam, float weight)
             {
@@ -140,7 +140,7 @@ namespace Unity.Cinemachine
                     vcamB.EnsureStarted();
             }
             return overrideId;
-            
+
             // local function to get the frame index corresponding to the ID
             int FindFrame(int withId, int priority)
             {
@@ -273,11 +273,11 @@ namespace Unity.Cinemachine
                 else
                 {
                     bool snapshot = (frame.Blend.State.BlendHint & CameraState.BlendHints.FreezeWhenBlendingOut) != 0;
-                    
+
                     // Special check here: if incoming is InheritPosition and if it's already live
                     // in the outgoing blend, use a snapshot otherwise there could be a pop
                     if (!snapshot && activeCamera != null
-                        && (activeCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                        && (activeCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                         && frame.Blend.Uses(activeCamera))
                         snapshot = true;
 
@@ -361,7 +361,7 @@ namespace Unity.Cinemachine
         /// exclude n topmost overrides.
         /// </summary>
         /// <param name="outputBlend">Receives the nested blend</param>
-        /// <param name="numTopLayersToExclude">Optionally exclude the last number 
+        /// <param name="numTopLayersToExclude">Optionally exclude the last number
         /// of overrides from the blend</param>
         public void ProcessOverrideFrames(
             ref CinemachineBlend outputBlend, int numTopLayersToExclude)
@@ -408,7 +408,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Set the current root blend.  Can be used to modify the root blend state.
-        /// <param name="blend">The new blend.  CamA and CamB will be ignored, but the other fields 
+        /// <param name="blend">The new blend.  CamA and CamB will be ignored, but the other fields
         /// will be taken.  If null, current blend will be force-completed.</param>
         /// </summary>
         public void SetRootBlend(CinemachineBlend blend)
@@ -469,7 +469,7 @@ namespace Unity.Cinemachine
 
             public void TakeSnapshot(ICinemachineCamera source)
             {
-                m_State = source != null ? source.State : CameraState.Default; 
+                m_State = source != null ? source.State : CameraState.Default;
                 m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
                 m_Name ??= source == null ? "(null)" : "*" + source.Name;
             }

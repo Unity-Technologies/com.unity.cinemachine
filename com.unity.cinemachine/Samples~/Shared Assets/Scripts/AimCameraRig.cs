@@ -4,12 +4,12 @@ using System.Collections.Generic;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This is a custom camera manager that selects between an aiming camera child and a 
+    /// This is a custom camera manager that selects between an aiming camera child and a
     /// non-aiming camera child, depending on the value of some user input.
-    /// 
+    ///
     /// The Aiming child is expected to have ThirdPersonFollow and ThirdPersonAim components,
     /// and to have a player as its Follow target.  The player is expected to have a
-    /// SimplePlayerAimController behaviour on one of its children, to decouple aiminag and 
+    /// SimplePlayerAimController behaviour on one of its children, to decouple aiminag and
     /// player rotation.
     /// </summary>
     [ExecuteAlways]
@@ -45,7 +45,7 @@ namespace Unity.Cinemachine.Samples
                 if (!cam.isActiveAndEnabled)
                     continue;
                 if (AimCamera == null
-                    && cam.TryGetComponent<CinemachineThirdPersonAim>(out var aim) 
+                    && cam.TryGetComponent<CinemachineThirdPersonAim>(out var aim)
                     && aim.NoiseCancellation)
                 {
                     AimCamera = cam;
@@ -73,7 +73,7 @@ namespace Unity.Cinemachine.Samples
                 // Set the mode of the player aim controller.
                 // We want the player rotation to be copuled to the camera when aiming, otherwise not.
                 AimController.PlayerRotation = IsAiming
-                    ? SimplePlayerAimController.CouplingMode.Coupled 
+                    ? SimplePlayerAimController.CouplingMode.Coupled
                     : SimplePlayerAimController.CouplingMode.Decoupled;
                 AimController.RecenterPlayer();
             }

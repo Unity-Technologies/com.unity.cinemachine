@@ -17,7 +17,7 @@ namespace Unity.Cinemachine
     public class CinemachineTrack : TrackAsset
     {
         [Tooltip("The priority controls the precedence that this track takes over other CinemachineTracks.  "
-            + "Tracks with higher priority will override tracks with lower priority.  If two " 
+            + "Tracks with higher priority will override tracks with lower priority.  If two "
             + "simultaneous tracks have the same priority, then the more-recently instanced track will "
             + "take precedence.  Track priority is unrelated to Cinemachine Camera priority.")]
         public int TrackPriority;

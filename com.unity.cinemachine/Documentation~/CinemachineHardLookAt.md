@@ -6,7 +6,7 @@ This is useful for looking at a character's head, or some other point of interes
 ### Properties
 
 | Property | Description |
-| --- | --- |				
+| --- | --- |
 | __Look At Offset__ | Offset from the LookAt target's origin, in target's local space.  The camera will look at this point. |
 
 

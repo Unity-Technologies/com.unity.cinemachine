@@ -22,7 +22,7 @@ namespace Unity.Cinemachine.Editor
             var row = ux.AddChild(new InspectorUtility.LeftRightRow());
             row.Left.Add(new Label("Live Camera")
                 { tooltip = "The Cm Camera that is currently active", style = { alignSelf = Align.Center, flexGrow = 1 }});
-            var liveCamera = row.Right.AddChild(new ObjectField() 
+            var liveCamera = row.Right.AddChild(new ObjectField()
                 { objectType = typeof(CinemachineVirtualCameraBase), style = { flexGrow = 1, flexShrink = 1 }});
             row.SetEnabled(false);
 
@@ -92,7 +92,7 @@ namespace Unity.Cinemachine.Editor
 
             var originalMatrix = Gizmos.matrix;
             var originalGizmoColour = Gizmos.color;
-            
+
             Gizmos.color = color;
             Gizmos.matrix = transform;
             if (ortho)

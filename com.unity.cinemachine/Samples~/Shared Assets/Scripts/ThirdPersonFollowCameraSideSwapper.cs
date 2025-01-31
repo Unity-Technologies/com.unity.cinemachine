@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Samples
     {
         [Tooltip("How long the shoulder swap will take")]
         public float Damping;
-        
+
         List<CinemachineThirdPersonFollow> m_ThirdPersonFollows = new();
         float m_SwapDirection;
 

@@ -18,7 +18,7 @@ namespace Unity.Cinemachine
         {
             return float.IsNaN(v.x) || float.IsNaN(v.y);
         }
-        
+
         /// <summary>
         /// Checks if the Vector2 contains NaN for x or y.
         /// </summary>
@@ -28,7 +28,7 @@ namespace Unity.Cinemachine
         {
             return float.IsNaN(v.x) || float.IsNaN(v.y) || float.IsNaN(v.z);
         }
-        
+
 
         /// <summary>
         /// Get the closest point on a line segment.
@@ -72,12 +72,12 @@ namespace Unity.Cinemachine
         {
             return vector - Vector3.Dot(vector, planeNormal) * planeNormal;
         }
-        
+
         /// <summary>
         /// Normalized the vector onto the unit square instead of the unit circle
         /// </summary>
         /// <param name="v">The vector to normalize</param>
-        /// <returns>The normalized vector, or the zero vector if its magnitude 
+        /// <returns>The normalized vector, or the zero vector if its magnitude
         /// was too small to normalize</returns>
         public static Vector2 SquareNormalize(this Vector2 v)
         {
@@ -92,18 +92,18 @@ namespace Unity.Cinemachine
         /// <param name="p2">line_1 is defined by (p1, p2)</param>
         /// <param name="q1">line_2 is defined by (q1, q2)</param>
         /// <param name="q2">line_2 is defined by (q1, q2)</param>
-        /// <param name="intersection">If lines intersect at a single point, 
-        /// then this will hold the intersection point. 
+        /// <param name="intersection">If lines intersect at a single point,
+        /// then this will hold the intersection point.
         /// Otherwise, it will be Vector2.positiveInfinity.</param>
         /// <returns>
-        ///     0 = no intersection, 
-        ///     1 = lines intersect, 
-        ///     2 = segments intersect, 
-        ///     3 = lines are collinear, segments do not touch, 
+        ///     0 = no intersection,
+        ///     1 = lines intersect,
+        ///     2 = segments intersect,
+        ///     3 = lines are collinear, segments do not touch,
         ///     4 = lines are collinear, segments touch (at one or at multiple points)
         /// </returns>
         public static int FindIntersection(
-            in Vector2 p1, in Vector2 p2, in Vector2 q1, in Vector2 q2, 
+            in Vector2 p1, in Vector2 p2, in Vector2 q1, in Vector2 q2,
             out Vector2 intersection)
         {
             var p = p2 - p1;
@@ -166,7 +166,7 @@ namespace Unity.Cinemachine
         }
 
         private static float Cross(this Vector2 v1, Vector2 v2) { return (v1.x * v2.y) - (v1.y * v2.x); }
-        
+
         /// <summary>
         /// Component-wise absolute value
         /// </summary>
@@ -196,7 +196,7 @@ namespace Unity.Cinemachine
         {
             return Math.Abs(v.x - v.y) < Epsilon;
         }
-        
+
         /// <summary>
         /// Checks whether the vector components are the same value.
         /// </summary>
@@ -218,7 +218,7 @@ namespace Unity.Cinemachine
         internal static void ConservativeSetPositionAndRotation(this Transform t, Vector3 pos, Quaternion rot)
         {
             // Avoid precision creep
-            if (t.position.Equals(pos) && t.rotation.Equals(rot)) 
+            if (t.position.Equals(pos) && t.rotation.Equals(rot))
                 return;
 #if UNITY_EDITOR
             // Avoid dirtying the scene with insignificant diffs
@@ -240,7 +240,7 @@ namespace Unity.Cinemachine
                     pos = p;
                 var r = t.localRotation;
                 if (Mathf.Abs(r.x - rot.x) < tolerance
-                    && Mathf.Abs(r.y - rot.y) < tolerance 
+                    && Mathf.Abs(r.y - rot.y) < tolerance
                     && Mathf.Abs(r.z - rot.z) < tolerance
                     && Mathf.Abs(r.w - rot.w) < tolerance)
                     rot = r;
@@ -250,7 +250,7 @@ namespace Unity.Cinemachine
             t.SetPositionAndRotation(pos, rot);
 #endif
         }
-        
+
         /// <summary>Much more stable for small angles than Unity's native implementation</summary>
         /// <param name="v1">The first vector</param>
         /// <param name="v2">The second vector</param>
@@ -262,7 +262,7 @@ namespace Unity.Cinemachine
             v1 *= v2.magnitude;
             v2 *= a;
             return Mathf.Atan2((v1 - v2).magnitude, (v1 + v2).magnitude) * Mathf.Rad2Deg * 2;
-#else            
+#else
             v1.Normalize();
             v2.Normalize();
             return Mathf.Atan2((v1 - v2).magnitude, (v1 + v2).magnitude) * Mathf.Rad2Deg * 2;

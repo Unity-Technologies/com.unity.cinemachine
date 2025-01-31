@@ -19,13 +19,13 @@ namespace Unity.Cinemachine.Tests
             CinemachineCore.CurrentTimeOverride = 0;
             CinemachineCore.CurrentUnscaledTimeTimeOverride = 0;
         }
-        
+
         [TearDown]
         public override void TearDown()
         {
             CinemachineCore.CurrentTimeOverride = -1f;
             CinemachineCore.CurrentUnscaledTimeTimeOverride = -1f;
-            
+
             base.TearDown();
         }
 
@@ -37,7 +37,7 @@ namespace Unity.Cinemachine.Tests
             CinemachineCore.CurrentUnscaledTimeTimeOverride += CinemachineCore.UniformDeltaTimeOverride;
             yield return null;
         }
-        
+
         /// <summary>Waits for the t seconds.</summary>
         /// <param name="t">Time in seconds.</param>
         protected IEnumerator WaitForSeconds(float t)

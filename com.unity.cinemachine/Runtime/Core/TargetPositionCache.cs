@@ -4,11 +4,11 @@ using System.Collections.Generic;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// Use this class to support caching of Cinemachine target positions and rotations for the 
+    /// Use this class to support caching of Cinemachine target positions and rotations for the
     /// purposes of timeline scrubbing in the Editor.  At runtime, the public methods in this class
     /// simply return the uncached values from the target's transform.
-    /// 
-    /// Cinemachine behaviours and extensions that support timeline scrubbing should use the 
+    ///
+    /// Cinemachine behaviours and extensions that support timeline scrubbing should use the
     /// GetTargetPosition and GetTargetRotation static methods when accessing the target's position or rotation.
     /// </summary>
     public class TargetPositionCache
@@ -16,7 +16,7 @@ namespace Unity.Cinemachine
         internal static bool UseCache;
         internal const float CacheStepSize = 1 / 60.0f;
         internal enum Mode { Disabled, Record, Playback }
-       
+
         static Mode m_CacheMode = Mode.Disabled;
 
 #if UNITY_EDITOR
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine
             public float StartTime;
             public float StepSize;
             public int Count => m_Cache.Count;
- 
+
             List<Item> m_Cache;
 
             public CacheCurve(float startTime, float endTime, float stepSize)
@@ -122,7 +122,7 @@ namespace Unity.Cinemachine
         {
             public CacheCurve Curve;
 
-            struct RecordingItem 
+            struct RecordingItem
             {
                 public float Time;
                 public bool IsCut;
@@ -148,7 +148,7 @@ namespace Unity.Cinemachine
                         Item = new CacheCurve.Item { Pos = target.position, Rot = target.rotation }
                     });
                 }
-                else 
+                else
                 {
                     // Trim off excess, overwrite the one after lastToKeep
                     var trimStart = lastToKeep + 2;
@@ -185,7 +185,7 @@ namespace Unity.Cinemachine
 
             public bool IsEmpty => End < Start;
             public bool Contains(float time) => time >= Start && time <= End;
-            public static TimeRange Empty 
+            public static TimeRange Empty
                 { get => new TimeRange { Start = float.MaxValue, End = float.MinValue }; }
 
             public void Include(float time)
@@ -222,7 +222,7 @@ namespace Unity.Cinemachine
         /// When using Timeline in Edit mode:
         ///  - If you're Recording, the method logs the target position at the CurrentTime.
         ///  - Otherwise, it fetches the cached position at CurrentTime.
-        ///  
+        ///
         /// When using Timeline in Play mode, and when you're not scrubbing it:
         ///  - The method returns the position directly from the Transform.
         /// </summary>
@@ -234,8 +234,8 @@ namespace Unity.Cinemachine
                 return target.position;
 
             // Wrap around during record?
-            if (CacheMode == Mode.Record 
-                && !m_CacheTimeRange.IsEmpty 
+            if (CacheMode == Mode.Record
+                && !m_CacheTimeRange.IsEmpty
                 && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
                 ClearCache();
@@ -267,7 +267,7 @@ namespace Unity.Cinemachine
         /// When using Timeline in Edit mode:
         ///  - If you're Recording, the method logs the target position at the CurrentTime.
         ///  - Otherwise, it fetches the cached position at CurrentTime.
-        ///  
+        ///
         /// When using Timeline in Play mode, and when you're not scrubbing it:
         ///  - The method returns the position directly from the Transform.
         /// </summary>
@@ -279,8 +279,8 @@ namespace Unity.Cinemachine
                 return target.rotation;
 
             // Wrap around during record?
-            if (CacheMode == Mode.Record 
-                && !m_CacheTimeRange.IsEmpty 
+            if (CacheMode == Mode.Record
+                && !m_CacheTimeRange.IsEmpty
                 && CurrentTime < m_CacheTimeRange.Start - kWraparoundSlush)
             {
                 ClearCache();

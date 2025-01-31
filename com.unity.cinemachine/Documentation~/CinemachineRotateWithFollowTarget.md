@@ -5,5 +5,5 @@ This CinemachineCamera __Rotation Control__ behavior matches the rotation of the
 ### Properties
 
 | Property | Description |
-| --- | --- |				
+| --- | --- |
 | __Damping__ | Adds lag to the camera's responsiveness.  Value is the approximate time to catch up, in seconds. |

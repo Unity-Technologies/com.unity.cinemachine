@@ -15,7 +15,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// This event is fired when a virtual camera is activated.
         /// If a blend is involved, it will be fired at the start of the blend.
-        /// 
+        ///
         /// Parameter ordering is: incomingCam, outgoingCam.
         /// </summary>
         [Serializable]

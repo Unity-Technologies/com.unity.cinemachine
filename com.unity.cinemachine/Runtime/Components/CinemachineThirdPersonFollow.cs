@@ -4,8 +4,8 @@ using UnityEngine;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// Third-person follower, with complex pivoting: horizontal about the origin, 
-    /// vertical about the shoulder.  
+    /// Third-person follower, with complex pivoting: horizontal about the origin,
+    /// vertical about the shoulder.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Position Control/Cinemachine Third Person Follow")]
     [SaveDuringPlay]
@@ -17,9 +17,9 @@ namespace Unity.Cinemachine
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
     {
-        /// <summary>How responsively the camera tracks the target.  Each axis (camera-local) 
-        /// can have its own setting.  Value is the approximate time it takes the camera 
-        /// to catch up to the target's new position.  Smaller values give a more rigid 
+        /// <summary>How responsively the camera tracks the target.  Each axis (camera-local)
+        /// can have its own setting.  Value is the approximate time it takes the camera
+        /// to catch up to the target's new position.  Smaller values give a more rigid
         /// effect, larger values give a squishier one.</summary>
         [Tooltip("How responsively the camera tracks the target.  Each axis (camera-local) "
            + "can have its own setting.  Value is the approximate time it takes the camera "
@@ -27,15 +27,15 @@ namespace Unity.Cinemachine
            + "rigid effect, larger values give a squishier one")]
         public Vector3 Damping;
 
-        /// <summary>Position of the shoulder pivot relative to the Follow target origin.  
+        /// <summary>Position of the shoulder pivot relative to the Follow target origin.
         /// This offset is in target-local space.</summary>
         [Header("Rig")]
         [Tooltip("Position of the shoulder pivot relative to the Follow target origin.  "
             + "This offset is in target-local space")]
         public Vector3 ShoulderOffset;
 
-        /// <summary>Vertical offset of the hand in relation to the shoulder.  
-        /// Arm length will affect the follow target's screen position 
+        /// <summary>Vertical offset of the hand in relation to the shoulder.
+        /// Arm length will affect the follow target's screen position
         /// when the camera rotates vertically.</summary>
         [Tooltip("Vertical offset of the hand in relation to the shoulder.  "
             + "Arm length will affect the follow target's screen position when "
@@ -58,17 +58,17 @@ namespace Unity.Cinemachine
         [Serializable]
         public struct ObstacleSettings
         {
-            /// <summary>Enable or disable obstacle handling.  
+            /// <summary>Enable or disable obstacle handling.
             /// If enabled, camera will be pulled in front of occluding obstacles.</summary>
             [Tooltip("If enabled, camera will be pulled in front of occluding obstacles")]
             public bool Enabled;
-            
+
             /// <summary>Camera will avoid obstacles on these layers.</summary>
             [Tooltip("Camera will avoid obstacles on these layers")]
             public LayerMask CollisionFilter;
 
             /// <summary>
-            /// Obstacles with this tag will be ignored.  It is a good idea 
+            /// Obstacles with this tag will be ignored.  It is a good idea
             /// to set this field to the target's tag
             /// </summary>
             [TagField]
@@ -82,9 +82,9 @@ namespace Unity.Cinemachine
             [Tooltip("Specifies how close the camera can get to obstacles")]
             [Range(0, 1)]
             public float CameraRadius;
-        
+
             /// <summary>
-            /// How gradually the camera moves to correct for occlusions.  
+            /// How gradually the camera moves to correct for occlusions.
             /// Higher numbers will move the camera more gradually.
             /// </summary>
             [Range(0, 10)]
@@ -111,7 +111,7 @@ namespace Unity.Cinemachine
                 DampingFromCollision = 0.5f
             };
         }
-        
+
         /// <summary>If enabled, camera will be pulled in front of occluding obstacles.</summary>
         [FoldoutWithEnabledButton]
         public ObstacleSettings AvoidObstacles = ObstacleSettings.Default;
@@ -174,7 +174,7 @@ namespace Unity.Cinemachine
             get => CameraDistance;
             set => CameraDistance = value;
         }
-        
+
         /// <summary>True if component is enabled and has a Follow target defined</summary>
         public override bool IsValid => enabled && FollowTarget != null;
 
@@ -186,8 +186,8 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
+        public override float GetMaxDampTime()
+        {
             return Mathf.Max(
 #if CINEMACHINE_PHYSICS
                 AvoidObstacles.Enabled ? Mathf.Max(
@@ -200,7 +200,7 @@ namespace Unity.Cinemachine
 
         /// <summary>Orients the camera to match the Follow target's orientation</summary>
         /// <param name="curState">The current camera state</param>
-        /// <param name="deltaTime">Elapsed time since last frame, for damping calculations.  
+        /// <param name="deltaTime">Elapsed time since last frame, for damping calculations.
         /// If negative, previous state is reset.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
@@ -223,7 +223,7 @@ namespace Unity.Cinemachine
             if (target == FollowTarget)
                 m_PreviousFollowTargetPosition += positionDelta;
         }
-        
+
         void PositionCamera(ref CameraState curState, float deltaTime)
         {
             var up = curState.ReferenceUp;
@@ -258,8 +258,8 @@ namespace Unity.Cinemachine
             CurrentObstacle = null;
             if (AvoidObstacles.Enabled)
             {
-                // Check if hand is colliding with something, if yes, then move the hand 
-                // closer to the player. The radius is slightly enlarged, to avoid problems 
+                // Check if hand is colliding with something, if yes, then move the hand
+                // closer to the player. The radius is slightly enlarged, to avoid problems
                 // next to walls
                 float dummy = 0;
                 var collidedHand = ResolveCollisions(root, hand, -1, AvoidObstacles.CameraRadius * 1.05f, ref dummy);
@@ -275,7 +275,7 @@ namespace Unity.Cinemachine
             if (!curState.HasLookAt() || curState.ReferenceLookAt.Equals(targetPos))
                 curState.ReferenceLookAt = camPos + targetRot * new Vector3(0, 0, 3); // so that there's something
         }
-        
+
         /// <summary>
         /// Internal use only.  Public for the inspector gizmo
         /// </summary>
@@ -308,7 +308,7 @@ namespace Unity.Cinemachine
         }
 
         void GetRawRigPositions(
-            Vector3 root, Quaternion targetRot, Quaternion heading, 
+            Vector3 root, Quaternion targetRot, Quaternion heading,
             out Vector3 shoulder, out Vector3 hand)
         {
             var shoulderOffset = ShoulderOffset;
@@ -316,17 +316,17 @@ namespace Unity.Cinemachine
             shoulderOffset.x += m_DampingCorrection.x;
             shoulderOffset.y += m_DampingCorrection.y;
             shoulder = root + heading * shoulderOffset;
-            hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);   
+            hand = shoulder + targetRot * new Vector3(0, VerticalArmLength, 0);
         }
 
 #if CINEMACHINE_PHYSICS
         Vector3 ResolveCollisions(
-            Vector3 root, Vector3 tip, float deltaTime, 
+            Vector3 root, Vector3 tip, float deltaTime,
             float cameraRadius, ref float collisionCorrection)
         {
             if (AvoidObstacles.CollisionFilter.value == 0)
                 return tip;
-            
+
             var dir = tip - root;
             var len = dir.magnitude;
             if (len < Epsilon)
@@ -337,7 +337,7 @@ namespace Unity.Cinemachine
             float desiredCorrection = 0;
 
             if (RuntimeUtility.SphereCastIgnoreTag(
-                new Ray(root, dir), cameraRadius, out RaycastHit hitInfo, 
+                new Ray(root, dir), cameraRadius, out RaycastHit hitInfo,
                 len, AvoidObstacles.CollisionFilter, AvoidObstacles.IgnoreTag))
             {
                 CurrentObstacle = hitInfo.collider;
@@ -346,8 +346,8 @@ namespace Unity.Cinemachine
             }
 
             collisionCorrection += deltaTime < 0 ? desiredCorrection - collisionCorrection : Damper.Damp(
-                desiredCorrection - collisionCorrection, 
-                desiredCorrection > collisionCorrection ? AvoidObstacles.DampingIntoCollision : AvoidObstacles.DampingFromCollision, 
+                desiredCorrection - collisionCorrection,
+                desiredCorrection > collisionCorrection ? AvoidObstacles.DampingIntoCollision : AvoidObstacles.DampingFromCollision,
                 deltaTime);
 
             // Apply the correction

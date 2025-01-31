@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Samples
         {
             if (Rigidbody == null)
                 return;
-        
+
 #if UNITY_2023_3_OR_NEWER
             var t = Mathf.Clamp01(Rigidbody.linearVelocity.magnitude / MaxSpeed);
 #else

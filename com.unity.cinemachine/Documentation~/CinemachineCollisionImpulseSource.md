@@ -1,6 +1,6 @@
 # Cinemachine Collision Impulse Source
 
-For collision-based impulses, attach a **CinemachineCollisionImpulseSource** component to a GameObject that has a Collider or Collider2D component. **CinemachineCollisionImpulseSource** generates an impulse when something collides with the GameObject or enters a trigger zone. 
+For collision-based impulses, attach a **CinemachineCollisionImpulseSource** component to a GameObject that has a Collider or Collider2D component. **CinemachineCollisionImpulseSource** generates an impulse when something collides with the GameObject or enters a trigger zone.
 
 To add a Collision Impulse Source component:
 
@@ -8,15 +8,15 @@ To add a Collision Impulse Source component:
 
 2. Go to **Scripts > Cinemachine** and select **Cinemachine Collision Impulse Source**.
 
-By default, an Impulse Source affects every [Impulse Listener](CinemachineImpulseListener.md) in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make Impulse Sources affect some Impulse Listeners and not others. 
+By default, an Impulse Source affects every [Impulse Listener](CinemachineImpulseListener.md) in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make Impulse Sources affect some Impulse Listeners and not others.
 
 ## Properties:
 
 The properties in the Cinemachine Collision Impulse Source Inspector window are divided into the following sections.
 
-- [Impulse Channel](#ImpulseChannel) 
+- [Impulse Channel](#ImpulseChannel)
 - [Impulse Type](#ImpulseType)
-- [Impulse Shape](#ImpulseShape) 
+- [Impulse Shape](#ImpulseShape)
 - [Trigger Object Filter](#TriggerObject)
 - [How to Generate The Impulse](#GenerateImpulse)
 
@@ -35,7 +35,7 @@ Impulse Listeners filter impulses based on channels to control which Impulse Sou
 <a name="ImpulseType"></a>
 ### Impulse Type
 
-You can choose the level of complexity, depending on your needs. Changing the Impulse Type brings up range, dissipation, and propagation speed controls, as appropriate. 
+You can choose the level of complexity, depending on your needs. Changing the Impulse Type brings up range, dissipation, and propagation speed controls, as appropriate.
 
 ![](images/ImpulseType.png)
 
@@ -77,7 +77,7 @@ These properties filter the GameObjects that trigger an impulse when they collid
 <a name="GenerateImpulse"></a>
 ### How To Generate The Impulse
 
-An impulse is triggered at a location by an impact mass moving at an impact velocity. Unity dynamically calculates the mass and velocity of the Rigidbody or Rigidbody 2D component that triggers the impulse. The **How To Generate The Impulse** properties control how the mass and velocity of the Rigidbody affect the strength and direction of the signal. 
+An impulse is triggered at a location by an impact mass moving at an impact velocity. Unity dynamically calculates the mass and velocity of the Rigidbody or Rigidbody 2D component that triggers the impulse. The **How To Generate The Impulse** properties control how the mass and velocity of the Rigidbody affect the strength and direction of the signal.
 
 ![](images/GenerateImpulse.png)
 

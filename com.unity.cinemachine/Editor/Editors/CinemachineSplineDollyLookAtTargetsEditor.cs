@@ -64,7 +64,7 @@ namespace Unity.Cinemachine.Editor
             return value;
         }
 
-        private void OnDisable() 
+        private void OnDisable()
         {
             var t = target as CinemachineSplineDollyLookAtTargets;
             if (t != null && s_CacheLookup.ContainsKey(t))
@@ -79,7 +79,7 @@ namespace Unity.Cinemachine.Editor
             this.AddMissingCmCameraHelpBox(ux);
 
             var invalidHelp = new HelpBox(
-                "This component requires a CinemachineSplineDolly component referencing a nonempty Spline", 
+                "This component requires a CinemachineSplineDolly component referencing a nonempty Spline",
                 HelpBoxMessageType.Warning);
             ux.Add(invalidHelp);
 
@@ -103,12 +103,12 @@ namespace Unity.Cinemachine.Editor
             });
 
             var targetsProp = serializedObject.FindProperty(() => splineData.Targets);
-            ux.Add(SplineDataInspectorUtility.CreatePathUnitField(targetsProp, () 
+            ux.Add(SplineDataInspectorUtility.CreatePathUnitField(targetsProp, ()
                 => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null));
 
             ux.AddHeader("Data Points");
             var list = ux.AddChild(SplineDataInspectorUtility.CreateDataListField(
-                splineData.Targets, targetsProp, 
+                splineData.Targets, targetsProp,
                 () => splineData.GetGetSplineAndDolly(out var spline, out _) ? spline : null,
                 () =>
                 {
@@ -125,7 +125,7 @@ namespace Unity.Cinemachine.Editor
                 }));
 
             var arrayProp = targetsProp.FindPropertyRelative("m_DataPoints");
-            list.makeItem = () => 
+            list.makeItem = () =>
             {
                 var itemRootName = "ItemRoot";
                 var row = new BindableElement() { name = itemRootName, style = { marginRight = 4 }};
@@ -141,14 +141,14 @@ namespace Unity.Cinemachine.Editor
                 dragger.OnStartDrag = (d) => list.selectedIndex = GetIndexInList(list, d.DragElement, itemRootName);
 
                 CinemachineSplineDollyLookAtTargets.Item def = new ();
-                var lookAtField1 = overlay.AddChild(new ObjectField 
-                { 
+                var lookAtField1 = overlay.AddChild(new ObjectField
+                {
                     bindingPath = "m_Value." + SerializedPropertyHelper.PropertyName(() => def.LookAt),
                     tooltip = SerializedPropertyHelper.PropertyTooltip(() => def.LookAt),
                     objectType = typeof(Transform),
                     style = { flexGrow = 4, flexBasis = 50, marginLeft = 6 }
                 });
-                    
+
                 var foldout = new Foldout() { value = false, text = "Target" }; // do not bind to "m_Value" because it will mess up the binding for index
                 var indexRow = foldout.AddChild(new InspectorUtility.LabeledRow("Index", SplineDataInspectorUtility.ItemIndexTooltip));
                 var indexField2 = indexRow.Contents.AddChild(InspectorUtility.CreateDraggableField(
@@ -186,7 +186,7 @@ namespace Unity.Cinemachine.Editor
                     }
                     return - 1;
                 }
-                
+
                 void OnLookAtChanged(int index)
                 {
                     // Don't mess with the offset if change was a result of undo/redo
@@ -217,11 +217,11 @@ namespace Unity.Cinemachine.Editor
                 }
             };
 
-            list.TrackPropertyWithInitialCallback(arrayProp, (p) => 
+            list.TrackPropertyWithInitialCallback(arrayProp, (p) =>
             {
                 // Fix up the foldout names to reflect the index of the item
                 int index = 0;
-                list.Query("ItemFoldout").ForEach((e) => 
+                list.Query("ItemFoldout").ForEach((e) =>
                 {
                     if (e is Foldout f)
                         f.text = $"Target {index++ / 2}"; // because there are 2 foldouts for each item
@@ -243,11 +243,11 @@ namespace Unity.Cinemachine.Editor
             LookAtDataOnSplineTool.s_OnDataIndexDragged += OnToolDragged;
             void OnToolDragged(CinemachineSplineDollyLookAtTargets data, int index)
             {
-                EditorApplication.delayCall += () => 
+                EditorApplication.delayCall += () =>
                 {
                     // GML This is a hack to avoid spurious exceptions thrown by uitoolkit!
                     // GML TODO: Remove when they fix it
-                    try 
+                    try
                     {
                         if (data == splineData)
                         {

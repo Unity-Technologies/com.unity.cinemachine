@@ -5,19 +5,19 @@ namespace Unity.Cinemachine.Samples
 {
     /// <summary>
     /// This is an add-on for SimplePlayerController that controls the player's Aiming Core.
-    /// 
-    /// This component expects to be in a child object of a player that has a SimplePlayerController 
+    ///
+    /// This component expects to be in a child object of a player that has a SimplePlayerController
     /// behaviour.  It works intimately with that component.
     //
-    /// The purpose of the aiming core is to decouple the camera rotation from the player rotation.  
-    /// Camera rotation is determined by the rotation of the player core GameObject, and this behaviour 
-    /// provides input axes for controlling it.  When the player core is used as the target for 
-    /// a CinemachineCamera with a ThirdPersonFollow component, the camera will look along the core's 
+    /// The purpose of the aiming core is to decouple the camera rotation from the player rotation.
+    /// Camera rotation is determined by the rotation of the player core GameObject, and this behaviour
+    /// provides input axes for controlling it.  When the player core is used as the target for
+    /// a CinemachineCamera with a ThirdPersonFollow component, the camera will look along the core's
     /// forward axis, and pivot around the core's origin.
-    /// 
-    /// The aiming core is also used to define the origin and direction of player shooting, if player 
-    /// has that ability.  
-    /// 
+    ///
+    /// The aiming core is also used to define the origin and direction of player shooting, if player
+    /// has that ability.
+    ///
     /// To implement player shooting, add a SimplePlayerShoot behaviour to this GameObject.
     /// </summary>
     public class SimplePlayerAimController : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
@@ -62,7 +62,7 @@ namespace Unity.Cinemachine.Samples
             VerticalLook.Range.y = Mathf.Clamp(VerticalLook.Range.y, -90, 90);
             VerticalLook.Validate();
         }
-        
+
         void OnEnable()
         {
             m_Controller = GetComponentInParent<SimplePlayerControllerBase>();
@@ -120,7 +120,7 @@ namespace Unity.Cinemachine.Samples
         {
             if (m_ControllerTransform == null)
                 return;
-            var rot = (Quaternion.Inverse(m_ControllerTransform.rotation) 
+            var rot = (Quaternion.Inverse(m_ControllerTransform.rotation)
                 * Quaternion.LookRotation(worldspaceDirection, m_ControllerTransform.up)).eulerAngles;
             HorizontalLook.Value = HorizontalLook.ClampValue(rot.y);
             VerticalLook.Value = VerticalLook.ClampValue(NormalizeAngle(rot.x));
@@ -134,7 +134,7 @@ namespace Unity.Cinemachine.Samples
             m_DesiredWorldRotation = t.rotation;
             switch (PlayerRotation)
             {
-                case CouplingMode.Coupled: 
+                case CouplingMode.Coupled:
                 {
                     m_Controller.SetStrafeMode(true);
                     RecenterPlayer();
@@ -149,7 +149,7 @@ namespace Unity.Cinemachine.Samples
                         RecenterPlayer(RotationDamping);
                     break;
                 }
-                case CouplingMode.Decoupled: 
+                case CouplingMode.Decoupled:
                 {
                     m_Controller.SetStrafeMode(false);
                     break;
@@ -164,7 +164,7 @@ namespace Unity.Cinemachine.Samples
         {
             if (PlayerRotation == CouplingMode.Decoupled)
             {
-                // After player has been rotated, we subtract any rotation change 
+                // After player has been rotated, we subtract any rotation change
                 // from our own transform, to maintain our world rotation
                 transform.rotation = m_DesiredWorldRotation;
                 var delta = (Quaternion.Inverse(m_ControllerTransform.rotation) * m_DesiredWorldRotation).eulerAngles;

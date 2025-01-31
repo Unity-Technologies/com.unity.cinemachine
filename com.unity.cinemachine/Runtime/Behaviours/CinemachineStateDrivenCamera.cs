@@ -123,14 +123,14 @@ namespace Unity.Cinemachine
             {
                 if (m_LegacyLookAt != null || m_LegacyFollow != null)
                 {
-                    DefaultTarget = new DefaultTargetSettings 
-                    { 
+                    DefaultTarget = new DefaultTargetSettings
+                    {
                         Enabled = true,
                         Target = new CameraTarget
                         {
-                            LookAtTarget = m_LegacyLookAt, 
-                            TrackingTarget = m_LegacyFollow, 
-                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
+                            LookAtTarget = m_LegacyLookAt,
+                            TrackingTarget = m_LegacyFollow,
+                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow
                         }
                     };
                     m_LegacyLookAt = m_LegacyFollow = null;
@@ -304,7 +304,7 @@ namespace Unity.Cinemachine
                     m_PendingActivationTime = 0;
                 }
             }
-            
+
             if (m_ActivationTime != 0)
                 return Instructions[m_ActiveInstructionIndex].Camera;
             return fallbackCam;
@@ -326,7 +326,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Call this to cancel the current wait time for the pending instruction and activate 
+        /// Call this to cancel the current wait time for the pending instruction and activate
         /// the pending instruction immediately.
         /// </summary>
         public void CancelWait()

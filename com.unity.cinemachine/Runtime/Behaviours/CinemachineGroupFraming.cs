@@ -4,8 +4,8 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for Cinemachine Camera that adjusts the framing if the tracking
-    /// target implements ICinemachineTargetGroup.  
-    /// 
+    /// target implements ICinemachineTargetGroup.
+    ///
     /// An attempt will be made to fit the entire target group within the specified framing.
     /// Camera position and/or rotation may be adjusted, depending on the settings.
     /// </summary>
@@ -48,7 +48,7 @@ namespace Unity.Cinemachine
             + "rapidly adjusting the camera to keep the group in the frame.  Larger numbers give a heavier "
             + "more slowly responding camera.")]
         public float Damping = 2f;
-        
+
         /// <summary>How to adjust the camera to get the desired framing size</summary>
         public enum SizeAdjustmentModes
         {
@@ -77,13 +77,13 @@ namespace Unity.Cinemachine
         /// <summary>How to adjust the camera to get the desired horizontal and vertical framing</summary>
         [Tooltip("How to adjust the camera to get the desired horizontal and vertical framing.")]
         public LateralAdjustmentModes LateralAdjustment = LateralAdjustmentModes.ChangePosition;
-        
+
         /// <summary>Allowable FOV range, if adjusting FOV</summary>
         [Tooltip("Allowable FOV range, if adjusting FOV.")]
         [MinMaxRangeSlider(1, 179)]
         public Vector2 FovRange = new (1, 100);
 
-        /// <summary>Allowable range for the camera to move. 0 is the undollied position.  
+        /// <summary>Allowable range for the camera to move. 0 is the undollied position.
         /// Negative values move the camera closer to the target.</summary>
         [Tooltip("Allowable range for the camera to move.  0 is the undollied position.  "
             + "Negative values move the camera closer to the target.")]
@@ -192,7 +192,7 @@ namespace Unity.Cinemachine
 
             if (stage != extra.Stage)
                 return;
-            
+
             var group = vcam.LookAtTargetAsGroup;
             group ??= vcam.FollowTargetAsGroup;
             if (group == null || !group.IsValid)
@@ -214,7 +214,7 @@ namespace Unity.Cinemachine
         }
 
         void OrthoFraming(
-            CinemachineVirtualCameraBase vcam, ICinemachineTargetGroup group, 
+            CinemachineVirtualCameraBase vcam, ICinemachineTargetGroup group,
             VcamExtraState extra, ref CameraState state, float deltaTime)
         {
             var damping = vcam.PreviousStateIsValid && deltaTime >= 0 ? Damping : 0;
@@ -224,7 +224,7 @@ namespace Unity.Cinemachine
             var stateRot = state.GetCorrectedOrientation();
             GroupBoundsMatrix = Matrix4x4.TRS(statePos, stateRot, Vector3.one);
             GroupBounds = group.GetViewSpaceBoundingBox(GroupBoundsMatrix, true);
-            var camPos = GroupBounds.center; 
+            var camPos = GroupBounds.center;
             camPos.z = Mathf.Min(0, camPos.z - GroupBounds.extents.z);
 
             // Ortho size adjustment
@@ -244,7 +244,7 @@ namespace Unity.Cinemachine
         }
 
         void PerspectiveFraming(
-            CinemachineVirtualCameraBase vcam, ICinemachineTargetGroup group, 
+            CinemachineVirtualCameraBase vcam, ICinemachineTargetGroup group,
             VcamExtraState extra, ref CameraState state, float deltaTime)
         {
             var damping = vcam.PreviousStateIsValid && deltaTime >= 0 ? Damping : 0;
@@ -262,7 +262,7 @@ namespace Unity.Cinemachine
             var dollyRange = canDollyOut ? DollyRange : Vector2.zero;
             var m = Matrix4x4.TRS(camPos, camRot, Vector3.one);
             var b = group.GetViewSpaceBoundingBox(m, canDollyOut);
-            
+
             var moveCamera = LateralAdjustment == LateralAdjustmentModes.ChangePosition;
             if (!moveCamera)
             {
@@ -338,7 +338,7 @@ namespace Unity.Cinemachine
                 camPos += camRot * new Vector3(0, 0, dolly);
                 ComputeCameraViewGroupBounds(group, ref camPos, ref camRot, true);
             }
-            // Zoom mode: Adjust lens 
+            // Zoom mode: Adjust lens
             if (SizeAdjustment != SizeAdjustmentModes.DollyOnly)
             {
                 var frameHeight = GetFrameHeight(GroupBounds.size / FramingSize, aspect);

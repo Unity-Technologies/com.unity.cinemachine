@@ -46,8 +46,8 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_LensAttributes")]
         public LegacyLensSettings m_Lens = LegacyLensSettings.Default;
 
-        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although 
-        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// <summary>Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will
         /// make an arbitrary choice.</summary>
         [Tooltip("Hint for transitioning to and from this CinemachineCamera.  Hints can be combined, although "
             + "not all combinations make sense.  In the case of conflicting hints, Cinemachine will "
@@ -57,7 +57,7 @@ namespace Unity.Cinemachine
         /// <summary>This event fires when a transition occurs.</summary>
         [Tooltip("This event fires when a transition occurs")]
         public CinemachineLegacyCameraEvents.OnCameraLiveEvent m_OnCameraLiveEvent = new();
-        
+
         /// <summary>Inspector control - Use for hiding sections of the Inspector UI.</summary>
         [HideInInspector, SerializeField, NoSaveDuringPlay]
         internal string[] m_ExcludedPropertiesInInspector = new string[] { "m_Script" };
@@ -105,7 +105,7 @@ namespace Unity.Cinemachine
             }
         }
         // ===============================================================
-        
+
         /// <summary>Helper for upgrading from CM2</summary>
         internal protected override bool IsDprecated => true;
 
@@ -176,7 +176,7 @@ namespace Unity.Cinemachine
                 transform.position = State.RawPosition;
             if (LookAt != null)
                 transform.rotation = State.RawOrientation;
-            
+
             PreviousStateIsValid = true;
         }
 
@@ -346,7 +346,7 @@ namespace Unity.Cinemachine
             return null;
         }
 
-        /// <summary>Add a component to the cinemachine pipeline.  
+        /// <summary>Add a component to the cinemachine pipeline.
         /// Existing components at the new component's stage are removed</summary>
         /// <typeparam name="T">The type of component to add</typeparam>
         /// <returns>The new component</returns>
@@ -517,7 +517,7 @@ namespace Unity.Cinemachine
                 CinemachineComponentBase postAimBody = null;
                 for (var stage = CinemachineCore.Stage.Body; stage <= CinemachineCore.Stage.Finalize; ++stage)
                 {
-                    var c = componentIndex < m_ComponentPipeline.Length 
+                    var c = componentIndex < m_ComponentPipeline.Length
                         ? m_ComponentPipeline[componentIndex] : null;
                     if (c != null && stage == c.Stage)
                     {
@@ -585,7 +585,7 @@ namespace Unity.Cinemachine
 
             base.ForceCameraPosition(pos, rot);
         }
-        
+
         // This is a hack for FreeLook rigs - to be removed
         internal void SetStateRawPosition(Vector3 pos) { m_State.RawPosition = pos; }
 
@@ -601,7 +601,7 @@ namespace Unity.Cinemachine
             bool forceUpdate = false;
 
             if (fromCam != null
-                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && (State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(this))
             {
                 ForceCameraPosition(fromCam.State.GetFinalPosition(), fromCam.State.GetFinalOrientation());
@@ -622,10 +622,10 @@ namespace Unity.Cinemachine
                 UpdateCameraState(worldUp, deltaTime);
             m_OnCameraLiveEvent?.Invoke(this, fromCam);
         }
-        
+
         /// <summary>Tells whether this vcam requires input.</summary>
         /// <returns>Returns true, when the vcam has an extension or components that require input.</returns>
-        bool AxisState.IRequiresInput.RequiresInput() 
+        bool AxisState.IRequiresInput.RequiresInput()
         {
             if (Extensions != null)
                 for (int i = 0; i < Extensions.Count; ++i)

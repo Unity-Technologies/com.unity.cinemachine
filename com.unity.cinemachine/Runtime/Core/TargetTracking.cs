@@ -84,7 +84,7 @@ namespace Unity.Cinemachine.TargetTracking
         [Tooltip("How aggressively the camera tries to track the target's rotation.  "
             + "Small numbers are more responsive.  Larger numbers give a more heavy slowly responding camera.")]
         public float QuaternionDamping;
-            
+
         /// <summary>
         /// Get the default tracking settings
         /// </summary>
@@ -122,16 +122,16 @@ namespace Unity.Cinemachine.TargetTracking
         /// </summary>
         /// <param name="s">The tracker settings</param>
         /// <returns>Highest damping setting in this mode</returns>
-        public static float GetMaxDampTime(this TrackerSettings s) 
-        { 
+        public static float GetMaxDampTime(this TrackerSettings s)
+        {
             var d = s.GetEffectivePositionDamping();
-            var d2 = s.AngularDampingMode == AngularDampingMode.Euler 
+            var d2 = s.AngularDampingMode == AngularDampingMode.Euler
                 ? s.GetEffectiveRotationDamping() : new Vector3(s.QuaternionDamping, 0, 0);
-            var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z)); 
-            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z)); 
-            return Mathf.Max(a, b); 
+            var a = Mathf.Max(d.x, Mathf.Max(d.y, d.z));
+            var b = Mathf.Max(d2.x, Mathf.Max(d2.y, d2.z));
+            return Mathf.Max(a, b);
         }
-        
+
         /// <summary>
         /// Get the effective position damping setting for current binding mode.
         /// For some binding modes, some axes are not damped.
@@ -140,7 +140,7 @@ namespace Unity.Cinemachine.TargetTracking
         /// <returns>The damping settings applicable for this binding mode</returns>
         internal static Vector3 GetEffectivePositionDamping(this TrackerSettings s)
         {
-            return s.BindingMode == BindingMode.LazyFollow 
+            return s.BindingMode == BindingMode.LazyFollow
                 ? new Vector3(0, s.PositionDamping.y, s.PositionDamping.z) : s.PositionDamping;
         }
 
@@ -181,14 +181,14 @@ namespace Unity.Cinemachine.TargetTracking
         Quaternion m_TargetOrientationOnAssign;
         Vector3 m_PreviousOffset;
         Transform m_PreviousTarget;
-        
+
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
         /// <param name="component">The component caller</param>
         /// <param name="deltaTime">Current effective deltaTime.</param>
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
         /// <param name="up">Current effective world up direction.</param>
         public void InitStateInfo(
-            CinemachineComponentBase component, float deltaTime, 
+            CinemachineComponentBase component, float deltaTime,
             BindingMode bindingMode, Vector3 up)
         {
             bool prevStateValid = deltaTime >= 0 && component.VirtualCamera.PreviousStateIsValid;
@@ -208,11 +208,11 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="component">The component caller</param>
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
         /// <param name="worldUp">Current effective world up</param>
-        /// <returns>The rotation of the Follow target, as understood by the Transposer.  
+        /// <returns>The rotation of the Follow target, as understood by the Transposer.
         /// This is not necessarily the same thing as the actual target rotation</returns>
         public Quaternion GetReferenceOrientation(
-            CinemachineComponentBase component, 
-            BindingMode bindingMode, 
+            CinemachineComponentBase component,
+            BindingMode bindingMode,
             Vector3 worldUp)
         {
             if (bindingMode == BindingMode.WorldSpace)
@@ -259,7 +259,7 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
         public void TrackTarget(
-            CinemachineComponentBase component, 
+            CinemachineComponentBase component,
             float deltaTime, Vector3 up, Vector3 desiredCameraOffset,
             in TrackerSettings settings,
             out Vector3 outTargetPosition, out Quaternion outTargetOrient)
@@ -310,8 +310,8 @@ namespace Unity.Cinemachine.TargetTracking
             var positionDelta = targetPosition - currentPosition;
             if (prevStateValid)
             {
-                Quaternion dampingSpace = desiredCameraOffset.AlmostZero() 
-                    ? component.VcamState.RawOrientation 
+                Quaternion dampingSpace = desiredCameraOffset.AlmostZero()
+                    ? component.VcamState.RawOrientation
                     : Quaternion.LookRotation(dampedOrientation * desiredCameraOffset, up);
                 var localDelta = Quaternion.Inverse(dampingSpace) * positionDelta;
                 localDelta = component.VirtualCamera.DetachedFollowTargetDamp(
@@ -324,7 +324,7 @@ namespace Unity.Cinemachine.TargetTracking
             outTargetOrient = dampedOrientation;
         }
 
-        /// <summary>Return a new damped target position that respects the minimum 
+        /// <summary>Return a new damped target position that respects the minimum
         /// distance from the real target</summary>
         /// <param name="component">The component caller</param>
         /// <param name="dampedTargetPos">The effective position of the target, after damping</param>
@@ -334,8 +334,8 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="actualTargetPos">The real undamped target position</param>
         /// <returns>New camera offset, potentially adjusted to respect minimum distance from target</returns>
         public Vector3 GetOffsetForMinimumTargetDistance(
-            CinemachineComponentBase component, 
-            Vector3 dampedTargetPos, Vector3 cameraOffset, 
+            CinemachineComponentBase component,
+            Vector3 dampedTargetPos, Vector3 cameraOffset,
             Vector3 cameraFwd, Vector3 up, Vector3 actualTargetPos)
         {
             var posOffset = Vector3.zero;
@@ -385,13 +385,13 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="rot">World-space orientation to take</param>
         /// <param name="cameraOffsetLocalSpace">Camera offset from target in local space (relative to ReferenceOrientation)</param>
         public void ForceCameraPosition(
-            CinemachineComponentBase component, 
+            CinemachineComponentBase component,
             BindingMode bindingMode,
             Vector3 pos, Quaternion rot,
             Vector3 cameraOffsetLocalSpace)
         {
             // Infer target pos from camera
-            var targetRot = bindingMode == BindingMode.LazyFollow 
+            var targetRot = bindingMode == BindingMode.LazyFollow
                 ? rot : GetReferenceOrientation(component, bindingMode, component.VirtualCamera.State.ReferenceUp);
             PreviousTargetPosition = pos - targetRot * cameraOffsetLocalSpace;
         }

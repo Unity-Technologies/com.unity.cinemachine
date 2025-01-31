@@ -59,10 +59,10 @@ namespace Unity.Cinemachine
         [HideInInspector]
         [Tooltip("Obsolete - no longer used")]
         public bool m_ApplyBeforeBody;
-        
+
         Quaternion m_PreviousCameraRotation;
-        
-        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
+
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue
         {
             get
             {
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine
             base.OnEnable();
             UpdateInputAxisProvider();
         }
-        
+
         /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
         /// <returns>Returns true when input is required.</returns>
         bool AxisState.IRequiresInput.RequiresInput() => true;
@@ -154,9 +154,9 @@ namespace Unity.Cinemachine
             curState.RawOrientation = rot;
 
             if (VirtualCamera.PreviousStateIsValid)
-                curState.RotationDampingBypass = curState.RotationDampingBypass 
+                curState.RotationDampingBypass = curState.RotationDampingBypass
                     * UnityVectorExtensions.SafeFromToRotation(
-                        m_PreviousCameraRotation * Vector3.forward, 
+                        m_PreviousCameraRotation * Vector3.forward,
                         rot * Vector3.forward, curState.ReferenceUp);
             m_PreviousCameraRotation = rot;
         }
@@ -189,11 +189,11 @@ namespace Unity.Cinemachine
         // Normalize angle value to [-180, 180] degrees.
         static float NormalizeAngle(float angle)
         {
-            return ((angle + 180) % 360) - 180; 
+            return ((angle + 180) % 360) - 180;
         }
 
         /// <summary>
-        /// Force the virtual camera to assume a given position and orientation.  
+        /// Force the virtual camera to assume a given position and orientation.
         /// Procedural placement then takes over
         /// </summary>
         /// <param name="pos">Worldspace position to take</param>
@@ -216,8 +216,8 @@ namespace Unity.Cinemachine
             m_VerticalRecentering.DoRecentering(ref m_VerticalAxis, -1, 0);
             m_HorizontalRecentering.CancelRecentering();
             m_VerticalRecentering.CancelRecentering();
-            if (fromCam != null 
-                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+            if (fromCam != null
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 SetAxesForRotation(fromCam.State.RawOrientation);
@@ -225,7 +225,7 @@ namespace Unity.Cinemachine
             }
             return false;
         }
-        
+
         void SetAxesForRotation(Quaternion targetRot)
         {
             Vector3 up = VcamState.ReferenceUp;
@@ -258,20 +258,20 @@ namespace Unity.Cinemachine
 
             c.PanAxis.Range = new Vector2(m_HorizontalAxis.m_MinValue, m_HorizontalAxis.m_MaxValue);
             c.PanAxis.Center = 0;
-            c.PanAxis.Recentering = new () 
-            { 
-                Enabled = m_HorizontalRecentering.m_enabled, 
-                Time = m_HorizontalRecentering.m_RecenteringTime, 
-                Wait = m_HorizontalRecentering.m_WaitTime 
+            c.PanAxis.Recentering = new ()
+            {
+                Enabled = m_HorizontalRecentering.m_enabled,
+                Time = m_HorizontalRecentering.m_RecenteringTime,
+                Wait = m_HorizontalRecentering.m_WaitTime
             };
 
             c.TiltAxis.Range = new Vector2(m_VerticalAxis.m_MinValue, m_VerticalAxis.m_MaxValue);
             c.TiltAxis.Center = 0;
-            c.TiltAxis.Recentering = new () 
-            { 
-                Enabled = m_VerticalRecentering.m_enabled, 
-                Time = m_VerticalRecentering.m_RecenteringTime, 
-                Wait = m_VerticalRecentering.m_WaitTime 
+            c.TiltAxis.Recentering = new ()
+            {
+                Enabled = m_VerticalRecentering.m_enabled,
+                Time = m_VerticalRecentering.m_RecenteringTime,
+                Wait = m_VerticalRecentering.m_WaitTime
             };
         }
     }

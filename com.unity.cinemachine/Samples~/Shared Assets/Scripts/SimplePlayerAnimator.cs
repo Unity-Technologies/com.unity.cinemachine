@@ -3,20 +3,20 @@ using UnityEngine;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This is a behaviour whose job it is to drive animation based on the player's motion.  
-    /// It is a sample implementation that you can modify or replace with your own.  As shipped, it is 
-    /// hardcoded to work specifically with the sample `CameronSimpleController` Animation controller, which 
-    /// is set up with states that the SimplePlayerAnimator knows about.  You can modify 
+    /// This is a behaviour whose job it is to drive animation based on the player's motion.
+    /// It is a sample implementation that you can modify or replace with your own.  As shipped, it is
+    /// hardcoded to work specifically with the sample `CameronSimpleController` Animation controller, which
+    /// is set up with states that the SimplePlayerAnimator knows about.  You can modify
     /// this class to work with your own animation controller.
-    /// 
-    /// SimplePlayerAnimator works with or without a SimplePlayerControllerBase alongside.  
-    /// Without one, it monitors the transform's position and drives the animation accordingly.  
-    /// You can see it used like this in some of the sample scenes, such as RunningRace or ClearShot.  
-    /// In this mode, is it unable to detect the player's grounded state, and so it always 
+    ///
+    /// SimplePlayerAnimator works with or without a SimplePlayerControllerBase alongside.
+    /// Without one, it monitors the transform's position and drives the animation accordingly.
+    /// You can see it used like this in some of the sample scenes, such as RunningRace or ClearShot.
+    /// In this mode, is it unable to detect the player's grounded state, and so it always
     /// assumes that the player is grounded.
-    /// 
-    /// When a SimplePlayerControllerBase is detected, the SimplePlayerAnimator installs callbacks 
-    /// and expects to be driven by the SimplePlayerControllerBase using the STartJump, EndJump, 
+    ///
+    /// When a SimplePlayerControllerBase is detected, the SimplePlayerAnimator installs callbacks
+    /// and expects to be driven by the SimplePlayerControllerBase using the STartJump, EndJump,
     /// and PostUpdate callbacks.
     /// </summary>
     public class SimplePlayerAnimator : MonoBehaviour
@@ -54,9 +54,9 @@ namespace Unity.Cinemachine.Samples
         public enum States { Idle, Walk, Run, Jump, RunJump }
 
         /// <summary>Current state of the player</summary>
-        public States State 
-        { 
-            get 
+        public States State
+        {
+            get
             {
                 if (m_AnimationParams.IsJumping)
                     return m_AnimationParams.IsRunning ? States.RunJump : States.Jump;
@@ -78,7 +78,7 @@ namespace Unity.Cinemachine.Samples
                 m_Controller.PostUpdate += (vel, jumpAnimationScale) => UpdateAnimationState(vel, jumpAnimationScale);
             }
         }
-        
+
         /// <summary>
         /// LateUpdate is used to avoid having to worry about script execution order:
         /// it can be assumed that the player has already been moved.
@@ -102,7 +102,7 @@ namespace Unity.Cinemachine.Samples
         /// Override this to interact appropriately with your animation controller.
         /// </summary>
         /// <param name="vel">Player's velocity, in player-local coordinates.</param>
-        /// <param name="jumpAnimationScale">Scale factor to apply to the jump animation.  
+        /// <param name="jumpAnimationScale">Scale factor to apply to the jump animation.
         /// It can be used to slow down the jump animation for longer jumps.</param>
         void UpdateAnimationState(Vector3 vel, float jumpAnimationScale)
         {
@@ -123,10 +123,10 @@ namespace Unity.Cinemachine.Samples
             // We scale the sprint animation speed to loosely match the actual speed, but we cheat
             // at the high end to avoid making the animation look ridiculous
             if (isRunning)
-                m_AnimationParams.MotionScale = (speed < NormalSprintSpeed) 
+                m_AnimationParams.MotionScale = (speed < NormalSprintSpeed)
                     ? speed / NormalSprintSpeed
                     : Mathf.Min(MaxSprintScale, 1 + (speed - NormalSprintSpeed) / (3 * NormalSprintSpeed));
-            
+
             UpdateAnimation(m_AnimationParams);
 
             if (m_AnimationParams.JumpTriggered)

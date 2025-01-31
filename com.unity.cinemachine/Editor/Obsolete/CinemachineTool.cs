@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
         /// <summary>Implement this to set your Tool's icon and tooltip.</summary>
         /// <returns>A GUIContent with an icon set.</returns>
         protected abstract GUIContent GetIcon();
-        
+
         /// <summary>This lets the editor find the icon of the tool.</summary>
         public override GUIContent toolbarIcon => null;
 
@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Editor
 
         /// <summary>This is called when the Tool is deselected in the editor.</summary>
         public override void OnWillBeDeactivated() => base.OnWillBeDeactivated();
-        
+
         /// <summary>Implement IDrawSelectedHandles to draw gizmos for this tool even if it is not the active tool.</summary>
         public void OnDrawHandles() {}
 

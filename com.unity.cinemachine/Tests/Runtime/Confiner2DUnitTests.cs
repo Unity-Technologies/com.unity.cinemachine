@@ -16,7 +16,7 @@ namespace Unity.Cinemachine.Tests
         public override void SetUp()
         {
             base.SetUp();
-            
+
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineConfiner2D));
             m_Vcam = vcamHolder.GetComponent<CinemachineCamera>();
             m_Confiner2D = vcamHolder.GetComponent<CinemachineConfiner2D>();
@@ -52,7 +52,7 @@ namespace Unity.Cinemachine.Tests
 
             // clockwise
             polygonCollider2D.points = testPoints;
-            
+
             m_Confiner2D.InvalidateBoundingShapeCache();
 
             m_Vcam.transform.position = Vector3.zero;
@@ -99,7 +99,7 @@ namespace Unity.Cinemachine.Tests
             m_Confiner2D.BoundingShape2D = compositeCollider2D;
             m_Confiner2D.Damping = 0;
             m_Confiner2D.OversizeWindow = new () { Enabled = true, MaxWindowSize = 0 };
-            
+
             // clockwise
             polygonCollider2D.points = testPoints;
             m_Confiner2D.InvalidateBoundingShapeCache();
@@ -124,7 +124,7 @@ namespace Unity.Cinemachine.Tests
             yield return null; // wait one frame
             Assert.That((m_Vcam.State.GetCorrectedPosition() - Vector3.down).sqrMagnitude, Is.LessThan(UnityVectorExtensions.Epsilon));
         }
-#endif        
+#endif
         [UnityTest]
         public IEnumerator Test_SimpleSquareConfiner_BoxCollider2D()
         {
@@ -135,7 +135,7 @@ namespace Unity.Cinemachine.Tests
 
             // clockwise
             boxCollider2D.size = new Vector2(2f, 2f);
-            
+
             m_Confiner2D.InvalidateBoundingShapeCache();
             m_Confiner2D.BakeBoundingShape(m_Vcam, 5);
 

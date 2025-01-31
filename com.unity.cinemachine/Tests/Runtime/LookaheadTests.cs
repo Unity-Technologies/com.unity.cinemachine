@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Tests
         public override void SetUp()
         {
             base.SetUp();
-            
+
             m_Target = CreateGameObject("Target Object").transform;
 
             // Source vcam
@@ -41,19 +41,19 @@ namespace Unity.Cinemachine.Tests
             yield return null;
             Assert.That(m_VCam.FollowTargetChanged, Is.False);
             Assert.That(m_VCam.LookAtTargetChanged, Is.False);
-            
+
             var newTarget = CreateGameObject("Target Object 2").transform;
             m_VCam.LookAt = newTarget;
 
             yield return null;
-            
+
             Assert.That(m_VCam.FollowTargetChanged, Is.False);
             Assert.That(m_VCam.LookAtTargetChanged, Is.True);
 
             m_VCam.Follow = newTarget;
 
             yield return null;
-            
+
             Assert.That(m_VCam.FollowTargetChanged, Is.True);
             Assert.That(m_VCam.LookAtTargetChanged, Is.False);
 
@@ -61,7 +61,7 @@ namespace Unity.Cinemachine.Tests
             m_VCam.LookAt = m_Target;
 
             yield return null;
-            
+
             Assert.That(m_VCam.FollowTargetChanged, Is.True);
             Assert.That(m_VCam.LookAtTargetChanged, Is.True);
         }
@@ -71,16 +71,16 @@ namespace Unity.Cinemachine.Tests
         {
             var delta = m_RotationComposer.m_Predictor.PredictPositionDelta(m_RotationComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
-            
+
             delta = m_PositionComposer.m_Predictor.PredictPositionDelta(m_PositionComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.False);
-            
+
             m_Target.Translate(10, 0, 0);
             yield return null;
-            
+
             delta = m_RotationComposer.m_Predictor.PredictPositionDelta(m_RotationComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
-            
+
             delta = m_PositionComposer.m_Predictor.PredictPositionDelta(m_PositionComposer.Lookahead.Time);
             Assert.That(delta.sqrMagnitude > 0, Is.True);
         }

@@ -8,10 +8,10 @@ namespace Unity.Cinemachine.Samples
     [RequireComponent(typeof(Rigidbody))]
     public class RigidbodyInterpolationSetter : MonoBehaviour
     {
-        Rigidbody m_Rigidbody; 
+        Rigidbody m_Rigidbody;
         void Start() => m_Rigidbody = GetComponent<Rigidbody>();
 
-        public void SetInterpolation(bool on) => 
+        public void SetInterpolation(bool on) =>
             m_Rigidbody.interpolation = on ? RigidbodyInterpolation.Interpolate : RigidbodyInterpolation.None;
     }
 }

@@ -18,8 +18,8 @@ namespace Unity.Cinemachine.Tests
         {
             base.SetUp();
             CreateGameObject("Brain", typeof(CinemachineBrain));
-            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera), 
-                typeof(CinemachineOrbitalFollow), 
+            m_Vcam = CreateGameObject("CM Vcam", typeof(CinemachineCamera),
+                typeof(CinemachineOrbitalFollow),
                 typeof(CinemachineRotationComposer),
                 typeof(CinemachineFreeLookModifier),
                 typeof(CinemachineInputAxisController)).GetComponent<CinemachineCamera>();

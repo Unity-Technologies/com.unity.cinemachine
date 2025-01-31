@@ -41,7 +41,7 @@ namespace Unity.Cinemachine
                 CachedObjects = new List<ClipObjects>(playable.GetInputCount());
                 for (int i = 0; i < playable.GetInputCount(); ++i)
                 {
-                    var cs = new ClipObjects 
+                    var cs = new ClipObjects
                     {
                         Cameras = new List<List<CinemachineVirtualCameraBase>>(),
                     };
@@ -61,7 +61,7 @@ namespace Unity.Cinemachine
                             var vcam = s_ScratchList[j];
 
                             int nestLevel = 0;
-                            for (var p = vcam.ParentCamera; 
+                            for (var p = vcam.ParentCamera;
                                 p != null && p != (ICinemachineCamera)mainVcam; p = p.ParentCamera)
                             {
                                 ++nestLevel;
@@ -82,7 +82,7 @@ namespace Unity.Cinemachine
 
                 if (TargetPositionCache.CacheMode == TargetPositionCache.Mode.Record)
                 {
-                    // If the clip is newly activated, force the time to clip start, 
+                    // If the clip is newly activated, force the time to clip start,
                     // in case timeline skipped some frames.  This will avoid target lerps between shots.
                     if (Time.frameCount != TargetPositionCache.CurrentFrame)
                         TargetPositionCache.IsCameraCut = false;
@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
 
                 // Impose upper limit on damping time, to avoid simulating too many frames
                 float maxDampTime = Mathf.Max(0, timeInClip - stepSize);
-                maxDampTime = Mathf.Min(cs.MaxDampTime, Mathf.Min(maxDampTime, 4.0f)); 
+                maxDampTime = Mathf.Min(cs.MaxDampTime, Mathf.Min(maxDampTime, 4.0f));
 
                 var endTime = TargetPositionCache.CurrentTime;
                 var startTime = Mathf.Max(
@@ -111,7 +111,7 @@ namespace Unity.Cinemachine
                 {
                     var t = Mathf.Max(startTime, endTime - step * stepSize);
                     TargetPositionCache.CurrentTime = t;
-                    var deltaTime = (step == numSteps) ? -1 
+                    var deltaTime = (step == numSteps) ? -1
                         : (t - startTime < stepSize ? t - startTime : stepSize);
 
                     // Update all relevant vcams, leaf-most first
@@ -125,7 +125,7 @@ namespace Unity.Cinemachine
                                 continue;
                             if (deltaTime < 0)
                                 vcam.ForceCameraPosition(
-                                    TargetPositionCache.GetTargetPosition(vcam.transform), 
+                                    TargetPositionCache.GetTargetPosition(vcam.transform),
                                     TargetPositionCache.GetTargetRotation(vcam.transform));
                             vcam.InternalUpdateCameraState(up, deltaTime);
                         }
@@ -143,7 +143,7 @@ namespace Unity.Cinemachine
             m_ScrubbingCacheHelper = null;
         }
 #endif
-        
+
         public override void OnPlayableDestroy(Playable playable)
         {
             if (m_BrainOverrideStack != null)
@@ -215,9 +215,9 @@ namespace Unity.Cinemachine
                         // Deduce which clip is incoming (timeline doesn't know)
                         var clipA = playable.GetInput(clipIndexA);
                         // Incoming has later start time (therefore earlier current time)
-                        incomingIsA = clip.GetTime() >= clipA.GetTime(); 
+                        incomingIsA = clip.GetTime() >= clipA.GetTime();
                         // If same start time, longer clip is incoming
-                        if (clip.GetTime() == clipA.GetTime()) 
+                        if (clip.GetTime() == clipA.GetTime())
                             incomingIsA = clip.GetDuration() < clipA.GetDuration();
                         break;
                     }
@@ -225,7 +225,7 @@ namespace Unity.Cinemachine
             }
 
             // Special case: check for only one clip that's fading out - it must be outgoing
-            if (activeInputs == 1 && weightB < 1 
+            if (activeInputs == 1 && weightB < 1
                 && playable.GetInput(clipIndexB).GetTime() > playable.GetInput(clipIndexB).GetDuration() / 2)
             {
                 // Note: this will be wrong in the case where the clip's blend-in time is longer
@@ -242,7 +242,7 @@ namespace Unity.Cinemachine
             ICinemachineCamera camA = null;
             if (clipIndexA >= 0)
             {
-                CinemachineShotPlayable shot 
+                CinemachineShotPlayable shot
                     = ((ScriptPlayable<CinemachineShotPlayable>)playable.GetInput(clipIndexA)).GetBehaviour();
                 camA = shot.VirtualCamera;
             }
@@ -250,7 +250,7 @@ namespace Unity.Cinemachine
             ICinemachineCamera camB = null;
             if (clipIndexB >= 0)
             {
-                CinemachineShotPlayable shot 
+                CinemachineShotPlayable shot
                     = ((ScriptPlayable<CinemachineShotPlayable>)playable.GetInput(clipIndexB)).GetBehaviour();
                 camB = shot.VirtualCamera;
             }
@@ -262,18 +262,18 @@ namespace Unity.Cinemachine
 #if UNITY_EDITOR
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
             {
-                bool isNewB = (m_ScrubbingCacheHelper.ActivePlayableA != clipIndexB 
+                bool isNewB = (m_ScrubbingCacheHelper.ActivePlayableA != clipIndexB
                     && m_ScrubbingCacheHelper.ActivePlayableB != clipIndexB);
 
                 m_ScrubbingCacheHelper.ActivePlayableA = clipIndexA;
                 m_ScrubbingCacheHelper.ActivePlayableB = clipIndexB;
                 if (clipIndexA >= 0)
                     m_ScrubbingCacheHelper.ScrubToHere(
-                        (float)GetMasterPlayableDirector().time, clipIndexA, false, 
+                        (float)GetMasterPlayableDirector().time, clipIndexA, false,
                         (float)playable.GetInput(clipIndexA).GetTime(), m_BrainOverrideStack.DefaultWorldUp);
                 if (clipIndexB >= 0)
                     m_ScrubbingCacheHelper.ScrubToHere(
-                        (float)GetMasterPlayableDirector().time, clipIndexB, isNewB && weightB > 0.99f, 
+                        (float)GetMasterPlayableDirector().time, clipIndexB, isNewB && weightB > 0.99f,
                         (float)playable.GetInput(clipIndexB).GetTime(), m_BrainOverrideStack.DefaultWorldUp);
             }
 #endif

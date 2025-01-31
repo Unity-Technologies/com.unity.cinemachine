@@ -193,7 +193,7 @@ namespace Unity.Cinemachine.Editor
                         rect, null,
                         new [] {
                                 property.FindPropertyRelative(() => def.Range),
-                                property.FindPropertyRelative(() => def.Wrap)}, 
+                                property.FindPropertyRelative(() => def.Wrap)},
                         new [] { GUIContent.none, null });
                 }
 
@@ -290,7 +290,7 @@ namespace Unity.Cinemachine.Editor
             const float hSpace = 2;
             var textDimensions = GUI.skin.button.CalcSize(m_ClearText);
             rect.width -= textDimensions.x + hSpace;
-            
+
             var tagValue = property.stringValue;
             EditorGUI.showMixedValue = property.hasMultipleDifferentValues;
             EditorGUI.BeginChangeCheck();

@@ -153,10 +153,10 @@ namespace Unity.Cinemachine
     public Rect64 bounds;
     public Path64 path;
     public bool isOpen;
-    public OutRec() 
-    { 
-      bounds = new Rect64(); 
-      path = new Path64(); 
+    public OutRec()
+    {
+      bounds = new Rect64();
+      path = new Path64();
     }
   };
 
@@ -200,7 +200,7 @@ namespace Unity.Cinemachine
   // Important: UP and DOWN here are premised on Y-axis positive down
   // displays, which is the orientation used in Clipper's development.
   ///////////////////////////////////////////////////////////////////
-  
+
   class Active
   {
     public Point64 bot;
@@ -448,7 +448,7 @@ namespace Unity.Cinemachine
       ae.dx = GetDx(ae.bot, ae.top);
     }
 
-    
+
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static Vertex NextVertex(Active ae)
     {
@@ -463,7 +463,7 @@ namespace Unity.Cinemachine
     {
       if (ae.windDx > 0)
         return ae.vertexTop!.prev!.prev!;
-      else 
+      else
         return ae.vertexTop!.next!.next!;
     }
 
@@ -545,7 +545,7 @@ namespace Unity.Cinemachine
 
     private static void SwapOutrecs(Active ae1, Active ae2)
     {
-      OutRec? or1 = ae1.outrec; // at least one edge has 
+      OutRec? or1 = ae1.outrec; // at least one edge has
       OutRec? or2 = ae2.outrec; // an assigned outrec
       if (or1 == or2)
       {
@@ -582,7 +582,7 @@ namespace Unity.Cinemachine
       OutPt op2 = op;
       do
       {
-        area += (double)(op2.prev.pt.Y + op2.pt.Y) * 
+        area += (double)(op2.prev.pt.Y + op2.pt.Y) *
           (op2.prev.pt.X - op2.pt.X);
         op2 = op2.next!;
       } while (op2 != op);
@@ -733,7 +733,7 @@ namespace Unity.Cinemachine
       foreach (Path64 path in paths) totalVertCnt += path.Count;
       _vertexList.Capacity = _vertexList.Count + totalVertCnt;
 
-      foreach (Path64 path in paths) 
+      foreach (Path64 path in paths)
       {
         Vertex? v0 = null, prev_v = null, curr_v;
         foreach (Point64 pt in path)
@@ -1049,7 +1049,7 @@ namespace Unity.Cinemachine
       // the direction they're about to turn
       if (!IsMaxima(resident) && (resident.top.Y > newcomer.top.Y))
       {
-        return InternalClipper.CrossProduct(newcomer.bot, 
+        return InternalClipper.CrossProduct(newcomer.bot,
           resident.top, NextVertex(resident).pt) <= 0;
       }
       else if (!IsMaxima(newcomer) && (newcomer.top.Y > resident.top.Y))
@@ -1498,9 +1498,9 @@ namespace Unity.Cinemachine
         outrec.frontEdge = ae;
         outrec.backEdge = null;
       }
-      else 
+      else
       {
-        outrec.frontEdge = null; 
+        outrec.frontEdge = null;
         outrec.backEdge = ae;
       }
 
@@ -1561,7 +1561,7 @@ namespace Unity.Cinemachine
         {
           if (!IsHotEdge(ae2)) return null;
         }
-        else if (ae2.localMin.polytype == PathType.Subject) 
+        else if (ae2.localMin.polytype == PathType.Subject)
           return null;
 
         switch (_fillrule)
@@ -1667,7 +1667,7 @@ namespace Unity.Cinemachine
           oldE1WindCount = Math.Abs(ae1.windCount);
           oldE2WindCount = Math.Abs(ae2.windCount);
           break;
-      }      
+      }
 
       bool e1WindCountIs0or1 = oldE1WindCount == 0 || oldE1WindCount == 1;
       bool e2WindCountIs0or1 = oldE2WindCount == 0 || oldE2WindCount == 1;
@@ -1681,7 +1681,7 @@ namespace Unity.Cinemachine
       {
         if ((oldE1WindCount != 0 && oldE1WindCount != 1) || (oldE2WindCount != 0 && oldE2WindCount != 1) ||
             (ae1.localMin.polytype != ae2.localMin.polytype && _cliptype != ClipType.Xor))
-        {          
+        {
           resultOp = AddLocalMaxPoly(ae1, ae2, pt);
 #if USINGZ
           if (resultOp != null)
@@ -1997,11 +1997,11 @@ namespace Unity.Cinemachine
         if (!EdgesAdjacentInAEL(_intersectList[i]))
         {
           int j = i + 1;
-          while (j < _intersectList.Count && 
+          while (j < _intersectList.Count &&
             !EdgesAdjacentInAEL(_intersectList[j])) j++;
 
           if (j < _intersectList.Count)
-            (_intersectList[j], _intersectList[i]) = 
+            (_intersectList[j], _intersectList[i]) =
               (_intersectList[i], _intersectList[j]);
         }
 
@@ -2212,8 +2212,8 @@ namespace Unity.Cinemachine
             op = IntersectEdges(horz, ae, pt);
             SwapPositionsInAEL(horz, ae);
 
-            if (IsHotEdge(horz) && op != null && 
-              !IsOpen(horz) && op.pt == pt) 
+            if (IsHotEdge(horz) && op != null &&
+              !IsOpen(horz) && op.pt == pt)
               AddTrialHorzJoin(op);
 
             if (!IsHorizontal(ae) && TestJoinWithPrev1(ae, Y))
@@ -2303,7 +2303,7 @@ namespace Unity.Cinemachine
           AddJoin(op2, op!);
         }
       }
-      else if (IsHotEdge(horz)) 
+      else if (IsHotEdge(horz))
         AddLocalMaxPoly(horz, maxPair!, horz.top);
       else
       {
@@ -2416,7 +2416,7 @@ namespace Unity.Cinemachine
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private static bool IsValidClosedPath(OutPt? op)
     {
-      return (op != null && 
+      return (op != null &&
         op.next != op && op.next != op.prev &&
         // also treat inconsequential polygons as invalid
         !(op.next!.next == op.prev &&
@@ -2450,7 +2450,7 @@ namespace Unity.Cinemachine
     private static bool CollinearSegsOverlap(Point64 seg1a, Point64 seg1b,
       Point64 seg2a, Point64 seg2b)
     {
-      // precondition: seg1 and seg2 are collinear      
+      // precondition: seg1 and seg2 are collinear
       if (seg1a.X == seg1b.X)
       {
         if (seg2a.X != seg1a.X || seg2a.X != seg2b.X) return false;
@@ -2805,7 +2805,7 @@ namespace Unity.Cinemachine
         // don't waste time trying to join adjacent vertices
         ((op1.next == op2) && (op1 != op1.outrec.pts)) ||
         ((op2.next == op1) && (op2 != op1.outrec.pts)))) return;
-        
+
       new Joiner(_joinerList, op1, op2, null);
     }
 
@@ -2862,7 +2862,7 @@ namespace Unity.Cinemachine
 
     private void ProcessJoinList()
     {
-      // NB can't use foreach here because list may 
+      // NB can't use foreach here because list may
       // contain nulls which can't be enumerated
       for (int i = 0; i < _joinerList.Count; i++)
       {
@@ -3025,7 +3025,7 @@ namespace Unity.Cinemachine
                  ((InternalClipper.CrossProduct(op1.next.pt, op2.pt, op2.prev.pt) == 0) &&
                   CollinearSegsOverlap(op1.next.pt, op1.pt, op2.pt, op2.prev.pt)))
         {
-          if (or1 == or2) 
+          if (or1 == or2)
           {
             // SPLIT REQUIRED
             // make sure op2.prev and op1.next match positions
@@ -3207,8 +3207,8 @@ namespace Unity.Cinemachine
     private void CleanCollinear(OutRec? outrec)
     {
       outrec = GetRealOutRec(outrec);
-      if (outrec == null || outrec.isOpen || 
-        outrec.frontEdge != null || !ValidateClosedPathEx(ref outrec.pts)) 
+      if (outrec == null || outrec.isOpen ||
+        outrec.frontEdge != null || !ValidateClosedPathEx(ref outrec.pts))
           return;
 
       OutPt startOp = outrec.pts!;
@@ -3326,7 +3326,7 @@ namespace Unity.Cinemachine
         op2 = op.next!;
       }
       path.Add(lastPt);
-        
+
       while (op2 != op)
       {
         if (op2.pt != lastPt)
@@ -3399,7 +3399,7 @@ namespace Unity.Cinemachine
 
     private bool DeepCheckOwner(OutRec outrec, OutRec owner)
       {
-      if (owner.bounds.IsEmpty()) 
+      if (owner.bounds.IsEmpty())
         owner.bounds = GetBounds(owner.path);
       bool isInsideOwnerBounds = owner.bounds.Contains(outrec.bounds);
 
@@ -3414,7 +3414,7 @@ namespace Unity.Cinemachine
           if (split == null || split.idx <= owner.idx || split == outrec) continue;
           if (split.splits != null && DeepCheckOwner(outrec, split)) return true;
 
-          if (split.path.Count == 0) 
+          if (split.path.Count == 0)
             BuildPath(split.pts!, ReverseSolution, false, split.path);
           if (split.bounds.IsEmpty()) split.bounds = GetBounds(split.path);
 
@@ -3432,7 +3432,7 @@ namespace Unity.Cinemachine
       {
         if (isInsideOwnerBounds && Path1InsidePath2(outrec, outrec.owner!))
           return true;
-        
+
         outrec.owner = outrec.owner!.owner;
         if (outrec.owner == null) return false;
         isInsideOwnerBounds = outrec.owner.bounds.Contains(outrec.bounds);
@@ -3592,7 +3592,7 @@ namespace Unity.Cinemachine
 #if USINGZ
     public ZCallback64? ZCallback {
       get { return this._zCallback; }
-      set { this._zCallback = value; } 
+      set { this._zCallback = value; }
     }
 #endif
 
@@ -3748,7 +3748,7 @@ namespace Unity.Cinemachine
       if (!success) return false;
       if (oPaths.Count > 0)
       {
-        openPaths.Capacity = oPaths.Count;        
+        openPaths.Capacity = oPaths.Count;
         foreach (Path64 path in oPaths)
           openPaths.Add(Clipper.ScalePathD(path, _invScale));
       }
@@ -3857,7 +3857,7 @@ namespace Unity.Cinemachine
       get {
         if (index < 0 || index >= _childs.Count)
           throw new InvalidOperationException();
-        return (PolyPath64) _childs[index]; 
+        return (PolyPath64) _childs[index];
       }
     }
 

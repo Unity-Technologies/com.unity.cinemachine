@@ -33,7 +33,7 @@ namespace Unity.Cinemachine
         public static implicit operator int(PrioritySettings prioritySettings) => prioritySettings.Value;
 
         /// <summary> Implicit conversion from int </summary>
-        /// <param name="priority"> The value to initialize the priority settings with. </param> 
+        /// <param name="priority"> The value to initialize the priority settings with. </param>
         /// <returns> A new priority settings with the given priority. </returns>
         public static implicit operator PrioritySettings(int priority) => new () { Value = priority, Enabled = true };
     }

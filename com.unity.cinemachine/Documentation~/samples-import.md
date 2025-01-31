@@ -1,6 +1,6 @@
 ## Import samples to your project
 
-To import a **Cinemachine** sample to your project: 
+To import a **Cinemachine** sample to your project:
 
 1. Open the Package manager: from the Editor's menu, select **Window** > **Package Manager**.
 

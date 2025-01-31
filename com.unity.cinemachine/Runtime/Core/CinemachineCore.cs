@@ -4,7 +4,7 @@ using UnityEngine.Events;
 
 namespace Unity.Cinemachine
 {
-    static class Documentation 
+    static class Documentation
     {
         /// <summary>This must be used like
         /// [HelpURL(Documentation.BaseURL + "api/some-page.html")]
@@ -34,7 +34,7 @@ namespace Unity.Cinemachine
         /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
         /// </summary>
         internal static float CurrentUnscaledTimeTimeOverride = -1;
-        
+
         /// <summary>
         /// Unit-test support:
         /// Replacement for Time.unscaledTime, taking CurrentUnscaledTimeTimeOverride into account.
@@ -45,11 +45,11 @@ namespace Unity.Cinemachine
 
         /// <summary>Unit-test support: Special mode for deterministic unit tests.</summary>
         internal static bool UnitTestMode = false;
-        
+
         /// <summary>API for the Unity Editor.</summary>
         /// <returns>Color used to indicate that a camera is in Solo mode.</returns>
         internal static Color SoloGUIColor() => Color.Lerp(Color.red, Color.yellow, 0.8f);
-        
+
         /// <summary>
         /// Stages in the Cinemachine Component pipeline.  This enum defines the pipeline order.
         /// </summary>
@@ -70,28 +70,28 @@ namespace Unity.Cinemachine
             Finalize
         };
 
-        /// <summary>Hint for transitioning to and from CinemachineCameras.  Hints can be combined, although 
-        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will 
+        /// <summary>Hint for transitioning to and from CinemachineCameras.  Hints can be combined, although
+        /// not all combinations make sense.  In the case of conflicting hints, Cinemachine will
         /// make an arbitrary choice.</summary>
         [Flags]
         public enum BlendHints
         {
             /// <summary>Spherical blend about Tracking target position</summary>
-            SphericalPosition = 1, 
-            /// <summary>Cylindrical blend about Tracking target position 
+            SphericalPosition = 1,
+            /// <summary>Cylindrical blend about Tracking target position
             /// (vertical co-ordinate is linearly interpolated)</summary>
             CylindricalPosition = 2,
-            /// <summary>Screen-space blend between LookAt targets instead of 
+            /// <summary>Screen-space blend between LookAt targets instead of
             /// world space lerp of target position</summary>
             ScreenSpaceAimWhenTargetsDiffer = 4,
-            /// <summary>When this virtual camera goes Live, attempt to force 
-            /// the position to be the same 
+            /// <summary>When this virtual camera goes Live, attempt to force
+            /// the position to be the same
             /// as the current position of the outgoing Camera</summary>
             InheritPosition = 8,
-            /// <summary>Do not consider the tracking target when blending, just 
+            /// <summary>Do not consider the tracking target when blending, just
             /// do a spherical interpolation</summary>
             IgnoreTarget = 16,
-            /// <summary>When blending out from this camera, use a snapshot of 
+            /// <summary>When blending out from this camera, use a snapshot of
             /// its outgoing state instead of a live state</summary>
             FreezeWhenBlendingOut = 32,
         }
@@ -120,7 +120,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Replacement for Time.deltaTime, taking UniformDeltaTimeOverride into account.
         /// </summary>
-        public static float DeltaTime 
+        public static float DeltaTime
             => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
 
         /// <summary>
@@ -133,10 +133,10 @@ namespace Unity.Cinemachine
         /// Replacement for Time.time, taking CurrentTimeTimeOverride into account.
         /// </summary>
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
-        
+
         /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
-        /// A handler can either return the default blend, or a new blend definition 
+        /// A handler can either return the default blend, or a new blend definition
         /// specific to current conditions.
         /// </summary>
         /// <param name="fromVcam">The outgoing virtual camera</param>
@@ -177,11 +177,11 @@ namespace Unity.Cinemachine
         /// <summary>An event with ICinemachineMixer and ICinemachineCamera parameters.</summary>
         [Serializable]
         public class CameraEvent : UnityEvent<ICinemachineMixer, ICinemachineCamera> {}
-        
+
         /// <summary>An Event with CinemachineBrain as parameter.</summary>
         [Serializable]
         public class BrainEvent : UnityEvent<CinemachineBrain> {}
-        
+
         /// <summary>This event will fire after a brain updates its Camera</summary>
         public static BrainEvent CameraUpdatedEvent = new ();
 
@@ -198,19 +198,19 @@ namespace Unity.Cinemachine
         [Serializable]
         public class BlendEvent : UnityEvent<BlendEventParams> {}
 
-        /// <summary>This event will fire when the current camera changes, 
+        /// <summary>This event will fire when the current camera changes,
         /// at the start of a blend</summary>
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
 
-        /// <summary>This event will fire immediately after a camera that is 
+        /// <summary>This event will fire immediately after a camera that is
         /// live in some context stops being live.</summary>
         public static CameraEvent CameraDeactivatedEvent = new ();
 
-        /// <summary>This event will fire when a blend is created.  
+        /// <summary>This event will fire when a blend is created.
         /// Handler can modify the settings of the blend (but not the cameras).
-        /// 
-        /// Note: BlendCreatedEvents are NOT sent for timeline blends, as those are expected 
-        /// to be controlled 100% by timeline. To modify the blend algorithm for timeline blends, 
+        ///
+        /// Note: BlendCreatedEvents are NOT sent for timeline blends, as those are expected
+        /// to be controlled 100% by timeline. To modify the blend algorithm for timeline blends,
         /// you can install a handler for CinemachineCore.GetCustomBlender.
         /// </summary>
         public static BlendEvent BlendCreatedEvent = new ();
@@ -227,7 +227,7 @@ namespace Unity.Cinemachine
         /// <summary>Access the priority-sorted array of active ICinemachineCamera in the scene.</summary>
         /// <param name="index">Index of the camera to access, range 0-VirtualCameraCount</param>
         /// <returns>The virtual camera at the specified index</returns>
-        public static CinemachineVirtualCameraBase GetVirtualCamera(int index) 
+        public static CinemachineVirtualCameraBase GetVirtualCamera(int index)
             => CameraUpdateManager.GetVirtualCamera(index);
 
         /// <summary>
@@ -273,9 +273,9 @@ namespace Unity.Cinemachine
             }
             return false;
         }
-        
+
         /// <summary>
-        /// Checks if the vcam is live as part of an outgoing blend in any active CinemachineBrain.  
+        /// Checks if the vcam is live as part of an outgoing blend in any active CinemachineBrain.
         /// Does not check whether the vcam is also the current active vcam.
         /// </summary>
         /// <param name="vcam">The virtual camera to check</param>
@@ -335,8 +335,8 @@ namespace Unity.Cinemachine
         /// that the target's position has suddenly warped to somewhere else, so that
         /// the virtual cameras can update their internal state to make the camera
         /// warp seamlessly along with the target.
-        /// 
-        /// All virtual cameras are iterated so this call will work no matter how many 
+        ///
+        /// All virtual cameras are iterated so this call will work no matter how many
         /// are tracking the target, and whether they are active or inactive.
         /// </summary>
         /// <param name="target">The object that was warped</param>

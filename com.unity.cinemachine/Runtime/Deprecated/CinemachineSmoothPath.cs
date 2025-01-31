@@ -24,7 +24,7 @@ namespace Unity.Cinemachine
             [Tooltip("Position in path-local space")]
             public Vector3 position;
 
-            /// <summary>Defines the roll of the path at this waypoint.  
+            /// <summary>Defines the roll of the path at this waypoint.
             /// The other orientation axes are inferred from the tangent and world up.</summary>
             [Tooltip("Defines the roll of the path at this waypoint.  The other orientation axes are inferred from the tangent and world up.")]
             public float roll;
@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
         /// <summary>True if the path ends are joined to form a continuous loop</summary>
         public override bool Looped => m_Looped;
 
-        /// <summary>When calculating the distance cache, sample the path this many 
+        /// <summary>When calculating the distance cache, sample the path this many
         /// times between points</summary>
         public override int DistanceCacheSampleStepsPerSegment => m_Resolution;
 
@@ -92,7 +92,7 @@ namespace Unity.Cinemachine
             m_ControlPoints1 = null;
             m_ControlPoints2 = null;
         }
-        
+
         internal Waypoint[] m_ControlPoints1;
         internal Waypoint[] m_ControlPoints2;
         bool m_IsLoopedCache;
@@ -100,7 +100,7 @@ namespace Unity.Cinemachine
         internal void UpdateControlPoints()
         {
             int numPoints = (m_Waypoints == null) ? 0 : m_Waypoints.Length;
-            if (numPoints > 1 
+            if (numPoints > 1
                 && (Looped != m_IsLoopedCache
                     || m_ControlPoints1 == null || m_ControlPoints1.Length != numPoints
                     || m_ControlPoints2 == null || m_ControlPoints2.Length != numPoints))
@@ -147,7 +147,7 @@ namespace Unity.Cinemachine
                 {
                     if (Looped)
                         indexB = 0;
-                    else 
+                    else
                     {
                         --indexB;
                         --indexA;
@@ -170,7 +170,7 @@ namespace Unity.Cinemachine
                 if (indexA == indexB)
                     result = m_Waypoints[indexA].position;
                 else
-                    result = SplineHelpers.Bezier3(pos - indexA, 
+                    result = SplineHelpers.Bezier3(pos - indexA,
                         m_Waypoints[indexA].position, m_ControlPoints1[indexA].position,
                         m_ControlPoints2[indexA].position, m_Waypoints[indexB].position);
             }
@@ -223,7 +223,7 @@ namespace Unity.Cinemachine
             }
             return result;
         }
-        
+
         // same as Quaternion.AngleAxis(roll, Vector3.forward), just simplified
         static Quaternion RollAroundForward(float angle)
         {

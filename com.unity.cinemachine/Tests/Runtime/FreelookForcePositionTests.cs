@@ -27,9 +27,9 @@ namespace Unity.Cinemachine.Tests
             var camGo = CreateGameObject("CM Freelook", typeof(CinemachineCamera));
             m_CmCamera = camGo.GetComponent<CinemachineCamera>();
             m_OrbitalFollow = camGo.AddComponent<CinemachineOrbitalFollow>();
-            
+
             camGo.AddComponent<CinemachineHardLookAt>();
-            
+
             m_FollowTargetGo = CreatePrimitive(PrimitiveType.Cube);
             m_FollowTargetGo.transform.SetPositionAndRotation(Vector3.zero, Quaternion.identity);
             m_CmCamera.Target.TrackingTarget = m_FollowTargetGo.transform;
@@ -56,7 +56,7 @@ namespace Unity.Cinemachine.Tests
                     new TestData
                     {
                         OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
-                        Orbits = new Cinemachine3OrbitRig.Settings { 
+                        Orbits = new Cinemachine3OrbitRig.Settings {
                             Top = new Cinemachine3OrbitRig.Orbit { Height = 5, Radius = 3},
                             Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 5}
@@ -75,12 +75,12 @@ namespace Unity.Cinemachine.Tests
                         },
                         Precision = 0.5f
                     }).SetName("3Ring-Above").Returns(null);
-                
+
                 yield return new TestCaseData(
                     new TestData
                     {
                         OrbitStyle = CinemachineOrbitalFollow.OrbitStyles.ThreeRing,
-                        Orbits = new Cinemachine3OrbitRig.Settings { 
+                        Orbits = new Cinemachine3OrbitRig.Settings {
                             Top = new Cinemachine3OrbitRig.Orbit { Height = -1, Radius = 5},
                             Center = new Cinemachine3OrbitRig.Orbit { Height = -3, Radius = 8},
                             Bottom = new Cinemachine3OrbitRig.Orbit { Height = -5, Radius = 3}
@@ -95,7 +95,7 @@ namespace Unity.Cinemachine.Tests
                         Radius = 3f,
                         Precision = 0.001f
                     }).SetName("Sphere-r3").Returns(null);
-                
+
                 yield return new TestCaseData(
                     new TestData
                     {
@@ -113,23 +113,23 @@ namespace Unity.Cinemachine.Tests
             yield return null;
             yield return Test_Freelook_ForcePosition_AllBindings(rigSetup);
         }
-        
+
         [UnityTest, TestCaseSource(nameof(RigSetups))]
         public IEnumerator Test_Freelook_ForcePosition_AllBindings(TestData rigSetup)
         {
             m_OrbitalFollow.OrbitStyle = rigSetup.OrbitStyle;
             var floatEqualityComparer = new FloatEqualityComparer(rigSetup.Precision);
             var axisRange = Setup(rigSetup.OrbitStyle);
-            
+
             const float step = 29f; // so tests are not too long
             foreach (BindingMode bindingMode in k_BindingModes)
             {
                 if (bindingMode == BindingMode.LazyFollow)
                     continue; // this mode has 0 horizontal axes, so we don't test it
-                
+
                 m_OrbitalFollow.TrackerSettings.BindingMode = bindingMode;
                 yield return null;
-                
+
                 // we don't test the range ends because the axis values can flip there (identical result, but not the same)
                 for (var axisValue = axisRange.x + 1; axisValue < axisRange.y; axisValue += step)
                 {
@@ -137,21 +137,21 @@ namespace Unity.Cinemachine.Tests
                     m_OrbitalFollow.HorizontalAxis.Value = axisValue;
                     m_OrbitalFollow.VerticalAxis.Value = axisValue;
                     yield return null;
-        
+
                     // Save camera current position and rotation
                     m_OriginalPosition = m_CmCamera.State.GetCorrectedPosition();
                     m_OriginalOrientation = m_CmCamera.State.GetCorrectedOrientation();
                     yield return null;
-        
+
                     // Force camera to position
                     m_CmCamera.ForceCameraPosition(m_OriginalPosition, m_OriginalOrientation);
                     yield return null;
-                    
+
                     Assert.That(m_OrbitalFollow.HorizontalAxis.Value, Is.EqualTo(axisValue).Using(floatEqualityComparer));
                     Assert.That(m_OrbitalFollow.VerticalAxis.Value, Is.EqualTo(axisValue).Using(floatEqualityComparer));
                 }
             }
-            
+
             // local functions
             Vector2 Setup(CinemachineOrbitalFollow.OrbitStyles style)
             {
@@ -166,7 +166,7 @@ namespace Unity.Cinemachine.Tests
                         m_OrbitalFollow.Orbits.SplineCurvature = 1f;
                         return Setup3RigAxes();
                 }
-                
+
                 // local functions
                 Vector2 SetupSphereAxes()
                 {

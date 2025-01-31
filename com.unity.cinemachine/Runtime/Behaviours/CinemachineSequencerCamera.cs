@@ -89,21 +89,21 @@ namespace Unity.Cinemachine
             {
                 if (m_LegacyLookAt != null || m_LegacyFollow != null)
                 {
-                    DefaultTarget = new DefaultTargetSettings 
-                    { 
+                    DefaultTarget = new DefaultTargetSettings
+                    {
                         Enabled = true,
                         Target = new CameraTarget
                         {
-                            LookAtTarget = m_LegacyLookAt, 
-                            TrackingTarget = m_LegacyFollow, 
-                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow 
+                            LookAtTarget = m_LegacyLookAt,
+                            TrackingTarget = m_LegacyFollow,
+                            CustomLookAtTarget = m_LegacyLookAt != m_LegacyFollow
                         }
                     };
                     m_LegacyLookAt = m_LegacyFollow = null;
                 }
             }
         }
-        
+
         /// <inheritdoc />
         public override void OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
@@ -129,7 +129,7 @@ namespace Unity.Cinemachine
         /// <returns>The blend to use for this camera transition.</returns>
         protected override CinemachineBlendDefinition LookupBlend(
             ICinemachineCamera outgoing, ICinemachineCamera incoming) => Instructions[m_CurrentInstruction].Blend;
-            
+
         /// <inheritdoc />
         protected override bool UpdateCameraCache()
         {
@@ -139,7 +139,7 @@ namespace Unity.Cinemachine
 
         void AdvanceCurrentInstruction(float deltaTime)
         {
-            if (ChildCameras == null || ChildCameras.Count == 0 
+            if (ChildCameras == null || ChildCameras.Count == 0
                 || m_ActivationTime < 0 || Instructions.Count == 0)
             {
                 m_ActivationTime = -1;
@@ -159,7 +159,7 @@ namespace Unity.Cinemachine
                 m_CurrentInstruction = Instructions.Count - 1;
             }
 
-            var holdTime = Instructions[m_CurrentInstruction].Hold 
+            var holdTime = Instructions[m_CurrentInstruction].Hold
                 + Instructions[m_CurrentInstruction].Blend.BlendTime;
             var minHold = m_CurrentInstruction < Instructions.Count - 1 || Loop ? 0 : float.MaxValue;
             if (now - m_ActivationTime > Mathf.Max(minHold, holdTime))

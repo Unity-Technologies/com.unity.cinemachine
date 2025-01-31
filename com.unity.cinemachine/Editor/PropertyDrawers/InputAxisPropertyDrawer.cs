@@ -31,9 +31,9 @@ namespace Unity.Cinemachine.Editor
             var rangeContainer = foldout.AddChild(new VisualElement() { style = { flexDirection = FlexDirection.Row }});
             rangeContainer.Add(new PropertyField(property.FindPropertyRelative(() => def.Range)) { style = { flexGrow = 1 }});
             var wrapProp = property.FindPropertyRelative(() => def.Wrap);
-            var wrap = rangeContainer.AddChild(new PropertyField(wrapProp, "") 
+            var wrap = rangeContainer.AddChild(new PropertyField(wrapProp, "")
                 { style = { alignSelf = Align.Center, marginLeft = 5, marginRight = 5, marginTop = 2 }});
-            var wrapLabel = rangeContainer.AddChild(new Label(wrapProp.displayName) 
+            var wrapLabel = rangeContainer.AddChild(new Label(wrapProp.displayName)
                 { tooltip = wrapProp.tooltip, style = { alignSelf = Align.Center }});
             var recentering = foldout.AddChild(new PropertyField(property.FindPropertyRelative(() => def.Recentering)));
 

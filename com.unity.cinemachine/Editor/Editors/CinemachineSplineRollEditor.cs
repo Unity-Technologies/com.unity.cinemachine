@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Editor
             var splineData = target as CinemachineSplineRoll;
 
             var invalidHelp = new HelpBox(
-                "This component should be associated with a non-empty spline", 
+                "This component should be associated with a non-empty spline",
                 HelpBoxMessageType.Warning);
             ux.Add(invalidHelp);
 
@@ -34,7 +34,7 @@ namespace Unity.Cinemachine.Editor
                 }
             });
             ux.AddSpace();
-                    
+
             ux.TrackAnyUserActivity(() =>
             {
                 var haveSpline = splineData != null && splineData.SplineContainer != null;
@@ -51,14 +51,14 @@ namespace Unity.Cinemachine.Editor
 
             var arrayProp = rollProp.FindPropertyRelative("m_DataPoints");
 
-            list.makeItem = () => 
+            list.makeItem = () =>
             {
                 var itemRootName = "ItemRoot";
                 var row = new BindableElement() { name = itemRootName, style = { flexDirection = FlexDirection.Row, marginRight = 4 }};
 
                 row.Add(new VisualElement { pickingMode = PickingMode.Ignore, style = { flexBasis = 12 }}); // pass-through for selecting row in list
                 var indexField = row.AddChild(InspectorUtility.CreateDraggableField(
-                    typeof(float), "m_Index", SplineDataInspectorUtility.ItemIndexTooltip, 
+                    typeof(float), "m_Index", SplineDataInspectorUtility.ItemIndexTooltip,
                         row.AddChild(new Label("Index")), out var dragger));
                 indexField.style.flexGrow = 1;
                 indexField.style.flexBasis = 50;
@@ -96,11 +96,11 @@ namespace Unity.Cinemachine.Editor
             SplineRollTool.s_OnDataIndexDragged += OnToolDragged;
             void OnToolDragged(CinemachineSplineRoll data, int index)
             {
-                EditorApplication.delayCall += () => 
+                EditorApplication.delayCall += () =>
                 {
                     // This is a hack to avoid spurious exceptions thrown by uitoolkit!
                     // GML TODO: Remove when they fix it
-                    try 
+                    try
                     {
                         if (data == splineData)
                             list.selectedIndex = index;
@@ -109,10 +109,10 @@ namespace Unity.Cinemachine.Editor
                 };
             }
 
-            ux.TrackPropertyValue(rollProp, (p) => 
+            ux.TrackPropertyValue(rollProp, (p) =>
             {
                 // Invalidate the mesh cache when the property changes (SetDirty() not always called!)
-                SplineGizmoCache.Instance = null; 
+                SplineGizmoCache.Instance = null;
                 EditorApplication.delayCall += () => InspectorUtility.RepaintGameView();
             });
 
@@ -126,8 +126,8 @@ namespace Unity.Cinemachine.Editor
             // For performance reasons, we only draw a gizmo for the current active game object
             if (Selection.activeGameObject == splineRoll.gameObject)
             {
-                DrawSplineGizmo(splineRoll, 
-                    splineRoll.enabled ? CinemachineSplineDollyPrefs.SplineRollColor.Value : Color.gray, 
+                DrawSplineGizmo(splineRoll,
+                    splineRoll.enabled ? CinemachineSplineDollyPrefs.SplineRollColor.Value : Color.gray,
                     CinemachineSplineDollyPrefs.SplineWidth.Value, CinemachineSplineDollyPrefs.SplineResolution.Value,
                     CinemachineSplineDollyPrefs.ShowSplineNormals.Value);
             }
@@ -144,7 +144,7 @@ namespace Unity.Cinemachine.Editor
             width = width * 3 / (scale.x + scale.y + scale.z);
 
             // Rebuild the cached mesh if necessary.  This can be expensive!
-            if (SplineGizmoCache.Instance == null 
+            if (SplineGizmoCache.Instance == null
                 || SplineGizmoCache.Instance.Mesh == null
                 || SplineGizmoCache.Instance.Spline != splineContainer.Spline
                 || SplineGizmoCache.Instance.RollData != splineRoll.Roll
@@ -357,7 +357,7 @@ namespace Unity.Cinemachine.Editor
                 return index >= 0 && index < targetCount ? index : -1;
             }
         }
-        
+
         // inverse pre-calculation optimization
         readonly Quaternion m_DefaultHandleOrientation = Quaternion.Euler(270, 0, 0);
         readonly Quaternion m_DefaultHandleOrientationInverse = Quaternion.Euler(90, 0, 0);
@@ -397,9 +397,9 @@ namespace Unity.Cinemachine.Editor
                     var globalRot = m_DefaultHandleOrientation * localRot;
 
                     var handleSize = HandleUtility.GetHandleSize(Vector3.zero) / 2f;
-                    if (Event.current.type == EventType.Repaint) 
+                    if (Event.current.type == EventType.Repaint)
                         Handles.ArrowHandleCap(-1, Vector3.zero, globalRot, handleSize, EventType.Repaint);
-                    
+
                     var newGlobalRot = Handles.Disc(controlID, globalRot, Vector3.zero, Vector3.forward, handleSize, false, 0);
                     if (GUIUtility.hotControl == controlID)
                     {
@@ -411,7 +411,7 @@ namespace Unity.Cinemachine.Editor
                         var deltaRoll = newLocalRot.eulerAngles.y - localRot.eulerAngles.y;
                         if (deltaRoll > 180)
                             deltaRoll -= 360; // Roll down one range
-                        else if (deltaRoll < -180) 
+                        else if (deltaRoll < -180)
                             deltaRoll += 360; // Roll up one range
 
                         rollData += deltaRoll;

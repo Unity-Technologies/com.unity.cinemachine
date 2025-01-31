@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Editor
         static Dictionary<string, Texture2D> s_IconCache = new();
         static Texture2D LoadAssetAtPathCached(string path)
         {
-            if (!s_IconCache.ContainsKey(path)) 
+            if (!s_IconCache.ContainsKey(path))
                 s_IconCache.Add(path, AssetDatabase.LoadAssetAtPath<Texture2D>(path));
             return s_IconCache[path];
         }
@@ -57,7 +57,7 @@ namespace Unity.Cinemachine.Editor
                     monoImporter.SaveAndReimport();
                 }
             }
-            
+
             // local function
             static List<string> GetAllCinemachineRuntimeScripts()
             {
@@ -65,11 +65,11 @@ namespace Unity.Cinemachine.Editor
                 var directories = Directory.GetDirectories(CinemachineCore.kPackageRoot + "/Runtime");
                 foreach (var directory in directories)
                     cmRuntimeScripts.AddRange(Directory.GetFiles(directory, "*.cs"));
-                
+
                 return cmRuntimeScripts;
             }
         }
-        
+
         static string GetIconPathForScript(MonoScript monoScript)
         {
             var scriptClass = monoScript.GetClass();
@@ -113,8 +113,8 @@ namespace Unity.Cinemachine.Editor
             // local function
             static string[] GetAllIcons()
             {
-                return new[] 
-                { 
+                return new[]
+                {
                     CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmExtension@256.png",
                     CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmComponent@256.png",
                     CinemachineCore.kPackageRoot + "/Editor/EditorResources/Icons/CmTrack@256.png",

@@ -96,7 +96,7 @@ namespace Unity.Cinemachine
             BarrelClipping = src.PhysicalProperties.BarrelClipping;
             Anamorphism = src.PhysicalProperties.Anamorphism;
         }
-        
+
         /// <summary>Make sure legacy lens settings are sane.  Call this from OnValidate().</summary>
         public void Validate()
         {

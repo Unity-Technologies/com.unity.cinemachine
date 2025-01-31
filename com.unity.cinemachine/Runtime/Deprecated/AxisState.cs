@@ -87,7 +87,7 @@ namespace Unity.Cinemachine
         [Tooltip("The maximum value for the axis")]
         public float m_MaxValue;
 
-        /// <summary>If checked, then the axis will wrap around at the 
+        /// <summary>If checked, then the axis will wrap around at the
         /// min/max values, forming a loop</summary>
         [Tooltip("If checked, then the axis will wrap around at the min/max values, "
             + "forming a loop")]
@@ -165,7 +165,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// This is an interface to override default querying of Unity's legacy Input system.
-        /// If a befaviour implementing this interface is attached to a CinemachineCamera that 
+        /// If a befaviour implementing this interface is attached to a CinemachineCamera that
         /// requires input, that interface will be polled for input instead of the standard Input system.
         /// </summary>
         [Obsolete("IInputAxisProvider is deprecated.  Use InputAxis and InputAxisController instead")]
@@ -181,7 +181,7 @@ namespace Unity.Cinemachine
 
         /// <summary>IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead.</summary>
         [Obsolete("IRequiresInput is deprecated.  Use InputAxis and InputAxisController instead")]
-        public interface IRequiresInput 
+        public interface IRequiresInput
         {
             /// <summary>Returns true if this object requires user input from a IInputAxisProvider.</summary>
             /// <returns>Returns true when input is required.</returns>
@@ -189,9 +189,9 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Set an input provider for this axis.  If an input provider is set, the 
-        /// provider will be queried when user input is needed, and the Input Axis Name 
-        /// field will be ignored.  If no provider is set, then the legacy Input system 
+        /// Set an input provider for this axis.  If an input provider is set, the
+        /// provider will be queried when user input is needed, and the Input Axis Name
+        /// field will be ignored.  If no provider is set, then the legacy Input system
         /// will be queried, using the Input Axis Name.
         /// </summary>
         /// <param name="axis">Which axis will be queried for input</param>
@@ -202,7 +202,7 @@ namespace Unity.Cinemachine
             m_InputAxisProvider = provider;
         }
 
-        /// <summary>Returns true if this axis has an InputAxisProvider, in which case 
+        /// <summary>Returns true if this axis has an InputAxisProvider, in which case
         /// we ignore the input axis name</summary>
         public bool HasInputProvider { get => m_InputAxisProvider != null; }
 
@@ -221,11 +221,11 @@ namespace Unity.Cinemachine
             m_LastUpdateFrame = Time.frameCount;
 
             // Cheating: we want the render frame time, not the fixed frame time
-            if (deltaTime > 0 && m_LastUpdateTime != 0) 
+            if (deltaTime > 0 && m_LastUpdateTime != 0)
                 deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
-            
+
             m_LastUpdateTime = Time.realtimeSinceStartup;
-            
+
             if (m_InputAxisProvider != null)
                 m_InputAxisValue = m_InputAxisProvider.GetAxisValue(m_InputAxisIndex);
             else if (!string.IsNullOrEmpty(m_InputAxisName))
@@ -438,9 +438,9 @@ namespace Unity.Cinemachine
                 // Cheating: we want the render frame time, not the fixed frame time
                 if (deltaTime > 0)
                     deltaTime = Time.realtimeSinceStartup - m_LastUpdateTime;
-                
+
                 m_LastUpdateTime = Time.realtimeSinceStartup;
-                
+
                 if (!m_enabled && deltaTime >= 0)
                     return;
 

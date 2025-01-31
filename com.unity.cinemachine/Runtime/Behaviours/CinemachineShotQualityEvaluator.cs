@@ -82,7 +82,7 @@ namespace Unity.Cinemachine
             CameraRadius = 0;
             DistanceEvaluation = DistanceEvaluationSettings.Default;
         }
-        
+
         /// <inheritdoc />
         protected override void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam, CinemachineCore.Stage stage, ref CameraState state, float deltaTime)

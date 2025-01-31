@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
     static partial class InspectorUtility
     {
         /// <summary>
-        /// Callback that happens whenever something undoable happens, either with 
+        /// Callback that happens whenever something undoable happens, either with
         /// objects or with selection.  This is a good way to track user activity.
         /// </summary>
         public static EditorApplication.CallbackFunction UserDidSomething;
@@ -63,7 +63,7 @@ namespace Unity.Cinemachine.Editor
             {
             }
         }
-        
+
         /// <summary>
         /// Normalize a curve so that each of X and Y axes ranges from 0 to 1
         /// </summary>
@@ -85,7 +85,7 @@ namespace Unity.Cinemachine.Editor
                 name = name.Substring(11); // Trim the prefix
             return ObjectNames.NicifyVariableName(name);
         }
-        
+
         /// <summary>
         /// Remove the "Cinemachine" prefix, then call the standard Unity Nicify,
         /// and add (Deprecated) to types with Obsolete attributes.
@@ -95,11 +95,11 @@ namespace Unity.Cinemachine.Editor
         public static string NicifyClassName(Type type)
         {
             var name = NicifyClassName(type.Name);
-            if (type.GetCustomAttribute<ObsoleteAttribute>() != null) 
+            if (type.GetCustomAttribute<ObsoleteAttribute>() != null)
                 name += " (Deprecated)";
             return name;
         }
-        
+
         private static int m_lastRepaintFrame;
 
         /// <summary>
@@ -157,7 +157,7 @@ namespace Unity.Cinemachine.Editor
             owner.RegisterCallback<AttachToPanelEvent>(_ =>
             {
                 UserDidSomething += callback;
-                owner.OnInitialGeometry(callback); 
+                owner.OnInitialGeometry(callback);
                 owner.RegisterCallback<DetachFromPanelEvent>(_ => UserDidSomething -= callback);
             });
         }
@@ -171,12 +171,12 @@ namespace Unity.Cinemachine.Editor
         {
             owner.RegisterCallback<AttachToPanelEvent>(_ =>
             {
-                owner.OnInitialGeometry(callback); 
+                owner.OnInitialGeometry(callback);
                 EditorApplication.update += callback;
                 owner.RegisterCallback<DetachFromPanelEvent>(_ => EditorApplication.update -= callback);
             });
         }
-        
+
         /// <summary>
         /// Convenience extension to get a callback after initial geometry creation, making it easier to use lambdas.
         /// Callback will only be called once.  Works in inspectors and PropertyDrawers.
@@ -191,9 +191,9 @@ namespace Unity.Cinemachine.Editor
                 callback();
             }
         }
-        
+
         /// <summary>
-        /// Convenience extension to track a property value change plus an initial callback at creation time.  
+        /// Convenience extension to track a property value change plus an initial callback at creation time.
         /// This simplifies logic for the caller, allowing use of lambda callback.
         /// </summary>
         public static void TrackPropertyWithInitialCallback(
@@ -202,11 +202,11 @@ namespace Unity.Cinemachine.Editor
             owner.OnInitialGeometry(() => callback(property));
             owner.TrackPropertyValue(property, callback);
         }
-        
+
         /// <summary>Control the visibility of a widget</summary>
         /// <param name="e">The widget</param>
         /// <param name="show">Whether it should be visible</param>
-        public static void SetVisible(this VisualElement e, bool show) 
+        public static void SetVisible(this VisualElement e, bool show)
             => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
 
         /// <summary>Is the widgte visible?</summary>
@@ -226,7 +226,7 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         /// <param name="e">Parent widget</param>
         /// <param name="name">name of child (or null)</param>
-        public static void SafeSetIsDelayed(this VisualElement e, string name = null) 
+        public static void SafeSetIsDelayed(this VisualElement e, string name = null)
         {
             var f = e.Q<FloatField>(name);
             if (f != null)
@@ -248,12 +248,12 @@ namespace Unity.Cinemachine.Editor
         public static void AddHeader(this VisualElement ux, string text, string tooltip = "")
         {
             ux.AddChild(new Label()
-            { 
-                text = $"<b>{text}</b>", 
+            {
+                text = $"<b>{text}</b>",
                 tooltip = tooltip,
                 focusable = false,
-                style = 
-                { 
+                style =
+                {
                     //height = SingleLineHeight,
                     marginLeft = 3, // GML TODO: remove hardcoded margin
                     marginTop = SingleLineHeight / 2,
@@ -270,12 +270,12 @@ namespace Unity.Cinemachine.Editor
         {
             ux.Add(new VisualElement { style = { height = SingleLineHeight / 2 }});
         }
-        
+
         /// <summary>
         /// Add a property dragger to a float or int label, so that dragging it changes the property value.
         /// </summary>
         public static void AddDelayedFriendlyPropertyDragger(
-            this Label label, SerializedProperty p, VisualElement field, 
+            this Label label, SerializedProperty p, VisualElement field,
             Action<IDelayedFriendlyDragger> OnDraggerCreated = null)
         {
             if (p.propertyType == SerializedPropertyType.Float || p.propertyType == SerializedPropertyType.Integer)
@@ -332,7 +332,7 @@ namespace Unity.Cinemachine.Editor
             return field;
         }
 
-        
+
         /// <summary>A small warning sybmol, suitable for embedding in an inspector row</summary>
         /// <param name="tooltip">The tooltip text</param>
         /// <param name="iconType">The little picture: error, warning, or info</param>
@@ -344,11 +344,11 @@ namespace Unity.Cinemachine.Editor
                 HelpBoxMessageType.Error => "console.erroricon.sml",
                 _ => "console.infoicon.sml",
             };
-            return new Label 
-            { 
+            return new Label
+            {
                 tooltip = tooltip,
-                style = 
-                { 
+                style =
+                {
                     flexGrow = 0,
                     flexBasis = SingleLineHeight,
                     backgroundImage = (StyleBackground)EditorGUIUtility.IconContent(icon).image,
@@ -363,7 +363,7 @@ namespace Unity.Cinemachine.Editor
         /// <param name="contextMenu">The context menu to show when the button is pressed</param>
         public static Button MiniPopupButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
         {
-            var button = new Button { tooltip = tooltip, style = 
+            var button = new Button { tooltip = tooltip, style =
             {
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("_Popup").image,
                 width = SingleLineHeight, height = SingleLineHeight,
@@ -384,7 +384,7 @@ namespace Unity.Cinemachine.Editor
         /// <param name="contextMenu">The context menu to show when the button is pressed</param>
         public static Button MiniDropdownButton(string tooltip = null, ContextualMenuManipulator contextMenu = null)
         {
-            var button = new Button { tooltip = tooltip, style = 
+            var button = new Button { tooltip = tooltip, style =
             {
                 backgroundImage = (StyleBackground)EditorGUIUtility.IconContent("dropdown").image,
                 width = SingleLineHeight, height = SingleLineHeight,
@@ -401,7 +401,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// This is an inspector container with 2 side-by-side rows. The Left row's width is 
+        /// This is an inspector container with 2 side-by-side rows. The Left row's width is
         /// locked to the inspector field label size, for proper alignment.
         /// </summary>
         public class LeftRightRow : VisualElement
@@ -424,7 +424,7 @@ namespace Unity.Cinemachine.Editor
             public LeftRightRow(VisualElement left = null, VisualElement right = null)
             {
                 // This is to peek at the resolved label width
-                Add(new AlignFieldSizer { OnLabelWidthChanged = (w) => 
+                Add(new AlignFieldSizer { OnLabelWidthChanged = (w) =>
                 {
                     if (KillLeftMargin)
                         Row.style.marginLeft = 0;
@@ -449,7 +449,7 @@ namespace Unity.Cinemachine.Editor
             class AlignFieldSizer : BaseField<bool> // bool is just a dummy because it has to be something
             {
                 public Action<float> OnLabelWidthChanged;
-                public AlignFieldSizer() : base (" ", new VisualElement()) 
+                public AlignFieldSizer() : base (" ", new VisualElement())
                 {
                     focusable = false;
                     style.flexDirection = FlexDirection.Row;
@@ -457,7 +457,7 @@ namespace Unity.Cinemachine.Editor
                     style.height = 0;
                     style.marginTop = -EditorGUIUtility.standardVerticalSpacing;
                     AddToClassList(AlignFieldClassName);
-                    labelElement.RegisterCallback<GeometryChangedEvent>((_) 
+                    labelElement.RegisterCallback<GeometryChangedEvent>((_)
                         => OnLabelWidthChanged?.Invoke(labelElement.resolvedStyle.width));
                 }
             }
@@ -470,9 +470,9 @@ namespace Unity.Cinemachine.Editor
         public class LabeledRow : LeftRightRow
         {
             public Label Label { get; private set; }
-            public VisualElement Contents { get; private set; } 
+            public VisualElement Contents { get; private set; }
 
-            public LabeledRow(string label, string tooltip = "", VisualElement contents = null) 
+            public LabeledRow(string label, string tooltip = "", VisualElement contents = null)
                 : base(new Label(label) { tooltip = tooltip, style = { alignSelf = Align.Center, flexGrow = 1 }}, contents)
             {
                 Label = Left as Label;
@@ -494,7 +494,7 @@ namespace Unity.Cinemachine.Editor
             AddDelayedFriendlyPropertyDragger(row.Label, property, propertyField, (d) => d.CancelDelayedWhenDragging = true);
             return row;
         }
-        
+
         /// <summary>
         /// A property field with a minimally-sized label that does not respect inspector sizing.
         /// Suitable for embedding in a row within the right-hand side of the inspector.
@@ -510,7 +510,7 @@ namespace Unity.Cinemachine.Editor
             {
                 style.flexDirection = FlexDirection.Row;
                 if (!string.IsNullOrEmpty(label))
-                    Label = AddChild(this, new Label(label) 
+                    Label = AddChild(this, new Label(label)
                         { tooltip = property?.tooltip, style = { alignSelf = Align.Center, minWidth = minLabelWidth }});
                 Field = AddChild(this, new PropertyField(property, "") { style = { flexGrow = 1, flexBasis = 50 } });
                 Field.style.marginLeft = Field.style.marginLeft.value.value - 1;
@@ -590,13 +590,13 @@ namespace Unity.Cinemachine.Editor
         }
 
         public static VisualElement HelpBoxWithButton(
-            string message, HelpBoxMessageType messageType, 
+            string message, HelpBoxMessageType messageType,
             string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
         {
-            var box = new VisualElement { style = 
-            { 
-                flexDirection = FlexDirection.Row, 
-                paddingTop = 8, paddingBottom = 8, paddingLeft = 8, paddingRight = 8 
+            var box = new VisualElement { style =
+            {
+                flexDirection = FlexDirection.Row,
+                paddingTop = 8, paddingBottom = 8, paddingLeft = 8, paddingRight = 8
             }};
             box.AddToClassList("unity-help-box");
             var innerBox = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Column, flexGrow = 1 }});
@@ -605,7 +605,7 @@ namespace Unity.Cinemachine.Editor
             var icon = row.AddChild(MiniHelpIcon("", messageType));
             icon.style.alignSelf = Align.Auto;
             icon.style.marginRight = 6;
-            var text = row.AddChild(new Label(message) 
+            var text = row.AddChild(new Label(message)
                 { style = { flexGrow = 1, flexBasis = 100, alignSelf = Align.Center, whiteSpace = WhiteSpace.Normal }});
 
             var buttons = innerBox.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginTop = 6 }});

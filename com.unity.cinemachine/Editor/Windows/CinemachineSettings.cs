@@ -13,21 +13,21 @@ namespace Unity.Cinemachine.Editor
             protected T m_DefaultValue;
             protected T m_CurrentValue;
 
-            public Item(string key, T defaultValue) 
-            { 
-                m_Key = key; 
-                m_DefaultValue = defaultValue; 
+            public Item(string key, T defaultValue)
+            {
+                m_Key = key;
+                m_DefaultValue = defaultValue;
                 m_CurrentValue = ReadPrefs();
             }
 
-            public T Value 
-            { 
-                get => m_CurrentValue; 
-                set 
-                { 
+            public T Value
+            {
+                get => m_CurrentValue;
+                set
+                {
                     if (!m_CurrentValue.Equals(value))
                     {
-                        m_CurrentValue = value; 
+                        m_CurrentValue = value;
                         WritePrefs(m_CurrentValue);
                     }
                 }
@@ -67,7 +67,7 @@ namespace Unity.Cinemachine.Editor
             protected override string ReadPrefs() => EditorPrefs.GetString(m_Key, m_DefaultValue);
             protected override void WritePrefs(string value) => EditorPrefs.SetString(m_Key, value);
         }
-        
+
         public class ColorItem : Item<Color>
         {
             public ColorItem(string key, Color defaultValue) : base(key, defaultValue) {}
@@ -113,7 +113,7 @@ namespace Unity.Cinemachine.Editor
 
         // Called by the ingrastructure.  We install our hierarchy icon drawer.
         static void OnPostprocessAllAssets(
-            string[] importedAssets, string[] deletedAssets, string[] movedAssets, 
+            string[] importedAssets, string[] deletedAssets, string[] movedAssets,
             string[] movedFromAssetPaths, bool didDomainReload)
         {
             if (didDomainReload)
@@ -150,9 +150,9 @@ namespace Unity.Cinemachine.Editor
 
         public static event Action AdditionalCategories = CinemachineCorePrefs.DrawCoreSettings; // This one is first
         static Vector2 s_ScrollPosition = Vector2.zero;
-        
+
         [SettingsProvider]
-        static SettingsProvider CreateProjectSettingsProvider() => 
+        static SettingsProvider CreateProjectSettingsProvider() =>
             new("Preferences/Cinemachine", SettingsScope.User) { guiHandler = _ => OnGUI() };
 
         static void OnGUI()

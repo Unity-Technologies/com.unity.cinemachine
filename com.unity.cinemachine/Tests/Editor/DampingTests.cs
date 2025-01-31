@@ -106,7 +106,7 @@ namespace Unity.Cinemachine.Tests.Editor
                     for (iterations = 0; vectorToDamp.magnitude > negligibleResidual; iterations++)
                     {
                         var delta = Damper.Damp(vectorToDamp, dampTime, deltaTime);
-                        Assert.That(delta.normalized, Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic 
+                        Assert.That(delta.normalized, Is.EqualTo(previousDelta.normalized).Using(m_Vector3EqualityComparer)); // monotonic
                         Assert.That(delta.magnitude, Is.LessThan(previousDelta.magnitude)); // strictly decreasing
                         vectorToDamp -= delta;
                         previousDelta = delta;

@@ -98,8 +98,8 @@ namespace Unity.Cinemachine.Editor
         enum DragBar
         {
             Center,
-            HardRight, HardBottom, HardLeft, HardTop, 
-            DeadRight, DeadBottom, DeadLeft, DeadTop, 
+            HardRight, HardBottom, HardLeft, HardTop,
+            DeadRight, DeadBottom, DeadLeft, DeadTop,
             NONE
         };
 
@@ -114,7 +114,7 @@ namespace Unity.Cinemachine.Editor
 
         // Call this from inspector's OnDisable()
         public void OnDisable() => m_EventCatcher.OnDisable();
-        
+
         Rect GetCameraRect(Camera outputCamera, LensSettings lens)
         {
             Rect cameraRect = outputCamera.pixelRect;
@@ -206,7 +206,7 @@ namespace Unity.Cinemachine.Editor
 
             var composition = GetComposition();
             var hard = composition.HardLimitsRect;
-            hard = new (hard.xMin * cameraRect.width, hard.yMin * cameraRect.height, 
+            hard = new (hard.xMin * cameraRect.width, hard.yMin * cameraRect.height,
                 hard.width * cameraRect.width, hard.height * cameraRect.height);
 
             const float kBarSize = 2;
@@ -217,7 +217,7 @@ namespace Unity.Cinemachine.Editor
             m_DragBars[(int)DragBar.HardBottom] = ClipToCamera(new Rect(0f, hard.yMax, cameraRect.width, 0).Inflated(new Vector2(0, kBarSize)));
 
             var dead = composition.DeadZoneRect;
-            dead = new (dead.xMin * cameraRect.width, dead.yMin * cameraRect.height, 
+            dead = new (dead.xMin * cameraRect.width, dead.yMin * cameraRect.height,
                 dead.width * cameraRect.width, dead.height * cameraRect.height);
 
             m_DragBars[(int)DragBar.DeadLeft] = ClipToCamera(new Rect(dead.xMin, 0f, 0, cameraRect.height).Inflated(new Vector2(kBarSize, 0)));
@@ -307,35 +307,35 @@ namespace Unity.Cinemachine.Editor
                 switch (m_IsDragging)
                 {
                     case DragBar.Center: dead.position += d; break;
-                    case DragBar.DeadLeft: 
+                    case DragBar.DeadLeft:
                     {
-                        if (composition.DeadZone.Enabled) 
-                            dead = dead.Inflated(new Vector2(-d.x, 0)); 
-                        else 
+                        if (composition.DeadZone.Enabled)
+                            dead = dead.Inflated(new Vector2(-d.x, 0));
+                        else
                             dead.position += new Vector2(d.x, 0);
                         break;
                     }
                     case DragBar.DeadRight:
                     {
-                        if (composition.DeadZone.Enabled) 
-                            dead = dead.Inflated(new Vector2(d.x, 0)); 
-                        else 
+                        if (composition.DeadZone.Enabled)
+                            dead = dead.Inflated(new Vector2(d.x, 0));
+                        else
                             dead.position += new Vector2(d.x, 0);
                         break;
                     }
                     case DragBar.DeadTop:
                     {
-                        if (composition.DeadZone.Enabled) 
-                            dead = dead.Inflated(new Vector2(0, -d.y)); 
-                        else 
+                        if (composition.DeadZone.Enabled)
+                            dead = dead.Inflated(new Vector2(0, -d.y));
+                        else
                             dead.position += new Vector2(0, d.y);
                         break;
                     }
                     case DragBar.DeadBottom:
                     {
-                        if (composition.DeadZone.Enabled) 
-                            dead = dead.Inflated(new Vector2(0, d.y)); 
-                        else 
+                        if (composition.DeadZone.Enabled)
+                            dead = dead.Inflated(new Vector2(0, d.y));
+                        else
                             dead.position += new Vector2(0, d.y);
                         break;
                     }

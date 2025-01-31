@@ -65,7 +65,7 @@ namespace Unity.Cinemachine.Editor
 
         public static ListView CreateDataListField<T>(
             SplineData<T> splineData,
-            SerializedProperty splineDataProp, 
+            SerializedProperty splineDataProp,
             GetSplineDelegate getSpline,
             GetDefaultValueDelegate<T> getDefaultValue = null)
         {
@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
             var pathUnitProp = splineDataProp.FindPropertyRelative("m_IndexUnit");
             var arrayProp = splineDataProp.FindPropertyRelative("m_DataPoints");
 
-            var list = new ListView 
+            var list = new ListView
             {
                 reorderable = false,
                 showBorder = true,
@@ -89,7 +89,7 @@ namespace Unity.Cinemachine.Editor
 
             // When we add the first item, make sure to use the default value
             var button = list.Q<Button>("unity-list-view__add-button");
-            button.clicked += () => 
+            button.clicked += () =>
             {
                 if (arrayProp.arraySize == 1)
                 {
@@ -99,7 +99,7 @@ namespace Unity.Cinemachine.Editor
                 }
             };
 
-            list.TrackPropertyValue(arrayProp, (p) => 
+            list.TrackPropertyValue(arrayProp, (p) =>
             {
                 p.serializedObject.ApplyModifiedProperties();
 
@@ -177,10 +177,10 @@ namespace Unity.Cinemachine.Editor
             float maxPos = 1;
             switch (unit)
             {
-                case PathIndexUnit.Distance: 
-                    maxPos = spline.GetLength(); 
+                case PathIndexUnit.Distance:
+                    maxPos = spline.GetLength();
                     break;
-                case PathIndexUnit.Knot: 
+                case PathIndexUnit.Knot:
                 {
                     var knotCount = spline.Count;
                     maxPos = (!spline.Closed || knotCount < 2) ? Mathf.Max(0, knotCount - 1) : knotCount;

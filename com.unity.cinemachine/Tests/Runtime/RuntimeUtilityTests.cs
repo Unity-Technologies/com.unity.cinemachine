@@ -11,7 +11,7 @@ namespace Unity.Cinemachine.Tests
     {
         GameObject m_Box;
         const string k_BoxTag = "Player";
-        int m_LayerMask = -5; // [DefaultValue("Physics.DefaultRaycastLayers")] 
+        int m_LayerMask = -5; // [DefaultValue("Physics.DefaultRaycastLayers")]
         BoxCollider m_BoxCollider;
 
         [SetUp]
@@ -40,15 +40,15 @@ namespace Unity.Cinemachine.Tests
             var boxPosition = m_Box.transform.position;
             var ray = new Ray(Vector3.zero, boxPosition);
             var rayLength = boxPosition.magnitude;
-            
+
             // check ray cast hit
             Assert.True(RuntimeUtility.RaycastIgnoreTag(ray, out var hitInfo, rayLength, m_LayerMask, string.Empty));
             Assert.That(hitInfo.distance, Is.EqualTo(boxPosition.z - (m_BoxCollider.size.z / 2f)));
-            
+
             // check that ray cast did not hit anything, because it ignores the box's tag
             Assert.False(RuntimeUtility.RaycastIgnoreTag(ray, out hitInfo, rayLength, m_LayerMask, k_BoxTag));
         }
-        
+
         [UnityTest]
         public IEnumerator SphereCastIgnoreTagTest()
         {
@@ -58,11 +58,11 @@ namespace Unity.Cinemachine.Tests
             var direction = boxPosition.normalized; // shooting from origin
             var rayLength = boxPosition.magnitude;
             var sphereRadius = 1f;
-            
+
             // check ray cast hit
             Assert.True(RuntimeUtility.SphereCastIgnoreTag(new Ray(Vector3.zero, direction), sphereRadius, out var hitInfo, rayLength, m_LayerMask, string.Empty));
             Assert.That(hitInfo.distance, Is.EqualTo(boxPosition.z - (m_BoxCollider.size.z / 2f) - sphereRadius));
-            
+
             // check that ray cast did not hit anything, because it ignores the box's tag
             Assert.False(RuntimeUtility.SphereCastIgnoreTag(new Ray(Vector3.zero, direction), sphereRadius, out hitInfo, rayLength, m_LayerMask, k_BoxTag));
         }

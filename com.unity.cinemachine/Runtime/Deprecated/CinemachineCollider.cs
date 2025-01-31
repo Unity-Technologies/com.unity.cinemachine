@@ -250,11 +250,11 @@ namespace Unity.Cinemachine
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime)); 
+        public override float GetMaxDampTime()
+        {
+            return Mathf.Max(m_Damping, Mathf.Max(m_DampingWhenOccluded, m_SmoothingTime));
         }
-        
+
           /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
@@ -271,7 +271,7 @@ namespace Unity.Cinemachine
                 var extra = GetExtraState<VcamExtraState>(vcam);
                 extra.targetObscured = false;
                 extra.debugResolutionPath?.RemoveRange(0, extra.debugResolutionPath.Count);
-            
+
                 if (m_AvoidObstacles)
                 {
                     var initialCamPos = state.GetCorrectedPosition();
@@ -313,7 +313,7 @@ namespace Unity.Cinemachine
                             displacement += (state.ReferenceLookAt + dir * distance) - pos;
                         }
                     }
-                    
+
                     if (displacement.AlmostZero())
                         extra.ResetDistanceSmoothing(m_SmoothingTime);
 
@@ -355,7 +355,7 @@ namespace Unity.Cinemachine
                         var dir0 = extra.previousCameraPosition - state.ReferenceLookAt;
                         var dir1 = cameraPos - state.ReferenceLookAt;
                         if (dir0.sqrMagnitude > Epsilon && dir1.sqrMagnitude > Epsilon)
-                            state.RotationDampingBypass = state.RotationDampingBypass 
+                            state.RotationDampingBypass = state.RotationDampingBypass
                                 * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, state.ReferenceUp);
                     }
                     extra.previousDisplacement = displacement;
@@ -685,7 +685,7 @@ namespace Unity.Cinemachine
                 // OverlapSphereNonAlloc won't catch those.
                 float d = distance - m_MinimumDistanceFromTarget;
                 Vector3 targetPos = lookAtPos + dir * m_MinimumDistanceFromTarget;
-                if (RuntimeUtility.RaycastIgnoreTag(new Ray(targetPos, dir), 
+                if (RuntimeUtility.RaycastIgnoreTag(new Ray(targetPos, dir),
                     out hitInfo, d, m_CollideAgainst, m_IgnoreTag))
                 {
                     // Only count it if there's an incoming collision but not an outgoing one

@@ -12,44 +12,44 @@ namespace Unity.Cinemachine
     /// Suppresses the top-level foldout on a complex property
     /// </summary>
     public sealed class HideFoldoutAttribute : PropertyAttribute {}
-    
+
     /// <summary>Hide this property if a component of a given type is not present</summary>
-    public sealed class HideIfNoComponentAttribute : PropertyAttribute 
+    public sealed class HideIfNoComponentAttribute : PropertyAttribute
     {
         /// <summary>The name of the field controlling the enabled state</summary>
-        public Type ComponentType; 
+        public Type ComponentType;
 
         /// <summary>Constructor</summary>
         /// <param name="type">Type of the component to check for</param>
-        public HideIfNoComponentAttribute(Type type) => ComponentType = type; 
+        public HideIfNoComponentAttribute(Type type) => ComponentType = type;
     }
 
     /// <summary>
     /// Draw a foldout with an Enabled toggle that shadows a field inside the foldout
     /// </summary>
-    public class FoldoutWithEnabledButtonAttribute : PropertyAttribute 
-    { 
+    public class FoldoutWithEnabledButtonAttribute : PropertyAttribute
+    {
         /// <summary>The name of the field controlling the enabled state</summary>
-        public string EnabledPropertyName; 
+        public string EnabledPropertyName;
 
         /// <summary>Constructor</summary>
         /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
-        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled") 
-            => EnabledPropertyName = enabledProperty; 
+        public FoldoutWithEnabledButtonAttribute(string enabledProperty = "Enabled")
+            => EnabledPropertyName = enabledProperty;
     }
 
     /// <summary>
     /// Draw a FoldoutWithEnabledButtonAttribute on a single line
     /// </summary>
-    public sealed class EnabledPropertyAttribute : FoldoutWithEnabledButtonAttribute 
-    { 
+    public sealed class EnabledPropertyAttribute : FoldoutWithEnabledButtonAttribute
+    {
         /// <summary>Text to display to the right of the toggle button when disabled</summary>
         public string ToggleDisabledText;
 
         /// <summary>Constructor</summary>
         /// <param name="enabledProperty">The name of the field controlling the enabled state</param>
         /// <param name="toggleText">Text to display to the right of the toggle button</param>
-        public EnabledPropertyAttribute(string enabledProperty = "Enabled", string toggleText = "") 
+        public EnabledPropertyAttribute(string enabledProperty = "Enabled", string toggleText = "")
             : base(enabledProperty) => ToggleDisabledText = toggleText;
     }
 
@@ -57,8 +57,8 @@ namespace Unity.Cinemachine
     /// Property applied to int or float fields to generate a slider in the inspector.
     /// </summary>
     [Obsolete("Use RangeAttribute instead")]
-    public sealed class RangeSliderAttribute : PropertyAttribute 
-    { 
+    public sealed class RangeSliderAttribute : PropertyAttribute
+    {
         /// <summary>Minimum value for the range slider</summary>
         public float Min;
         /// <summary>Maximum value for the range slider</summary>
@@ -68,12 +68,12 @@ namespace Unity.Cinemachine
         /// <param name="max">Maximum value for the range slider</param>
         public RangeSliderAttribute(float min, float max) { Min = min; Max = max; }
     }
-    
+
     /// <summary>
     /// Property applied to int or float fields to generate a minmax range slider in the inspector.
     /// </summary>
-    public sealed class MinMaxRangeSliderAttribute : PropertyAttribute 
-    { 
+    public sealed class MinMaxRangeSliderAttribute : PropertyAttribute
+    {
         /// <summary>Minimum value for the range slider</summary>
         public float Min;
         /// <summary>Maximum value for the range slider</summary>
@@ -85,22 +85,22 @@ namespace Unity.Cinemachine
     }
 
     /// <summary>
-    /// Property applied to LensSetting properties.  
+    /// Property applied to LensSetting properties.
     /// Will cause the property drawer to hide the ModeOverride setting.
     /// </summary>
     public sealed class LensSettingsHideModeOverridePropertyAttribute : PropertyAttribute {}
 
     /// <summary>Property to display a SensorSize field</summary>
     public sealed class SensorSizePropertyAttribute : PropertyAttribute {}
-    
+
     /// <summary>Property field is a Tag.</summary>
     public sealed class TagFieldAttribute : PropertyAttribute {}
-    
+
     /// <summary>
     /// Used for custom drawing in the inspector.  Inspector will show a foldout with the asset contents
     /// </summary>
     // GML TODO: delete this attribute
-    public sealed class CinemachineEmbeddedAssetPropertyAttribute : PropertyAttribute 
+    public sealed class CinemachineEmbeddedAssetPropertyAttribute : PropertyAttribute
     {
         /// <summary>If true, inspector will display a warning if the embedded asset is null</summary>
         public bool WarnIfNull;
@@ -109,7 +109,7 @@ namespace Unity.Cinemachine
         /// <param name="warnIfNull">If true, inspector will display a warning if the embedded asset is null</param>
         public CinemachineEmbeddedAssetPropertyAttribute(bool warnIfNull = false) { WarnIfNull = warnIfNull; }
     }
-    
+
     /// <summary>
     /// Property applied to Vector2 to treat (x, y) as (min, max).
     /// Used for custom drawing in the inspector.
@@ -142,16 +142,16 @@ namespace Unity.Cinemachine
     public sealed class RequiredTargetAttribute : System.Attribute
     {
         /// <summary>Choices for which targets are required</summary>
-        public enum RequiredTargets 
-        { 
+        public enum RequiredTargets
+        {
             /// <summary>No specific target is required.</summary>
-            None, 
+            None,
             /// <summary>Tracking Target is required for the pipeline element to work</summary>
-            Tracking, 
+            Tracking,
             /// <summary>LookAt Target is required for the pipeline element to work</summary>
-            LookAt, 
+            LookAt,
             /// <summary>LookAt Target is required and must be a ICinemachineTargetGroup for the pipeline element to work</summary>
-            GroupLookAt 
+            GroupLookAt
         };
 
         /// <summary>Get the stage in the Camera Pipeline in which to position this component</summary>

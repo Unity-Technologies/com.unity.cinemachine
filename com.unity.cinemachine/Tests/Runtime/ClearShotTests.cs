@@ -13,12 +13,12 @@ namespace Unity.Cinemachine.Tests
         CinemachineClearShot m_ClearShot;
         CinemachineCamera m_Vcam1;
         CinemachineCamera m_Vcam2;
-        
+
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            
+
             // a basic "character" to use as a lookat
             m_Character = CreateGameObject("Character");
             m_Character.transform.position = new Vector3(10, 0, 1);
@@ -34,11 +34,11 @@ namespace Unity.Cinemachine.Tests
             // a stationary vcam1 with a hard lookat
             var vcam1Holder = CreateGameObject("CM Vcam1", typeof(CinemachineCamera));
             vcam1Holder.transform.SetParent(clearShotHolder.transform);
-            vcam1Holder.transform.position = new Vector3(0, 0, 8); 
+            vcam1Holder.transform.position = new Vector3(0, 0, 8);
             m_Vcam1 = vcam1Holder.GetComponent<CinemachineCamera>();
             m_Vcam1.gameObject.AddComponent<CinemachineHardLookAt>();
             m_Vcam1.Priority.Value = 20;
-            
+
             // a completely locked vcam2
             var vcam2Holder = CreateGameObject("CM Vcam2", typeof(CinemachineCamera));
             vcam2Holder.transform.SetParent(clearShotHolder.transform);

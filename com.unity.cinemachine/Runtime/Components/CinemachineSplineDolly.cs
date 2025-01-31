@@ -27,7 +27,7 @@ namespace Unity.Cinemachine
         [SerializeField, FormerlySerializedAs("SplineSettings")]
         SplineSettings m_SplineSettings = new () { Units = PathIndexUnit.Normalized };
 
-        /// <summary>Where to put the camera relative to the spline position.  X is perpendicular 
+        /// <summary>Where to put the camera relative to the spline position.  X is perpendicular
         /// to the spline, Y is up, and Z is parallel to the spline.</summary>
         [Tooltip("Where to put the camera relative to the spline position.  X is perpendicular "
             + "to the spline, Y is up, and Z is parallel to the spline.")]
@@ -38,7 +38,7 @@ namespace Unity.Cinemachine
             + "the camera Aim behaviours will always try to respect the Up direction.")]
         [FormerlySerializedAs("CameraUp")]
         public RotationMode CameraRotation = RotationMode.Default;
-        
+
         /// <summary>Different ways to set the camera's up vector</summary>
         public enum RotationMode
         {
@@ -58,7 +58,7 @@ namespace Unity.Cinemachine
         [Serializable]
         public struct DampingSettings
         {
-            /// <summary>Enables damping, which causes the camera to move gradually towards 
+            /// <summary>Enables damping, which causes the camera to move gradually towards
             /// the desired spline position.</summary>
             [Tooltip("Enables damping, which causes the camera to move gradually towards the desired spline position")]
             public bool Enabled;
@@ -73,14 +73,14 @@ namespace Unity.Cinemachine
             /// - z represents the axis that is parallel to the spline. This won't move the camera off the spline.
             /// Smaller numbers are more responsive. Larger numbers give a heavier more slowly responding camera.
             /// Using different settings per axis can yield a wide range of camera behaviors.</summary>
-            [Tooltip("How aggressively the camera tries to maintain the offset along the " 
-                + "x, y, or z directions in spline local space. \n" 
-                + "- x represents the axis that is perpendicular to the spline. Use this to smooth out " 
-                + "imperfections in the path. This may move the camera off the spline.\n" 
-                + "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out " 
-                + "imperfections in the path. This may move the camera off the spline.\n" 
-                + "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n" 
-                + "Smaller numbers are more responsive, larger numbers give a heavier more slowly responding camera. " 
+            [Tooltip("How aggressively the camera tries to maintain the offset along the "
+                + "x, y, or z directions in spline local space. \n"
+                + "- x represents the axis that is perpendicular to the spline. Use this to smooth out "
+                + "imperfections in the path. This may move the camera off the spline.\n"
+                + "- y represents the axis that is defined by the spline-local up direction. Use this to smooth out "
+                + "imperfections in the path. This may move the camera off the spline.\n"
+                + "- z represents the axis that is parallel to the spline. This won't move the camera off the spline.\n\n"
+                + "Smaller numbers are more responsive, larger numbers give a heavier more slowly responding camera. "
                 + "Using different settings per axis can yield a wide range of camera behaviors.")]
             public Vector3 Position;
 
@@ -92,13 +92,13 @@ namespace Unity.Cinemachine
             public float Angular;
         }
 
-        /// <summary>Settings for controlling damping, which causes the camera to 
+        /// <summary>Settings for controlling damping, which causes the camera to
         /// move gradually towards the desired spline position</summary>
         [FoldoutWithEnabledButton]
         [Tooltip("Settings for controlling damping, which causes the camera to "
             + "move gradually towards the desired spline position")]
         public DampingSettings Damping;
-        
+
         /// <summary>Controls how automatic dolly occurs</summary>
         [NoSaveDuringPlay]
         [FoldoutWithEnabledButton]
@@ -222,7 +222,7 @@ namespace Unity.Cinemachine
             var spline = m_SplineSettings.GetCachedSpline();
             if (spline == null)
                 return;
-            
+
             var splinePos = spline.StandardizePosition(CameraPosition, PositionUnits, out var maxPos);
 
             // Init previous frame state info
@@ -253,7 +253,7 @@ namespace Unity.Cinemachine
             m_PreviousSplinePosition = CameraPosition = splinePos;
 
             spline.EvaluateSplineWithRoll(
-                Spline.transform, spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized), 
+                Spline.transform, spline.ConvertIndexUnit(splinePos, PositionUnits, PathIndexUnit.Normalized),
                 m_RollCache.GetSplineRoll(this), out var newPos, out var newSplineRotation);
 
             // Apply the offset to get the new camera position

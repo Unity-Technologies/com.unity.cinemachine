@@ -8,7 +8,7 @@ namespace Unity.Cinemachine.Samples
     {
         [Tooltip("The platform from which LoseSightAtRange is calculated")]
         public Transform Floor;
-        
+
         [Tooltip("The weight of a transform in the target group is 1 when above the Floor. When a transform is " +
             "below the Floor, then its weight decreases based on the distance between the transform and the " +
             "Floor and it reaches 0 at LoseSightAtRange. If you set this value to 0, then the transform is removed " +

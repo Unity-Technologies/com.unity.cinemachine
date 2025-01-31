@@ -20,7 +20,7 @@ namespace Unity.Cinemachine.Editor
         Texture2D m_Screenshot;
         float m_LastUpdateTime = 0;
         VisualElement m_ImageDisplay;
- 
+
         public static void RefreshNow()
         {
             if (s_Window != null)
@@ -56,14 +56,14 @@ namespace Unity.Cinemachine.Editor
             m_ScreenshotFilename = null;
             m_WaveformGenerator.DestroyBuffers();
         }
-        
+
         public void CreateGUI()
         {
             var ux = rootVisualElement;
-            var exposureField = ux.AddChild(new Slider("Exposure", 0.01f, 2) 
+            var exposureField = ux.AddChild(new Slider("Exposure", 0.01f, 2)
                 { value = m_WaveformGenerator.Exposure, showInputField = true });
             exposureField.RemoveFromClassList(InspectorUtility.AlignFieldClassName);
-            exposureField.RegisterValueChangedCallback((evt) => 
+            exposureField.RegisterValueChangedCallback((evt) =>
             {
                 m_WaveformGenerator.Exposure = evt.newValue;
                 CaptureScreen();

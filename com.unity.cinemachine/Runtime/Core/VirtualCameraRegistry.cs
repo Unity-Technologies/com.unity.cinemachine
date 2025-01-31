@@ -3,7 +3,7 @@ using UnityEngine.Assertions;
 
 namespace Unity.Cinemachine
 {
-    /// <summary>Keeps track of CinemachineCameras.  Sorts them by priority, and 
+    /// <summary>Keeps track of CinemachineCameras.  Sorts them by priority, and
     /// by nesting level, so cameras can get updated leafmost-first.</summary>
     sealed class VirtualCameraRegistry
     {
@@ -36,9 +36,9 @@ namespace Unity.Cinemachine
         {
             if (!m_ActiveCamerasAreSorted && m_ActiveCameras.Count > 1)
             {
-                m_ActiveCameras.Sort((x, y) => 
-                    x.Priority.Value == y.Priority.Value 
-                        ? y.ActivationId.CompareTo(x.ActivationId) 
+                m_ActiveCameras.Sort((x, y) =>
+                    x.Priority.Value == y.Priority.Value
+                        ? y.ActivationId.CompareTo(x.ActivationId)
                         : y.Priority.Value.CompareTo(x.Priority.Value));
                 m_ActiveCamerasAreSorted = true;
             }

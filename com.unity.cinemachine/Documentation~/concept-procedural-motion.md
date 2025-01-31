@@ -23,8 +23,8 @@ With these behaviors, you can:
 
 * Compose shots with adaptive camera [position](CinemachinePositionComposer.md) and [rotation](CinemachineRotationComposer.md), or centered [hard look](CinemachineHardLookAt.md), to keep the target in the camera frame.
 
-* Apply the target's [position](CinemachineHardLockToTarget.md) and [rotation](CinemachineRotateWithFollowTarget.md) to the camera instead of having the target in the camera frame. 
-  
+* Apply the target's [position](CinemachineHardLockToTarget.md) and [rotation](CinemachineRotateWithFollowTarget.md) to the camera instead of having the target in the camera frame.
+
 * Move the camera along a predefined Spline to simulate a [dolly camera path](CinemachineSplineDolly.md).
 
 * Rotate the camera around configurable [pan and tilt](CinemachinePanTilt.md) axes.
@@ -63,7 +63,7 @@ Here is the list of all available Cinemachine Camera Extensions:
 
 ## Target GameObject tracking
 
-Target GameObject tracking is a key element in defining procedural motion. Offsets and screen compositions are specified in relation to these targets, so as the targets move around in the world, the cameras adjust themselves to keep the shot.  
+Target GameObject tracking is a key element in defining procedural motion. Offsets and screen compositions are specified in relation to these targets, so as the targets move around in the world, the cameras adjust themselves to keep the shot.
 
 ### Tracking Target and Look At Target properties
 
@@ -77,7 +77,7 @@ By default, a Cinemachine Camera has a single **Tracking Target** property, whic
 
 ### Target tracking and blends
 
-The target is also relevant when Cinemachine performs blends between shots. Cinemachine attempts to maintain the shot's desired screen position for the target, and if the target changes between shots, Cinemachine performs an interpolation between the targets' positions.  
+The target is also relevant when Cinemachine performs blends between shots. Cinemachine attempts to maintain the shot's desired screen position for the target, and if the target changes between shots, Cinemachine performs an interpolation between the targets' positions.
 
 If no target is specified for a camera blend, then Cinemachine can only interpolate the position and rotation independently, which often results in the object of interest moving around on the screen in undesirable ways. If Cinemachine knows what is the object of interest, it can correct that problem.
 

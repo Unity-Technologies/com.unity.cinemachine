@@ -14,12 +14,12 @@ namespace Unity.Cinemachine.Editor
             var ux = new VisualElement();
             ux.Add(new HelpBox("The Spline Smoother adjusts the spline's knot settings to maintain smoothness "
                 + "suitable for camera paths.  Do not adjust the tangents or knot modes manually; they will be overwritten by the smoother.\n"
-                + "To adjust tangents and knot settings manually, disable or remove this Behaviour.", 
+                + "To adjust tangents and knot settings manually, disable or remove this Behaviour.",
             HelpBoxMessageType.Info));
 
             var autoSmoothProp = serializedObject.FindProperty(nameof(CinemachineSplineSmoother.AutoSmooth));
             ux.Add(new PropertyField(autoSmoothProp));
-            ux.TrackPropertyValue(autoSmoothProp, (p) => 
+            ux.TrackPropertyValue(autoSmoothProp, (p) =>
             {
                 if (p.boolValue)
                 {
@@ -33,7 +33,7 @@ namespace Unity.Cinemachine.Editor
             return ux;
         }
 
-        static void SmoothSplineNow(CinemachineSplineSmoother smoother) 
+        static void SmoothSplineNow(CinemachineSplineSmoother smoother)
         {
             if (smoother != null && smoother.TryGetComponent(out SplineContainer container))
             {

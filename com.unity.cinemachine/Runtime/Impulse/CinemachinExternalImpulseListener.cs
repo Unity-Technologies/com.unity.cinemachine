@@ -5,11 +5,11 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// This behaviour can be attached to any object to make it shake in response to Impulses.
-    /// 
+    ///
     /// This behaviour can be attached to the main Camera with the CinemachineBrain,
-    /// to allow the main camera to shake without putting Listeners on the virtual cameras. 
+    /// to allow the main camera to shake without putting Listeners on the virtual cameras.
     /// In this case, camera shake is not dependent on the active virtual camera.
-    /// 
+    ///
     /// It is also possible to put this behaviour on other scene objects to shake them
     /// in response to impulses.
     /// </summary>
@@ -51,10 +51,10 @@ namespace Unity.Cinemachine
         public bool UseLocalSpace;
 
         /// <summary>
-        /// This controls the secondary reaction of the listener to the incoming impulse.  
+        /// This controls the secondary reaction of the listener to the incoming impulse.
         /// The impulse might be for example a sharp shock, and the secondary reaction could
-        /// be a vibration whose amplitude and duration is controlled by the size of the 
-        /// original impulse.  This allows different listeners to respond in different ways 
+        /// be a vibration whose amplitude and duration is controlled by the size of the
+        /// original impulse.  This allows different listeners to respond in different ways
         /// to the same impulse signal.
         /// </summary>
         [Tooltip("This controls the secondary reaction of the listener to the incoming impulse.  "
@@ -71,9 +71,9 @@ namespace Unity.Cinemachine
             Gain = 1;
             Use2DDistance = false;
             UseLocalSpace = true;
-            ReactionSettings = new CinemachineImpulseListener.ImpulseReaction 
-            { 
-                AmplitudeGain = 1, 
+            ReactionSettings = new CinemachineImpulseListener.ImpulseReaction
+            {
+                AmplitudeGain = 1,
                 FrequencyGain = 1,
                 Duration = 1f
             };
@@ -98,7 +98,7 @@ namespace Unity.Cinemachine
         {
             // Apply the shake
             bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                transform.position, Use2DDistance, ChannelMask, 
+                transform.position, Use2DDistance, ChannelMask,
                 out m_ImpulsePosLastFrame, out m_ImpulseRotLastFrame);
             bool haveReaction = ReactionSettings.GetReaction(
                 Time.deltaTime, m_ImpulsePosLastFrame, out var reactionPos, out var reactionRot);

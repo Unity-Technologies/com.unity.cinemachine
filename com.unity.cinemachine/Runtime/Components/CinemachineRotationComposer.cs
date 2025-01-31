@@ -19,7 +19,7 @@ namespace Unity.Cinemachine
     [CameraPipeline(CinemachineCore.Stage.Aim)]
     [RequiredTarget(RequiredTargetAttribute.RequiredTargets.LookAt)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineRotationComposer.html")]
-    public class CinemachineRotationComposer : CinemachineComponentBase, 
+    public class CinemachineRotationComposer : CinemachineComponentBase,
         CinemachineFreeLookModifier.IModifiableComposition
     {
         /// <summary>Settings for screen-space composition</summary>
@@ -27,7 +27,7 @@ namespace Unity.Cinemachine
         [HideFoldout]
         public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
 
-        /// <summary>Force target to center of screen when this camera activates.  
+        /// <summary>Force target to center of screen when this camera activates.
         /// If false, will clamp target to the edges of the dead zone</summary>
         [Tooltip("Force target to center of screen when this camera activates.  If false, will "
             + "clamp target to the edges of the dead zone")]
@@ -153,12 +153,12 @@ namespace Unity.Cinemachine
             m_CameraPosPrevFrame = pos;
             m_CameraOrientationPrevFrame = rot;
         }
-        
+
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => Mathf.Max(Damping.x, Damping.y); 
+        public override float GetMaxDampTime() => Mathf.Max(Damping.x, Damping.y);
 
         /// <summary>Sets the state's ReferenceLookAt, applying the offset.</summary>
         /// <param name="curState">Input state that must be mutated</param>

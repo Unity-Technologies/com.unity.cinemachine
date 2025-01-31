@@ -56,7 +56,7 @@ namespace Unity.Cinemachine
                     choice = UpdateClock.Fixed;
                 if (m_NumWindows == 0)
                     PreferredUpdate = choice;
- 
+
                 if (m_WindowStart + kWindowSize <= currentFrame)
                 {
 #if DEBUG_LOG_NAME
@@ -74,7 +74,7 @@ namespace Unity.Cinemachine
 
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule() => s_UpdateStatus.Clear();
-        
+
         static List<Transform> s_ToDelete = new();
         static void UpdateTargets(UpdateClock currentClock)
         {

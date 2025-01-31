@@ -32,7 +32,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("If true, MaxDistance will be set to " +
             "distance between this virtual camera and LookAt target minus LookAtTargetRadius.")]
         public bool MaxDistanceControlledByCamera = true;
-    
+
         /// <summary>Material using the FadeOut shader.</summary>
         [Tooltip("Material using the FadeOut shader.")]
         public Material FadeOutMaterial;
@@ -51,19 +51,19 @@ namespace Unity.Cinemachine.Samples
         {
             if (stage == CinemachineCore.Stage.Finalize)
             {
-                if (FadeOutMaterial == null || 
-                    !FadeOutMaterial.HasProperty(k_MaxDistanceID) || 
-                    !FadeOutMaterial.HasProperty(k_MinDistanceID)) 
+                if (FadeOutMaterial == null ||
+                    !FadeOutMaterial.HasProperty(k_MaxDistanceID) ||
+                    !FadeOutMaterial.HasProperty(k_MinDistanceID))
                     return;
-            
-                if (MaxDistanceControlledByCamera && vcam.LookAt != null) 
+
+                if (MaxDistanceControlledByCamera && vcam.LookAt != null)
                     FadeOutRange.y = Vector3.Distance(vcam.transform.position, vcam.LookAt.position) - LookAtTargetRadius;
 
                 FadeOutMaterial.SetFloat(k_MinDistanceID, FadeOutRange.x);
                 FadeOutMaterial.SetFloat(k_MaxDistanceID, FadeOutRange.y);
             }
         }
-        
+
         void OnValidate()
         {
             LookAtTargetRadius = Math.Max(0, LookAtTargetRadius);

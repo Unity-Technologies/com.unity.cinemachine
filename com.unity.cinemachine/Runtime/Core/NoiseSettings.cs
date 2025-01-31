@@ -5,14 +5,14 @@ using UnityEngine.Serialization;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This is an asset that defines a noise profile.  A noise profile is the 
+    /// This is an asset that defines a noise profile.  A noise profile is the
     /// shape of the noise signal as a function of time.  You can build arbitrarily complex shapes by
     /// combining different base perlin noise frequencies at different amplitudes.
-    /// 
+    ///
     /// The frequencies and amplitudes should be chosen with care, to ensure an interesting
     /// noise quality that is not obviously repetitive.
-    /// 
-    /// As a mathematical side-note, any arbitrary periodic curve can be broken down into a 
+    ///
+    /// As a mathematical side-note, any arbitrary periodic curve can be broken down into a
     /// series of fixed-amplitude sine-waves added together.  This is called fourier decomposition,
     /// and is the basis of much signal processing.  It doesn't really have much to do with this
     /// asset, but it's super interesting!
@@ -72,8 +72,8 @@ namespace Unity.Cinemachine
             public Vector3 GetValueAt(float time, Vector3 timeOffsets)
             {
                 return new Vector3(
-                    X.GetValueAt(time, timeOffsets.x), 
-                    Y.GetValueAt(time, timeOffsets.y), 
+                    X.GetValueAt(time, timeOffsets.x),
+                    Y.GetValueAt(time, timeOffsets.y),
                     Z.GetValueAt(time, timeOffsets.z));
             }
         }
@@ -108,7 +108,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Returns the total length in seconds of the signal.  
+        /// Returns the total length in seconds of the signal.
         /// Returns 0 for signals of indeterminate length.
         /// </summary>
         public override float SignalDuration { get { return 0; } }

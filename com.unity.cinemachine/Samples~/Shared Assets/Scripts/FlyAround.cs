@@ -6,7 +6,7 @@ namespace Unity.Cinemachine.Samples
     /// <summary>
     /// This behaviour makes a GameObject fly around in response to user input.
     /// Movement is relative to the GameObject's local axes.
-    /// 
+    ///
     /// </summary>
     public class FlyAround : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
     {
@@ -35,11 +35,11 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
         public InputAxis Sprint = InputAxis.DefaultMomentary;
 
-        static InputAxis DefaultPan => new () 
+        static InputAxis DefaultPan => new ()
             { Value = 0, Range = new Vector2(-180, 180), Wrap = true, Center = 0, Restrictions = InputAxis.RestrictionFlags.NoRecentering };
-        static InputAxis DefaultTilt => new () 
+        static InputAxis DefaultTilt => new ()
             { Value = 0, Range = new Vector2(-70, 70), Wrap = false, Center = 0, Restrictions = InputAxis.RestrictionFlags.NoRecentering };
-        
+
         /// Report the available input axes to the input axis controller.
         /// We use the Input Axis Controller because it works with both the Input package
         /// and the Legacy input system.  This is sample code and we
@@ -73,7 +73,7 @@ namespace Unity.Cinemachine.Samples
             Tilt = DefaultTilt;
             Sprint = InputAxis.DefaultMomentary;
         }
-        
+
         void OnEnable()
         {
             // Take rotation from the transform

@@ -24,7 +24,7 @@ namespace Unity.Cinemachine.Editor
         }
 
 #if UNITY_2023_2_OR_NEWER
-        [AnalyticInfo(eventName: k_CreateVcamEventName, vendorKey: k_VendorKey, 
+        [AnalyticInfo(eventName: k_CreateVcamEventName, vendorKey: k_VendorKey,
             maxEventsPerHour:k_MaxEventsPerHour, maxNumberOfElements:k_MaxNumberOfElements)]
         class CreateEventAnalytic : IAnalytic
         {
@@ -45,7 +45,7 @@ namespace Unity.Cinemachine.Editor
         {
             public string vcam_created; // vcam created from Create -> Cinemachine menu
         }
-        
+
         /// <summary>
         /// Send analytics event when using Create -> Cinemachine menu
         /// </summary>
@@ -61,7 +61,7 @@ namespace Unity.Cinemachine.Editor
             var data = new CreateEventData { vcam_created = name };
 
             // Register our event
-            EditorAnalytics.RegisterEventWithLimit(k_CreateVcamEventName, 
+            EditorAnalytics.RegisterEventWithLimit(k_CreateVcamEventName,
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
@@ -70,7 +70,7 @@ namespace Unity.Cinemachine.Editor
         }
 
 #if UNITY_2023_2_OR_NEWER
-        [AnalyticInfo(eventName: k_VcamsOnPlayEventName, vendorKey: k_VendorKey, 
+        [AnalyticInfo(eventName: k_VcamsOnPlayEventName, vendorKey: k_VendorKey,
             maxEventsPerHour:k_MaxEventsPerHour, maxNumberOfElements:k_MaxNumberOfElements)]
         class PlayModeEventAnalytic : IAnalytic
         {
@@ -125,15 +125,15 @@ namespace Unity.Cinemachine.Editor
             CollectOnPlayEnterData(ref projectData);
 
             // Register our event
-            EditorAnalytics.RegisterEventWithLimit(k_VcamsOnPlayEventName, 
+            EditorAnalytics.RegisterEventWithLimit(k_VcamsOnPlayEventName,
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
-            
+
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit(k_VcamsOnPlayEventName, projectData);
 #endif
         }
 
-        
+
         /// <summary>
         /// Send analytics event when using entering playmode
         /// </summary>
@@ -164,11 +164,11 @@ namespace Unity.Cinemachine.Editor
 
         static void CollectVcamData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
         {
-            if (vcamBase == null) 
+            if (vcamBase == null)
                 return;
-            
+
             var vcamData = new VcamData(id, vcamBase);
-            
+
             // VirtualCamera
             var vcam = vcamBase as CinemachineCamera;
             if (vcam != null)
@@ -177,7 +177,7 @@ namespace Unity.Cinemachine.Editor
                 vcamData.SetComponents(vcam.GetComponents<CinemachineComponentBase>());
                 vcamDatas.Add(vcamData);
                 return;
-            }     
+            }
 
             var vcamChildren = vcamBase.GetComponentsInChildren<CinemachineVirtualCameraBase>();
             for (var c = 1; c < vcamChildren.Length; c++)
@@ -208,7 +208,7 @@ namespace Unity.Cinemachine.Editor
             public VcamData(string id, CinemachineVirtualCameraBase vcamBase) : this()
             {
                 var _ = 0;
-                
+
                 this.id = id;
                 vcam_class = GetTypeName(vcamBase.GetType(), ref _);
                 has_follow_target = vcamBase.Follow != null;
@@ -236,7 +236,7 @@ namespace Unity.Cinemachine.Editor
                     extensions = Array.Empty<string>();
                 }
             }
-            
+
             public void SetTransitionsAndLens(CinemachineCore.BlendHints hints, LensSettings lens)
             {
                 blend_hint = hints.ToString();
@@ -252,7 +252,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     for (var i = 0; i < cmComps.Length; i++)
                     {
-                        if (cmComps[i] == null) 
+                        if (cmComps[i] == null)
                             continue;
                         var componentName = GetTypeName(cmComps[i].GetType(), ref custom_component_count);
                         switch (cmComps[i].Stage)

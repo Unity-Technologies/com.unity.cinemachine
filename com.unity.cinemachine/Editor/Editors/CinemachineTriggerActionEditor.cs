@@ -66,7 +66,7 @@ namespace Unity.Cinemachine.Editor
                 bool isEventOnly = action == CinemachineTriggerAction.ActionSettings.ActionModes.EventOnly;
                 target.SetVisible(!isEventOnly);
 
-                string helpText = isEventOnly || targetObject != null 
+                string helpText = isEventOnly || targetObject != null
                     ? string.Empty : "No action will be taken because target is not valid";
 
                 boostAmount.SetVisible(action == CinemachineTriggerAction.ActionSettings.ActionModes.PriorityBoost);

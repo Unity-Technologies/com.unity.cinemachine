@@ -60,7 +60,7 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
         public override float GetMaxDampTime() => Damping;
-        
+
         /// <summary>Callback to preform the zoom adjustment</summary>
         /// <param name="vcam">The virtual camera being processed</param>
         /// <param name="stage">The current pipeline stage</param>

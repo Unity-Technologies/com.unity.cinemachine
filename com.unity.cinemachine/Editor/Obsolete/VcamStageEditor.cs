@@ -71,7 +71,7 @@ namespace Unity.Cinemachine.Editor
                 {
                     if (active)
                         s_ActiveEditorRegistry.Add(e);
-                    else 
+                    else
                         s_ActiveEditorRegistry.Remove(e);
                     InspectorUtility.RepaintGameView();
                 }
@@ -156,7 +156,7 @@ namespace Unity.Cinemachine.Editor
             {
                 UnityEditor.Editor.CreateCachedEditor(m_EditedComponents.ToArray(), null, ref m_ComponentEditor);
                 if (m_ComponentEditor != null)
-                    m_ComponentEditorOnSceneGUI = m_ComponentEditor.GetType().GetMethod("OnSceneGUI", 
+                    m_ComponentEditorOnSceneGUI = m_ComponentEditor.GetType().GetMethod("OnSceneGUI",
                         System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
             }
             m_StageSelection = GetPopupIndexForComponent(numComponents == 0 ? null : m_EditedComponents[0]);
@@ -256,14 +256,14 @@ namespace Unity.Cinemachine.Editor
     internal class VcamStageEditorPipeline
     {
         static GUIContent ProceduralMotionLabel = new GUIContent(
-            "Procedural Motion", 
+            "Procedural Motion",
             "Use the procedural motion algorithms to automatically drive the transform in "
                 + "relation to the LookAt and Tracking targets.  \n\n"
                 + "Position Control controls the position, and Rotation Control controls the rotation.\n\n"
                 + "If None is selected, "
                 + "then the transform will not be written to, and can be controlled manually "
                 + "or otherwise driven by script.");
-                
+
         VcamStageEditor[] m_subeditors;
 
         // Call from editor's OnEnable
@@ -330,7 +330,7 @@ namespace Unity.Cinemachine.Editor
                 var ed = m_subeditors[i];
                 if (ed == null)
                     continue;
-                
+
                 ed.OnSceneGUI();
             }
         }

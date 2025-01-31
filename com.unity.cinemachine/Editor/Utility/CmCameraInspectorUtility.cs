@@ -28,36 +28,36 @@ namespace Unity.Cinemachine.Editor
 
         static Color s_NormalColor = Color.white;
         static Color s_NormalBkgColor = Color.black;
-        
+
         /// <summary>Add the camera status controls and indicators in the inspector</summary>
         public static void AddCameraStatus(this UnityEditor.Editor editor, VisualElement ux)
         {
             // No status and Solo for prefabs or multi-select
             if (Selection.objects.Length > 1 || IsPrefab(editor.target))
                 return;
-            
+
             var cameraParentingMessage = ux.AddChild(new HelpBox(
                 $"Setup error: {editor.target.GetType().Name} should not be a child "
                 + "of CinemachineCamera or CinemachineBrain.\n\n"
                 + "<b>Best practice is to have CinemachineCamera, CinemachineBrain, and camera targets as "
-                + "separate objects, not parented to each other.</b>", 
+                + "separate objects, not parented to each other.</b>",
                 HelpBoxMessageType.Error));
 
             var noBrainMessage = ux.AddChild(InspectorUtility.HelpBoxWithButton(
-                "A CinemachineBrain is required in the scene.", 
+                "A CinemachineBrain is required in the scene.",
                 HelpBoxMessageType.Warning, "Add Brain", () => CinemachineMenu.GetOrCreateBrain()));
 
             var navelGazeMessage = ux.AddChild(new HelpBox(
-                "The camera is trying to look at itself.", 
+                "The camera is trying to look at itself.",
                 HelpBoxMessageType.Warning));
 
             var row = ux.AddChild(new InspectorUtility.LabeledRow("Status"));
             var statusText = row.Label;
-            var soloButton = row.Contents.AddChild(new Button() 
-            { 
-                text = "Solo", 
-                style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0, 
-                    marginLeft = 3, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 } 
+            var soloButton = row.Contents.AddChild(new Button()
+            {
+                text = "Solo",
+                style = { flexGrow = 1, paddingLeft = 0, paddingRight = 0,
+                    marginLeft = 3, marginRight = 0, borderLeftWidth = 1, borderRightWidth = 1 }
             });
             var updateMode = row.Contents.AddChild(new Label("(Update Mode)") { style = { flexGrow = 0, alignSelf = Align.Center }});
             updateMode.SetEnabled(false);
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine.Editor
             });
 
             ux.TrackAnyUserActivity(() =>
-            { 
+            {
                 if (target == null)
                     return;
 
@@ -90,7 +90,7 @@ namespace Unity.Cinemachine.Editor
 
                 // Is the camera parenting incorrect?
                 cameraParentingMessage.SetVisible(
-                    target.GetComponentInParent<CinemachineBrain>() != null 
+                    target.GetComponentInParent<CinemachineBrain>() != null
                     || (target.ParentCamera != null && target.ParentCamera is not CinemachineCameraManagerBase));
 
                 // Is there a Brain?
@@ -109,7 +109,7 @@ namespace Unity.Cinemachine.Editor
 
             // Refresh camera state
             ux.ContinuousUpdate(() =>
-            { 
+            {
                 if (target == null)
                     return;
 
@@ -134,7 +134,7 @@ namespace Unity.Cinemachine.Editor
                     var color = isSolo ? Color.Lerp(s_NormalColor, CinemachineCore.SoloGUIColor(), 0.5f) : s_NormalColor;
                     statusText.style.color = color;
                     soloButton.style.color = color;
-                    soloButton.style.backgroundColor = isSolo 
+                    soloButton.style.backgroundColor = isSolo
                         ? Color.Lerp(s_NormalBkgColor, CinemachineCore.SoloGUIColor(), 0.2f) : s_NormalBkgColor;
                 }
 
@@ -173,9 +173,9 @@ namespace Unity.Cinemachine.Editor
 
                 var stage = i; // capture for lambda
                 var row = ux.AddChild(new InspectorUtility.LeftRightRow());
-                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name) 
-                { 
-                    tooltip = "Will add a Behaviour to implement this stage in the procedural pipeline", 
+                row.Left.Add(new Label(PipelineStageMenu.s_StageData[stage].Name)
+                {
+                    tooltip = "Will add a Behaviour to implement this stage in the procedural pipeline",
                     style = { flexGrow = 1, alignSelf = Align.Center }
                 });
                 var warningIcon = row.Left.AddChild(InspectorUtility.MiniHelpIcon("Component is disabled or has a problem"));
@@ -189,7 +189,7 @@ namespace Unity.Cinemachine.Editor
                     index = currentSelection,
                     style = { flexGrow = 1 }
                 });
-                dropdown.RegisterValueChangedCallback(evt => 
+                dropdown.RegisterValueChangedCallback(evt =>
                 {
                     var newType = PipelineStageMenu.s_StageData[stage].Types[GetTypeIndexFromSelection(evt.newValue, stage)];
                     for (int j = 0; j < targets.Length; j++)
@@ -252,7 +252,7 @@ namespace Unity.Cinemachine.Editor
                 + "the Cinemachine pipeline to alter the camera's behaviour.  "
                 + "This dropdown will add the selected extension behaviour.");
 
-            var menu = new ContextualMenuManipulator((evt) => 
+            var menu = new ContextualMenuManipulator((evt) =>
             {
                 for (int i = 0; i < PipelineStageMenu.s_ExtensionTypes.Count; ++i)
                 {
@@ -260,13 +260,13 @@ namespace Unity.Cinemachine.Editor
                     if (type == null)
                         continue;
                     var name = PipelineStageMenu.s_ExtensionNames[i];
-                    evt.menu.AppendAction(name, 
-                        (action) => 
+                    evt.menu.AppendAction(name,
+                        (action) =>
                         {
                             var target = editor.target as CinemachineVirtualCameraBase;
                             Undo.AddComponent(target.gameObject, type);
-                        }, 
-                        (status) => 
+                        },
+                        (status) =>
                         {
                             var target = editor.target as CinemachineVirtualCameraBase;
                             var disable = target == null || target.HasExtension(type);
@@ -275,14 +275,14 @@ namespace Unity.Cinemachine.Editor
                     );
                 }
             });
-            var button = row.Contents.AddChild(new Button 
-            { 
-                text = "(select)", 
-                style = 
-                { 
-                    flexGrow = 1, marginRight = -2, marginLeft = 3, 
+            var button = row.Contents.AddChild(new Button
+            {
+                text = "(select)",
+                style =
+                {
+                    flexGrow = 1, marginRight = -2, marginLeft = 3,
                     paddingTop = 0, paddingBottom = 0, paddingLeft = 1,
-                    height = InspectorUtility.SingleLineHeight + 2, 
+                    height = InspectorUtility.SingleLineHeight + 2,
                     unityTextAlign = TextAnchor.MiddleLeft
                 }
             });
@@ -297,7 +297,7 @@ namespace Unity.Cinemachine.Editor
             if (editor.target is CinemachineVirtualCameraBase target)
             {
                 var groupHelp = ux.AddChild(new HelpBox(
-                    "Consider adding a Cinemachine Group Framing extension to frame the members of the Target Group.", 
+                    "Consider adding a Cinemachine Group Framing extension to frame the members of the Target Group.",
                     HelpBoxMessageType.Info));
                 groupHelp.SetVisible(false);
                 ux.TrackAnyUserActivity(() =>
@@ -344,7 +344,7 @@ namespace Unity.Cinemachine.Editor
                 public List<string> Choices;
             }
             public static StageData[] s_StageData = null;
-            
+
             // Extensions
             public static List<Type> s_ExtensionTypes;
             public static List<string> s_ExtensionNames;
@@ -369,7 +369,7 @@ namespace Unity.Cinemachine.Editor
                     s_StageData[i] = new StageData
                     {
                         Stage = stage,
-                        Name = stage == CinemachineCore.Stage.Body ? "Position Control" 
+                        Name = stage == CinemachineCore.Stage.Body ? "Position Control"
                             : stage == CinemachineCore.Stage.Aim ? "Rotation Control"
                             : ObjectNames.NicifyVariableName(stage.ToString()),
                         Types = new List<Type>() { null }, // first item is "None"
@@ -379,7 +379,7 @@ namespace Unity.Cinemachine.Editor
 
                 // Get all CinemachineComponentBase
                 var allTypes = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
-                    (t) => !t.IsAbstract 
+                    (t) => !t.IsAbstract
                         && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
 
@@ -408,29 +408,29 @@ namespace Unity.Cinemachine.Editor
                 }
             }
         }
-        
+
         /// <summary>Draw the global settings controls in the inspector</summary>
         public static void AddGlobalControls(this UnityEditor.Editor editor, VisualElement ux)
         {
             var helpBox = ux.AddChild(new HelpBox("CinemachineCamera settings changes made during Play Mode will be "
-                    + "propagated back to the scene when Play Mode is exited.", 
+                    + "propagated back to the scene when Play Mode is exited.",
                 HelpBoxMessageType.Info));
             helpBox.SetVisible(SaveDuringPlay.Enabled && Application.isPlaying);
 
-            var toggle = ux.AddChild(new Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel.text) 
-            { 
+            var toggle = ux.AddChild(new Toggle(CinemachineCorePrefs.s_SaveDuringPlayLabel.text)
+            {
                 tooltip = CinemachineCorePrefs.s_SaveDuringPlayLabel.tooltip,
                 value = SaveDuringPlay.Enabled
             });
             toggle.AddToClassList(InspectorUtility.AlignFieldClassName);
-            toggle.RegisterValueChangedCallback((evt) => 
+            toggle.RegisterValueChangedCallback((evt) =>
             {
                 SaveDuringPlay.Enabled = evt.newValue;
                 helpBox.SetVisible(evt.newValue && Application.isPlaying);
             });
 
             var choices = new List<string>() { "Disabled", "Passive", "Interactive" };
-            int index = CinemachineCorePrefs.ShowInGameGuides.Value 
+            int index = CinemachineCorePrefs.ShowInGameGuides.Value
                 ? (CinemachineCorePrefs.DraggableComposerGuides.Value ? 2 : 1) : 0;
             var dropdown = ux.AddChild(new DropdownField("Game View Guides")
             {
@@ -440,7 +440,7 @@ namespace Unity.Cinemachine.Editor
                 style = { flexGrow = 1 }
             });
             dropdown.AddToClassList(InspectorUtility.AlignFieldClassName);
-            dropdown.RegisterValueChangedCallback((evt) => 
+            dropdown.RegisterValueChangedCallback((evt) =>
             {
                 CinemachineCorePrefs.ShowInGameGuides.Value = evt.newValue != choices[0];
                 CinemachineCorePrefs.DraggableComposerGuides.Value = evt.newValue == choices[2];
@@ -493,7 +493,7 @@ namespace Unity.Cinemachine.Editor
                     return SortOrder.Pipeline + (int)(component as CinemachineComponentBase).Stage;
                 return SortOrder.Other;
             }
-        
+
             // Returns true if item exists.  Will re-sort components if something changed.
             bool MoveComponentToPosition(int pos, SortOrder item, List<MonoBehaviour> components)
             {
@@ -520,7 +520,7 @@ namespace Unity.Cinemachine.Editor
 
         /// <summary>If camera is a CinemachineCameraManagerBase, draw the Child camera list</summary>
         public static void AddChildCameras(
-            this UnityEditor.Editor editor, VisualElement ux, 
+            this UnityEditor.Editor editor, VisualElement ux,
             GetChildWarningMessageDelegate getChildWarning)
         {
             var vcam = editor.target as CinemachineCameraManagerBase;
@@ -530,11 +530,11 @@ namespace Unity.Cinemachine.Editor
             var floatFieldWidth = EditorGUIUtility.singleLineHeight * 3f;
 
             var helpBox = ux.AddChild(new HelpBox(
-                "Child Cameras cannot be displayed when multiple objects are selected.", 
+                "Child Cameras cannot be displayed when multiple objects are selected.",
                 HelpBoxMessageType.Info));
 
             var container = ux.AddChild(new VisualElement());
-            
+
             var header = container.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, marginBottom = -2 } });
             header.AddToClassList("unity-collection-view--with-border");
             header.AddChild(new Label("Child Cameras") { style = { marginLeft = 3, flexGrow = 1, flexBasis = 10  }});
@@ -551,15 +551,15 @@ namespace Unity.Cinemachine.Editor
             });
             list.itemsSource = vcam.ChildCameras;
 
-            list.makeItem = () => 
+            list.makeItem = () =>
             {
                 var row = new VisualElement { style = { flexDirection = FlexDirection.Row }};
 
                 var warningIcon = row.AddChild(InspectorUtility.MiniHelpIcon("Item is null"));
                 warningIcon.name = "warningIcon";
 
-                row.AddChild(new ObjectField 
-                { 
+                row.AddChild(new ObjectField
+                {
                     name = "vcamSelector",
                     objectType = typeof(CinemachineVirtualCameraBase),
                     style = { flexBasis = floatFieldWidth * 2, flexGrow = 1, flexShrink = 0 }
@@ -614,7 +614,7 @@ namespace Unity.Cinemachine.Editor
             list.itemsAdded += (added) =>
             {
                 var selected = list.selectedIndex;
-                var selectedCam = (selected >= 0 && selected < list.itemsSource.Count) 
+                var selectedCam = (selected >= 0 && selected < list.itemsSource.Count)
                     ? list.itemsSource[selected] as CinemachineVirtualCameraBase : null;
                 var name = selectedCam != null ? selectedCam.Name : "Child";
                 var iter = added.GetEnumerator();

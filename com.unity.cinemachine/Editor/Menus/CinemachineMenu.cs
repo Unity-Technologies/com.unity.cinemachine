@@ -44,7 +44,7 @@ namespace Unity.Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("Virtual Camera");
             var targetObject = command.context as GameObject;
-            var parent = targetObject == null || targetObject.transform.parent == null 
+            var parent = targetObject == null || targetObject.transform.parent == null
                 ? null : targetObject.transform.parent.gameObject;
             var vcam = CreateCinemachineObject<CinemachineCamera>("CinemachineCamera", parent, true);
             if (targetObject != null)
@@ -60,7 +60,7 @@ namespace Unity.Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("2D Camera");
             var targetObject = command.context as GameObject;
-            var parent = targetObject == null || targetObject.transform.parent == null 
+            var parent = targetObject == null || targetObject.transform.parent == null
                 ? null : targetObject.transform.parent.gameObject;
             var vcam = CreateCinemachineObject<CinemachineCamera>("CinemachineCamera", parent, true);
             if (targetObject != null)
@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("FreeLook Camera");
             var targetObject = command.context as GameObject;
-            var parent = targetObject == null || targetObject.transform.parent == null 
+            var parent = targetObject == null || targetObject.transform.parent == null
                 ? null : targetObject.transform.parent.gameObject;
             var vcam = CreatePassiveCmCamera("FreeLook Camera", parent, true);
             if (targetObject != null)
@@ -85,14 +85,14 @@ namespace Unity.Cinemachine.Editor
             Undo.AddComponent<CinemachineInputAxisController>(vcam.gameObject);
             Undo.AddComponent<CinemachineFreeLookModifier>(vcam.gameObject).enabled = false;
         }
-        
+
 #if CINEMACHINE_PHYSICS
         [MenuItem(m_CinemachineGameObjectRootMenu + "Targeted Cameras/Third Person Aim Camera", false, m_GameObjectMenuPriority)]
         static void CreateThirdPersonAimCamera(MenuCommand command)
         {
             CinemachineEditorAnalytics.SendCreateEvent("Third Person Aim Camera");
             var targetObject = command.context as GameObject;
-            var parent = targetObject == null || targetObject.transform.parent == null 
+            var parent = targetObject == null || targetObject.transform.parent == null
                 ? null : targetObject.transform.parent.gameObject;
             var vcam = CreatePassiveCmCamera("Third Person Aim Camera", parent, true);
             if (targetObject != null)
@@ -111,7 +111,7 @@ namespace Unity.Cinemachine.Editor
         {
             CinemachineEditorAnalytics.SendCreateEvent("Target Group Camera");
             var targetObject = command.context as GameObject;
-            var parent = targetObject == null || targetObject.transform.parent == null 
+            var parent = targetObject == null || targetObject.transform.parent == null
                 ? null : targetObject.transform.parent.gameObject;
             var vcam = CreateCinemachineObject<CinemachineCamera>("CinemachineCamera", parent, false);
             vcam.Lens = MatchSceneViewCamera(vcam.transform);
@@ -125,7 +125,7 @@ namespace Unity.Cinemachine.Editor
             vcam.Follow = targetGroup.transform;
             targetGroup.AddMember(targetObject == null ? null : targetObject.transform, 1, 0.5f);
         }
-        
+
         [MenuItem(m_CinemachineGameObjectRootMenu + "Sequencer Camera", false, m_GameObjectMenuPriority)]
         static void CreateBlendListCamera(MenuCommand command)
         {
@@ -184,7 +184,7 @@ namespace Unity.Cinemachine.Editor
             CreatePassiveCmCamera(parentObject: mixingCamera.gameObject);
             CreatePassiveCmCamera(parentObject: mixingCamera.gameObject);
         }
-        
+
         [MenuItem(m_CinemachineGameObjectRootMenu + "Dolly Camera with Spline", false, m_GameObjectMenuPriority)]
         static void CreateDollyCameraWithPath(MenuCommand command)
         {
@@ -216,18 +216,18 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Sets the specified <see cref="Transform"/> to match the position and 
-        /// rotation of the <see cref="SceneView"/> camera, and returns the scene view 
+        /// Sets the specified <see cref="Transform"/> to match the position and
+        /// rotation of the <see cref="SceneView"/> camera, and returns the scene view
         /// camera's lens settings.
         /// </summary>
-        /// <param name="sceneObject">The <see cref="Transform"/> to match with the 
+        /// <param name="sceneObject">The <see cref="Transform"/> to match with the
         /// <see cref="SceneView"/> camera.</param>
         /// <returns>A <see cref="LensSettings"/> representing the scene view camera's lens</returns>
         public static LensSettings MatchSceneViewCamera(Transform sceneObject)
         {
             var lens = LensSettings.Default;
 
-            // Take initial settings from the GameView camera, because we don't want to override 
+            // Take initial settings from the GameView camera, because we don't want to override
             // things like ortho vs perspective - we just want position and FOV
             var brain = GetOrCreateBrain();
             if (brain != null && brain.OutputCamera != null)
@@ -296,7 +296,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Gets the first loaded <see cref="CinemachineBrain"/>. Creates one on 
+        /// Gets the first loaded <see cref="CinemachineBrain"/>. Creates one on
         /// the <see cref="Camera.main"/> if none were found.
         /// </summary>
         public static CinemachineBrain GetOrCreateBrain()

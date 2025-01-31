@@ -21,7 +21,7 @@ namespace Unity.Cinemachine.Editor
 
         bool WarnIfNull => attribute is CinemachineEmbeddedAssetPropertyAttribute attr && attr.WarnIfNull;
 
-        float HeaderHeight => EditorGUIUtility.singleLineHeight * 1.5f; 
+        float HeaderHeight => EditorGUIUtility.singleLineHeight * 1.5f;
         float DrawHeader(Rect rect, string text)
         {
             float delta = HeaderHeight - EditorGUIUtility.singleLineHeight;
@@ -182,7 +182,7 @@ namespace Unity.Cinemachine.Editor
         {
             // Collect all the eligible asset types
             Type type = EmbeddedAssetType(property);
-            mAssetTypes ??= ReflectionHelpers.GetTypesDerivedFrom(type, 
+            mAssetTypes ??= ReflectionHelpers.GetTypesDerivedFrom(type,
                 (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null).ToArray();
 
             float iconSize = r.height + 4;

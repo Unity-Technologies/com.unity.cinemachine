@@ -4,14 +4,14 @@ using NUnit.Framework;
 using UnityEngine;
 
 namespace Unity.Cinemachine.Tests.Editor
-{    
+{
     [TestFixture]
     public class InputAxisTests
     {
         const float k_DeltaTime = 0.1f;
         [SetUp] public void Setup() { CinemachineCore.CurrentUnscaledTimeTimeOverride = 0f; }
         [TearDown] public void TearDown() { CinemachineCore.CurrentUnscaledTimeTimeOverride = -1; }
-        
+
         static IEnumerable AxisDriverAccelTestCases
         {
             get
@@ -72,7 +72,7 @@ namespace Unity.Cinemachine.Tests.Editor
         {
             get
             {
-                yield return new TestCaseData(new Vector2(-100f, 100f), false, 0.5f, 0.5f, 0.1f, 
+                yield return new TestCaseData(new Vector2(-100f, 100f), false, 0.5f, 0.5f, 0.1f,
                     new[]{0.006018929f, 0.01443404f, 0.02380308f});
                 yield return new TestCaseData(new Vector2(-100f, 100f), false, 0.5f, 0.5f, 0.5f,
                     new[]{0.03009464f, 0.07217018f, 0.1190154f});

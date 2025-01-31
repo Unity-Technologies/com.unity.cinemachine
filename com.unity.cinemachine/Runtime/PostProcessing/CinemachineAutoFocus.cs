@@ -9,13 +9,13 @@ using UnityEngine.Rendering.HighDefinition;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This behaviour will drive the Camera focusDistance property. It can be used to hold focus onto 
+    /// This behaviour will drive the Camera focusDistance property. It can be used to hold focus onto
     /// a specific object, or (in HDRP) to auto-detect what is in front of the camera and focus on that.
     ///
     /// Camera.focusDistance is only available in physical mode, and appropriate processing
     /// must be installed for it to have any visible effect.
-    /// 
-    /// This component's ScreenCenter mode is only available in HDRP projects, and in this mode 
+    ///
+    /// This component's ScreenCenter mode is only available in HDRP projects, and in this mode
     /// the component cannot be dynamically added at runtime; it must be added in the editor.
     /// </summary>
     [ExecuteAlways]
@@ -38,7 +38,7 @@ namespace Unity.Cinemachine
             CustomTarget,
             /// <summary>Focus offset is relative to the camera</summary>
             Camera,
-            /// <summary>HDRP only: Focus will be on whatever is located in the depth buffer. 
+            /// <summary>HDRP only: Focus will be on whatever is located in the depth buffer.
             /// at the center of the screen</summary>
             ScreenCenter
         };
@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
 
 #if CINEMACHINE_HDRP
         /// <summary>
-        /// Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.  
+        /// Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.
         /// It's recommended to keep this quite small.  Default value is 0.02.
         /// </summary>
         [Tooltip("Radius of the AutoFocus sensor in the center of the screen.  A value of 1 would fill the screen.  "
@@ -90,7 +90,7 @@ namespace Unity.Cinemachine
         {
             public float CurrentFocusDistance;
         }
-        
+
         void Reset()
         {
             Damping = 0.2f;
@@ -128,19 +128,19 @@ namespace Unity.Cinemachine
                 Transform focusTarget = null;
                 switch (FocusTarget)
                 {
-                    default: 
+                    default:
                         break;
-                    case FocusTrackingMode.LookAtTarget: 
+                    case FocusTrackingMode.LookAtTarget:
                         if (state.HasLookAt())
                             focusDistance =  (state.GetFinalPosition() - state.ReferenceLookAt).magnitude;
-                        else 
+                        else
                             focusTarget = vcam.LookAt; // probably null, but doesn't hurt
                         break;
-                    case FocusTrackingMode.FollowTarget: 
-                        focusTarget = vcam.Follow; 
+                    case FocusTrackingMode.FollowTarget:
+                        focusTarget = vcam.Follow;
                         break;
-                    case FocusTrackingMode.CustomTarget: 
-                        focusTarget = CustomTarget; 
+                    case FocusTrackingMode.CustomTarget:
+                        focusTarget = CustomTarget;
                         break;
 #if CINEMACHINE_HDRP
                     case FocusTrackingMode.ScreenCenter:
@@ -189,7 +189,7 @@ namespace Unity.Cinemachine
             s_VolumeRefCounts = null;
             s_ScratchList = null;
         }
-        
+
         CustomPassVolume GetFocusVolume(CinemachineVirtualCameraBase vcam)
         {
             if (s_VolumeRefCounts == null || s_VolumeRefCounts.Count == 0)

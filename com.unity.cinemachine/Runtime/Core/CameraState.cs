@@ -8,12 +8,12 @@ namespace Unity.Cinemachine
     /// The output of the Cinemachine engine for a specific virtual camera.  The information
     /// in this struct can be blended, and provides what is needed to calculate an
     /// appropriate camera position, orientation, and lens setting.
-    /// 
+    ///
     /// Raw values are what the Cinemachine behaviours generate.  The correction channel
     /// holds perturbations to the raw values - e.g. noise or smoothing, or obstacle
     /// avoidance corrections.  Corrections are not considered when making time-based
     /// calculations such as damping.
-    /// 
+    ///
     /// The Final position and orientation is the combination of the raw values and
     /// their corrections.
     /// </summary>
@@ -31,7 +31,7 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// The world space focus point of the camera.  What the camera wants to look at.
-        /// There is a special constant define to represent "nothing".  Be careful to 
+        /// There is a special constant define to represent "nothing".  Be careful to
         /// check for that (or check the HasLookAt property).
         /// </summary>
         public Vector3 ReferenceLookAt;
@@ -90,7 +90,7 @@ namespace Unity.Cinemachine
             CylindricalPositionBlend = CinemachineCore.BlendHints.CylindricalPosition,
             /// <summary>Radial blend when the LookAt target changes(if any)</summary>
             ScreenSpaceAimWhenTargetsDiffer = CinemachineCore.BlendHints.ScreenSpaceAimWhenTargetsDiffer,
-            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same 
+            /// <summary>When this virtual camera goes Live, attempt to force the position to be the same
             /// as the current position of the outgoing Camera</summary>
             InheritPosition = CinemachineCore.BlendHints.InheritPosition,
             /// <summary>Ignore the LookAt target and just slerp the orientation</summary>
@@ -131,22 +131,22 @@ namespace Unity.Cinemachine
         };
 
         /// <summary>
-        /// Custom Blendables are a way to attach opaque custom data to a CameraState and have 
+        /// Custom Blendables are a way to attach opaque custom data to a CameraState and have
         /// their weights blend along with the camera weights.  For efficiency, a fixed number of slots
         /// are provided, plus a (more expensive) overflow list.
-        /// The base system manages but otherwise ignores this data - it is intended for 
+        /// The base system manages but otherwise ignores this data - it is intended for
         /// extension modules.
         /// </summary>
         public struct CustomBlendableItems
         {
             /// <summary>Opaque structure represent extra blendable stuff and its weight.
             /// The base system ignores this data - it is intended for extension modules</summary>
-            public struct Item 
-            { 
+            public struct Item
+            {
                 /// <summary>The custom stuff that the extension module will consider</summary>
-                public Object Custom; 
+                public Object Custom;
                 /// <summary>The weight of the custom stuff.  Must be 0...1</summary>
-                public float Weight; 
+                public float Weight;
             };
 
             // This is to avoid excessive GC allocs
@@ -157,25 +157,25 @@ namespace Unity.Cinemachine
 
             internal List<Item> m_Overflow;
 
-            /// <summary>The number of custom blendable items that will be applied to the camera.  
-            /// The base system manages but otherwise ignores this data - it is intended for 
+            /// <summary>The number of custom blendable items that will be applied to the camera.
+            /// The base system manages but otherwise ignores this data - it is intended for
             /// extension modules</summary>
             internal int NumItems;
         }
 
         /// <summary>
-        /// Custom Blendables are a way to attach opaque custom data to a CameraState and have 
+        /// Custom Blendables are a way to attach opaque custom data to a CameraState and have
         /// their weights blend along with the camera weights.  For efficiency, a fixed number of slots
         /// are provided, plus a (more expensive) overflow list.
-        /// The base system manages but otherwise ignores this data - it is intended for 
+        /// The base system manages but otherwise ignores this data - it is intended for
         /// extension modules.
         /// </summary>
         internal CustomBlendableItems CustomBlendables;
 
         /// <summary>Add a custom blendable to the pot for eventual application to the camera.
-        /// The base system manages but otherwise ignores this data - it is intended for 
+        /// The base system manages but otherwise ignores this data - it is intended for
         /// extension modules</summary>
-        /// <param name="b">The custom blendable to add.  If b.m_Custom is the same as an 
+        /// <param name="b">The custom blendable to add.  If b.m_Custom is the same as an
         /// already-added custom blendable, then they will be merged and the weights combined.</param>
         public void AddCustomBlendable(CustomBlendableItems.Item b)
         {
@@ -192,7 +192,7 @@ namespace Unity.Cinemachine
                 case 1: CustomBlendables.m_Item1 = b; break;
                 case 2: CustomBlendables.m_Item2 = b; break;
                 case 3: CustomBlendables.m_Item3 = b; break;
-                default: 
+                default:
                 {
                     index -= 4;
                     CustomBlendables.m_Overflow ??= new();
@@ -245,14 +245,14 @@ namespace Unity.Cinemachine
 
             state.PositionCorrection = ApplyPosBlendHint(
                 stateA.PositionCorrection, stateA.BlendHint,
-                stateB.PositionCorrection, stateB.BlendHint, 
-                state.PositionCorrection, 
+                stateB.PositionCorrection, stateB.BlendHint,
+                state.PositionCorrection,
                 Vector3.Lerp(stateA.PositionCorrection, stateB.PositionCorrection, t));
 
             state.OrientationCorrection = ApplyRotBlendHint(
                 stateA.OrientationCorrection, stateA.BlendHint,
-                stateB.OrientationCorrection, stateB.BlendHint, 
-                state.OrientationCorrection, 
+                stateB.OrientationCorrection, stateB.BlendHint,
+                state.OrientationCorrection,
                 Quaternion.Slerp(stateA.OrientationCorrection, stateB.OrientationCorrection, t));
 
             // LookAt target
@@ -279,22 +279,22 @@ namespace Unity.Cinemachine
                 // Linear interpolation of lookAt target point
                 state.ReferenceLookAt = Vector3.Lerp(stateA.ReferenceLookAt, stateB.ReferenceLookAt, adjustedT);
             }
-            
+
             // Raw position
             state.RawPosition = ApplyPosBlendHint(
                 stateA.RawPosition, stateA.BlendHint,
-                stateB.RawPosition, stateB.BlendHint, 
+                stateB.RawPosition, stateB.BlendHint,
                 state.RawPosition, InterpolatePosition(
                     stateA.RawPosition, stateA.ReferenceLookAt,
                     stateB.RawPosition, stateB.ReferenceLookAt,
                     t, state.BlendHint, state.ReferenceUp));
 
             // Interpolate the LookAt in Screen Space if requested
-            if (state.HasLookAt() 
+            if (state.HasLookAt()
                 && ((stateA.BlendHint | stateB.BlendHint) & BlendHints.ScreenSpaceAimWhenTargetsDiffer) != 0)
             {
                 state.ReferenceLookAt = state.RawPosition + Vector3.Slerp(
-                        stateA.ReferenceLookAt - state.RawPosition, 
+                        stateA.ReferenceLookAt - state.RawPosition,
                         stateB.ReferenceLookAt - state.RawPosition, adjustedT);
             }
 
@@ -310,8 +310,8 @@ namespace Unity.Cinemachine
                     if (angle > UnityVectorExtensions.Epsilon)
                         dirTarget = state.ReferenceLookAt - state.GetCorrectedPosition();
                 }
-                
-                if (dirTarget.AlmostZero() 
+
+                if (dirTarget.AlmostZero()
                     || ((stateA.BlendHint | stateB.BlendHint) & BlendHints.IgnoreLookAtTarget) != 0)
                 {
                     // Don't know what we're looking at - can only slerp
@@ -340,7 +340,7 @@ namespace Unity.Cinemachine
             }
             state.RawOrientation = ApplyRotBlendHint(
                 stateA.RawOrientation, stateA.BlendHint,
-                stateB.RawOrientation, stateB.BlendHint, 
+                stateB.RawOrientation, stateB.BlendHint,
                 state.RawOrientation, newOrient);
 
             // Accumulate the custom blendables and apply the weights
@@ -375,8 +375,8 @@ namespace Unity.Cinemachine
         }
 
         static Vector3 ApplyPosBlendHint(
-            Vector3 posA, BlendHints hintA, 
-            Vector3 posB, BlendHints hintB, 
+            Vector3 posA, BlendHints hintA,
+            Vector3 posB, BlendHints hintB,
             Vector3 original, Vector3 blended)
         {
             if (((hintA | hintB) & BlendHints.NoPosition) == 0)
@@ -389,8 +389,8 @@ namespace Unity.Cinemachine
         }
 
         static Quaternion ApplyRotBlendHint(
-            Quaternion rotA, BlendHints hintA, 
-            Quaternion rotB, BlendHints hintB, 
+            Quaternion rotA, BlendHints hintA,
+            Quaternion rotB, BlendHints hintB,
             Quaternion original, Quaternion blended)
         {
             if (((hintA | hintB) & BlendHints.NoOrientation) == 0)
@@ -476,8 +476,8 @@ namespace Unity.Cinemachine
         /// <returns>The number of custom blendable items added.</returns>
         public static int GetNumCustomBlendables(this CameraState s) => s.CustomBlendables.NumItems;
 
-        /// <summary>Get a custom blendable that will be applied to the camera.  
-        /// The base system manages but otherwise ignores this data - it is intended for 
+        /// <summary>Get a custom blendable that will be applied to the camera.
+        /// The base system manages but otherwise ignores this data - it is intended for
         /// extension modules</summary>
         /// <param name="s">State to check.</param>
         /// <param name="index">Which one to get.  Must be in range [0...NumCustomBlendables)</param>
@@ -490,7 +490,7 @@ namespace Unity.Cinemachine
                 case 1: return s.CustomBlendables.m_Item1;
                 case 2: return s.CustomBlendables.m_Item2;
                 case 3: return s.CustomBlendables.m_Item3;
-                default: 
+                default:
                 {
                     index -= 4;
                     if (s.CustomBlendables.m_Overflow != null && index < s.CustomBlendables.m_Overflow.Count)
@@ -500,7 +500,7 @@ namespace Unity.Cinemachine
             }
         }
 
-        
+
         /// <summary>Returns the index of the custom blendable that is associated with the input.</summary>
         /// <param name="s">State to check.</param>
         /// <param name="custom">The object with which the returned custom blendable index is associated.</param>

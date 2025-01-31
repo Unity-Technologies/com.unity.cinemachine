@@ -42,11 +42,11 @@ namespace Unity.Cinemachine.Editor
         public static void UpgradeSingleObject(GameObject go)
         {
             var objectUpgrader = new UpgradeObjectToCm3();
-            try 
+            try
             {
                 var notUpgradable = objectUpgrader.UpgradeComponents(go);
                 objectUpgrader.DeleteObsoleteComponents(go);
-            
+
                 // Report difficult cases
                 if (notUpgradable != null)
                 {
@@ -63,7 +63,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Upgrades all the gameObjects in the current scene.  
+        /// Upgrades all the gameObjects in the current scene.
         /// Obsolete components are deleted.  Timeline references are not patched.
         /// Undo is supported.
         /// </summary>
@@ -77,7 +77,7 @@ namespace Unity.Cinemachine.Editor
                 + "Upgrade scene?",
                 "Upgrade", "Cancel"))
             {
-                try 
+                try
                 {
                     Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
                     EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0);
@@ -126,7 +126,7 @@ namespace Unity.Cinemachine.Editor
                 "I made a backup, go ahead", "Cancel"))
             {
                 var originalScenePath = EditorSceneManager.GetActiveScene().path;
-                try 
+                try
                 {
                     Thread.Sleep(1); // this is needed so the Display Dialog closes, and lets the progress bar open
                     EditorUtility.DisplayProgressBar(k_ProgressBarTitle, "Initializing...", 0.1f);
@@ -158,9 +158,9 @@ namespace Unity.Cinemachine.Editor
         static void OnUnsuccessfulUpgrade()
         {
             EditorUtility.DisplayDialog(
-                "Cinemachine Upgrader", 
+                "Cinemachine Upgrader",
                 "The upgrade was unsuccessful, and your project may be corrupted. It would be wise to restore the backup.\n\n"
-                + "Please see the console messages for details.", 
+                + "Please see the console messages for details.",
                 "OK");
         }
 
@@ -197,7 +197,7 @@ namespace Unity.Cinemachine.Editor
             return ObjectsUsePrefabs(upgradable);
         }
 
-        
+
         /// <summary>
         /// For each scene:
         /// - Make names of timeline object unique - for unique referencing later on
@@ -206,7 +206,7 @@ namespace Unity.Cinemachine.Editor
         /// <param name="conversionLinksPerScene">Key: scene index, Value: List of conversion links</param>
         /// <param name="renameMap">Timeline rename mapping</param>
         void PrepareUpgrades(
-            out Dictionary<int, List<ConversionLink>> conversionLinksPerScene, 
+            out Dictionary<int, List<ConversionLink>> conversionLinksPerScene,
             out Dictionary<string, string> renameMap)
         {
             conversionLinksPerScene = new ();
@@ -280,7 +280,7 @@ namespace Unity.Cinemachine.Editor
             }
             m_CurrentSceneOrPrefab = string.Empty;
         }
-        
+
         /// <summary>
         /// For each prefab asset that has any component from filter
         /// - Upgrade the prefab asset, but do not delete obsolete components
@@ -311,7 +311,7 @@ namespace Unity.Cinemachine.Editor
                             EditorUtility.SetDirty(prefabContents);
 
                         if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabContents))
-                           continue; 
+                           continue;
 
                         var timelineManager = new TimelineManager(prefabContents, m_CurrentSceneOrPrefab);
 
@@ -319,7 +319,7 @@ namespace Unity.Cinemachine.Editor
                         var components = new List<Component>();
                         foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
                             components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
-                
+
                         // upgrade all
                         foreach (var c in components)
                         {
@@ -342,7 +342,7 @@ namespace Unity.Cinemachine.Editor
 #endif
                     }  // Prefabs are automatically saved when exiting the scope
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     Debug.LogAssertion("CinemachineUpgradeManager: Failed to open " + m_CurrentSceneOrPrefab + ": " + e.Message);
                     continue;
@@ -372,7 +372,7 @@ namespace Unity.Cinemachine.Editor
             for (var s = 0; s < m_SceneManager.SceneCount; ++s)
             {
                 var scene = OpenScene(s);
-                if (!scene.isLoaded) 
+                if (!scene.isLoaded)
                     continue;
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
@@ -382,7 +382,7 @@ namespace Unity.Cinemachine.Editor
 
             m_CurrentSceneOrPrefab = string.Empty;
         }
-        
+
         /// <summary>
         /// For each scene:
         /// - Upgrade non-referencable prefab instances without deleting obsolete components, sync with their
@@ -406,15 +406,15 @@ namespace Unity.Cinemachine.Editor
                     continue;
                 var timelineManager = new TimelineManager(scene);
                 var upgradedObjects = new HashSet<GameObject>();
-                
+
                 UpgradePrefabInstances(upgradedObjects, conversionLinksPerScene[s], timelineManager, false);
-                
+
                 var rootObjects = scene.GetRootGameObjects();
                 var upgradables = GetUpgradables(rootObjects, m_ObjectUpgrader.RootUpgradeComponentTypes, true);
                 UpgradeNonPrefabs(upgradables, upgradedObjects, timelineManager);
-                
+
                 // restore dolly references in prefab instances
-                foreach (var go in upgradables) 
+                foreach (var go in upgradables)
                     UpgradeObjectComponents(go, null);
 
 #if CINEMACHINE_TIMELINE
@@ -423,11 +423,11 @@ namespace Unity.Cinemachine.Editor
                     UpdateAnimationBindings(playableDirector);
 #endif
                 UpgradeObjectReferences(rootObjects);
-                
+
                 // Clean up all obsolete components
                 foreach (var go in rootObjects)
                     m_ObjectUpgrader.DeleteObsoleteComponents(go);
-                
+
 #if CINEMACHINE_TIMELINE
                 // Restore timeline names
                 foreach (var director in timelineManager.PlayableDirectors)
@@ -435,7 +435,7 @@ namespace Unity.Cinemachine.Editor
                     if (timelineRenames.ContainsKey(director.name)) // search based on guid name
                     {
                         director.name = timelineRenames[director.name]; // restore director name
-                        if (PrefabUtility.IsPartOfAnyPrefab(director.gameObject)) 
+                        if (PrefabUtility.IsPartOfAnyPrefab(director.gameObject))
                             PrefabUtility.RecordPrefabInstancePropertyModifications(director);
                     }
                 }
@@ -462,7 +462,7 @@ namespace Unity.Cinemachine.Editor
                     var components = new List<Component>();
                     foreach (var type in m_ObjectUpgrader.RootUpgradeComponentTypes)
                         components.AddRange(prefabContents.GetComponentsInChildren(type, true).ToList());
-                
+
                     foreach (var c in components)
                     {
                         if (c == null)
@@ -472,7 +472,7 @@ namespace Unity.Cinemachine.Editor
 
                         m_ObjectUpgrader.DeleteObsoleteComponents(c.gameObject);
                     }
-                    
+
                     var managers = prefabContents.GetComponentsInChildren<CinemachineCameraManagerBase>();
                     foreach (var manager in managers)
                     {
@@ -480,7 +480,7 @@ namespace Unity.Cinemachine.Editor
                         var justToUpdateCache = manager.ChildCameras;
                     }
                 }
-                catch (Exception e) 
+                catch (Exception e)
                 {
                     Debug.LogAssertion("CinemachineUpgradeManager: Failed to open " + m_CurrentSceneOrPrefab + ": " + e.Message);
                     continue;
@@ -491,11 +491,11 @@ namespace Unity.Cinemachine.Editor
 
         static void UpgradeObjectReferences(GameObject[] rootObjects)
         {
-            foreach (var go in rootObjects) 
+            foreach (var go in rootObjects)
             {
                 if (go == null)
                     continue; // ignore deleted objects (prefab instance copies)
-                
+
                 ReflectionHelpers.RecursiveUpdateBehaviourReferences(go, (expectedType, oldValue) =>
                 {
                     var newType = UpgradeObjectToCm3.GetBehaviorReferenceUpgradeType(oldValue);
@@ -552,11 +552,11 @@ namespace Unity.Cinemachine.Editor
                 var prefabInstance = Find(conversionLink.originalGUIDName, allGameObjectsInScene);
                 if (prefabInstance == null)
                     continue; // it has been upgraded already
-                
+
 #if DEBUG_HELPERS
                 Debug.Log("Upgrading prefab instance: " + conversionLink.originalName);
 #endif
-                if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabInstance)) 
+                if (upgradeReferencables ^ UpgradeObjectToCm3.HasReferencableComponent(prefabInstance))
                 {
     #if DEBUG_HELPERS
                     Debug.Log("SKIPPING because upgradeReferencables=" + upgradeReferencables);
@@ -639,7 +639,7 @@ namespace Unity.Cinemachine.Editor
                 UpgradeObjectComponents(go, timelineManager);
             }
         }
-        
+
 
 #if CINEMACHINE_TIMELINE
         void UpdateAnimationBindings(PlayableDirector playableDirector)
@@ -657,10 +657,10 @@ namespace Unity.Cinemachine.Editor
                     {
                         var binding = playableDirector.GetGenericBinding(track);
 #if DEBUG_HELPERS
-                        if (binding == null) 
+                        if (binding == null)
                         {
-                            Debug.Log("Binding is null for " 
-                                + GetFullName(playableDirector.gameObject, m_CurrentSceneOrPrefab) + ", track:" + track.name 
+                            Debug.Log("Binding is null for "
+                                + GetFullName(playableDirector.gameObject, m_CurrentSceneOrPrefab) + ", track:" + track.name
                                 + ", PlayableAsset=" + playableAsset.name);
                         }
 #endif
@@ -689,7 +689,7 @@ namespace Unity.Cinemachine.Editor
         {
             m_ObjectUpgrader = new UpgradeObjectToCm3();
             m_SceneManager = new SceneManager();
-            if (initPrefabManager) 
+            if (initPrefabManager)
                 m_PrefabManager = new PrefabManager(m_ObjectUpgrader.RootUpgradeComponentTypes);
         }
 
@@ -720,11 +720,11 @@ namespace Unity.Cinemachine.Editor
             }
             return pathToRoot + "/" + path;
         }
-        
+
         /// <summary>
         /// First upgrades the input gameObject's components without deleting the obsolete components.
         /// Then upgrades timeline references (if timelineManager is not null) to the upgraded gameObject.
-        /// If the object could not be fully upgraded, a pre-upgrade 
+        /// If the object could not be fully upgraded, a pre-upgrade
         /// copy is created and returned, else returns null.
         /// </summary>
         GameObject UpgradeObjectComponents(GameObject go, TimelineManager timelineManager)
@@ -768,7 +768,7 @@ namespace Unity.Cinemachine.Editor
                 foreach (var type in componentTypes)
                     foreach (var go in rootObjects)
                         components.AddRange(go.GetComponentsInChildren(type, true).ToList());
-                    
+
             var upgradables = new List<GameObject>();
             foreach (var c in components)
             {
@@ -791,7 +791,7 @@ namespace Unity.Cinemachine.Editor
         {
             return c is not CinemachineFreeLook && c.GetComponentInParent<CinemachineFreeLook>(true) != null;
         }
-        
+
         class SceneManager
         {
             List<string> m_AllScenePaths = new ();
@@ -825,7 +825,7 @@ namespace Unity.Cinemachine.Editor
 #endif
             }
         }
-            
+
         /// <summary>
         /// Terminology:
         /// - Prefab Asset: prefab source that lives with the assets.
@@ -871,11 +871,11 @@ namespace Unity.Cinemachine.Editor
                     bool IsXPartOfY(GameObject x, GameObject y)
                     {
                         GameObject prefab;
-                        try 
+                        try
                         {
                             prefab = PrefabUtility.LoadPrefabContents(AssetDatabase.GetAssetPath(y));
                         }
-                        catch (Exception e) 
+                        catch (Exception e)
                         {
                             Debug.LogAssertion("CinemachineUpgradeManager: Failed to load prefab contents for " + y.name + ": " + e.Message);
                             return false;
@@ -902,7 +902,7 @@ namespace Unity.Cinemachine.Editor
                         return result;
                     }
                 });
-                    
+
 #if DEBUG_HELPERS
                 Debug.Log("**** All prefabs ****");
                 m_PrefabAssets.ForEach(prefab => Debug.Log(prefab.name));
@@ -921,7 +921,7 @@ namespace Unity.Cinemachine.Editor
                     if (nearestPrefabRoot != null)
                     {
                         var nearestPrefabRootPath = PrefabUtility.GetPrefabAssetPathOfNearestInstanceRoot(go);
-                        if (nearestPrefabRootPath.Equals(prefabPath) && !allInstances.Contains(nearestPrefabRoot)) 
+                        if (nearestPrefabRootPath.Equals(prefabPath) && !allInstances.Contains(nearestPrefabRoot))
                             allInstances.Add(nearestPrefabRoot);
                     }
                 }
@@ -932,8 +932,8 @@ namespace Unity.Cinemachine.Editor
         class TimelineManager
         {
 #if !CINEMACHINE_TIMELINE
-            public TimelineManager(GameObject root, string pathToRoot) {} 
-            public TimelineManager(Scene scene) {} 
+            public TimelineManager(GameObject root, string pathToRoot) {}
+            public TimelineManager(Scene scene) {}
 #else
             struct Item { public string Name; public List<CinemachineShot> Shots; }
             Dictionary<PlayableDirector, Item> m_ShotsToUpdate;
@@ -988,7 +988,7 @@ namespace Unity.Cinemachine.Editor
                                     if (clip.asset is CinemachineShot cmShot)
                                     {
                                         if (!m_ShotsToUpdate.ContainsKey(playableDirector))
-                                            m_ShotsToUpdate.Add(playableDirector, new () 
+                                            m_ShotsToUpdate.Add(playableDirector, new ()
                                                 { Name = playableDirector.name, Shots = new () });
                                         m_ShotsToUpdate[playableDirector].Shots.Add(cmShot);
                                     }
@@ -1000,11 +1000,11 @@ namespace Unity.Cinemachine.Editor
             }
 
             /// <summary>
-            /// Updates timeline reference with the upgraded vcam. This is called after each 
+            /// Updates timeline reference with the upgraded vcam. This is called after each
             /// vcam is upgraded, but before the obsolete component is deleted.
             /// </summary>
             public void UpdateTimelineReference(
-                CinemachineVirtualCameraBase oldComponent, 
+                CinemachineVirtualCameraBase oldComponent,
                 CinemachineVirtualCameraBase upgraded)
             {
                 foreach (var (director, items) in m_ShotsToUpdate)
@@ -1018,7 +1018,7 @@ namespace Unity.Cinemachine.Editor
                     }
                 }
             }
-            
+
             public void UpdateTimelineReference(CinemachineVirtualCameraBase upgraded, ConversionLink link)
             {
                 foreach (var (director, items) in m_ShotsToUpdate)
@@ -1028,17 +1028,17 @@ namespace Unity.Cinemachine.Editor
                     var references = link.timelineReferences;
                     foreach (var reference in references)
                     {
-                        if (reference.directorName != director.name) 
+                        if (reference.directorName != director.name)
                         {
 #if DEBUG_HELPERS
                             Debug.Log("Skipping reference for " + reference.directorName + " because it is not for " + director.name);
 #endif
                             continue; // ignore references that are not for this director
-                        }                        
+                        }
                         foreach (var cmShot in items.Shots)
                         {
                             var exposedRef = cmShot.VirtualCamera;
-                            if (exposedRef.exposedName == reference.exposedReference.exposedName) 
+                            if (exposedRef.exposedName == reference.exposedReference.exposedName)
                                 director.SetReferenceValue(exposedRef.exposedName, upgraded);
                         }
                     }

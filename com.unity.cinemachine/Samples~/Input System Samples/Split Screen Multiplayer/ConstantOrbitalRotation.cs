@@ -7,7 +7,7 @@ namespace Unity.Cinemachine.Samples
         public CinemachineOrbitalFollow orbitalFollow;
 
         public float Speed;
-        
+
         void Update()
         {
             orbitalFollow.HorizontalAxis.Value += Time.deltaTime * Speed;

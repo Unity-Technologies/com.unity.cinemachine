@@ -60,7 +60,7 @@ namespace Unity.Cinemachine
         public ActionSettings OnObjectExit = new(ActionSettings.ActionModes.EventOnly);
 
         HashSet<GameObject> m_ActiveTriggerObjects = new();
-        
+
         /// <summary>Defines what action to take on trigger enter/exit</summary>
         [Serializable]
         public struct ActionSettings
@@ -115,13 +115,13 @@ namespace Unity.Cinemachine
             public enum TimeModes
             {
                 /// <summary>Offset after the start of the timeline</summary>
-                FromStart, 
+                FromStart,
                 /// <summary>Offset before the end of the timeline</summary>
-                FromEnd, 
+                FromEnd,
                 /// <summary>Offset before the current timeline time</summary>
-                BeforeNow, 
+                BeforeNow,
                 /// <summary>Offset after the current timeline time</summary>
-                AfterNow 
+                AfterNow
             };
 
             /// <summary>How to interpret the start time</summary>

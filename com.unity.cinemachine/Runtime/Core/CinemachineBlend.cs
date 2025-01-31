@@ -52,7 +52,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// If non-null, the custom blender will be used to blend camera state.  
+        /// If non-null, the custom blender will be used to blend camera state.
         /// If null, then CameraState.Lerp will be used.
         /// </summary>
         public IBlender CustomBlender { get; set; }
@@ -203,7 +203,7 @@ namespace Unity.Cinemachine
         [FormerlySerializedAs("m_Style")]
         public Styles Style;
 
-        /// <summary>The duration (in seconds) of the blend, if not a cut.  
+        /// <summary>The duration (in seconds) of the blend, if not a cut.
         /// If style is a cut, then this value is ignored.</summary>
         [Tooltip("Duration of the blend, in seconds")]
         [FormerlySerializedAs("m_Time")]
@@ -212,7 +212,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Get the duration of the blend, in seconds.  Will return 0 if blend style is a cut.
         /// </summary>
-        public float BlendTime => Style == Styles.Cut ? 0 : Time; 
+        public float BlendTime => Style == Styles.Cut ? 0 : Time;
 
         /// <summary>Constructor</summary>
         /// <param name="style">The shape of the blend curve.</param>
@@ -304,8 +304,8 @@ namespace Unity.Cinemachine
         public CinemachineBlend Blend { get; internal set; }
 
         /// <inheritdoc />
-        public string Name 
-        { 
+        public string Name
+        {
             get
             {
                 // Cache the name only if name is requested
@@ -318,7 +318,7 @@ namespace Unity.Cinemachine
         /// <inheritdoc />
         public CameraState State { get; private set; }
         /// <inheritdoc />
-        public bool IsValid => Blend != null && Blend.IsValid; 
+        public bool IsValid => Blend != null && Blend.IsValid;
         /// <inheritdoc />
         public ICinemachineMixer ParentCamera => null;
         /// <inheritdoc />

@@ -1,6 +1,6 @@
 # Cinemachine Impulse Source
 
-Use the **Cinemachine Impulse Source** component to generate impulses on events that are not collisions or Collider triggers. This is a generic Impulse Source that exposes a family of `GenerateImpulse()` API methods. These methods generate impulses at the specified locations and with the specified velocities and strengths. Call these methods directly from your game logic, or use them with [UnityEvents](https://docs.unity3d.com/Manual/UnityEvents.html). 
+Use the **Cinemachine Impulse Source** component to generate impulses on events that are not collisions or Collider triggers. This is a generic Impulse Source that exposes a family of `GenerateImpulse()` API methods. These methods generate impulses at the specified locations and with the specified velocities and strengths. Call these methods directly from your game logic, or use them with [UnityEvents](https://docs.unity3d.com/Manual/UnityEvents.html).
 
 >**TIP:** You can use the script for this component as an example to reference when creating your own custom impulse-generating classes.
 
@@ -10,7 +10,7 @@ To add a Cinemachine Impulse Source to your Scene:
 
 2. Go to **Scripts > Cinemachine**, and select **Cinemachine Impulse Source**.
 
-By default, an Impulse Source affects every [Impulse Listener](CinemachineImpulseListener.md) in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make Impulse Sources affect some Impulse Listeners and not others. 
+By default, an Impulse Source affects every [Impulse Listener](CinemachineImpulseListener.md) in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make Impulse Sources affect some Impulse Listeners and not others.
 
 ##Properties:
 
@@ -36,7 +36,7 @@ Impulse Listeners filter impulses based on channels to control which Impulse Sou
 <a name="ImpulseType"></a>
 ### Impulse Type
 
- You can choose the level of complexity, depending on your needs. Changing the Impulse Type brings up range, dissipation, and propagation speed controls, as appropriate. 
+ You can choose the level of complexity, depending on your needs. Changing the Impulse Type brings up range, dissipation, and propagation speed controls, as appropriate.
 
 ![](images/ImpulseType.png)
 

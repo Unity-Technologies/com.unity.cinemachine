@@ -92,7 +92,7 @@ namespace Unity.Cinemachine
                 pos += m_TargetTracker.GetOffsetForMinimumTargetDistance(
                     this, pos, offset, curState.RawOrientation * Vector3.forward,
                     curState.ReferenceUp, targetPosition);
-                    
+
                 curState.RawPosition = pos + offset;
             }
         }
@@ -119,7 +119,7 @@ namespace Unity.Cinemachine
             base.ForceCameraPosition(pos, rot);
             m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, EffectiveOffset);
         }
-        
+
         internal Quaternion GetReferenceOrientation(Vector3 up)
         {
             return m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);

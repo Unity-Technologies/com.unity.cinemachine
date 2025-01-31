@@ -56,7 +56,7 @@ namespace Unity.Cinemachine
             w1 = 6f * p0 - 12f * p1 + 6f * p2;
             w2 = -3f * p0 + 3f * p1;
         }
-        
+
         /// <summary>Compute the value of a 4-point 1-dimensional bezier spline</summary>
         /// <param name="t">How far along the spline (0...1)</param>
         /// <param name="p0">First point</param>
@@ -89,7 +89,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Use the Thomas algorithm to compute smooth tangent values for a spline.  
+        /// Use the Thomas algorithm to compute smooth tangent values for a spline.
         /// Resultant tangents guarantee second-order smoothness of the curve.
         /// </summary>
         /// <param name="knot">The knots defining the curve</param>
@@ -161,7 +161,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Use the Thomas algorithm to compute smooth tangent values for a spline.  
+        /// Use the Thomas algorithm to compute smooth tangent values for a spline.
         /// This method will assume that the spline is looped (i.e. that the last knot is followed by the first).
         /// Resultant tangents guarantee second-order smoothness of the curve.
         /// </summary>
@@ -199,7 +199,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Use the Thomas algorithm to compute smooth tangent values for a spline.  
+        /// Use the Thomas algorithm to compute smooth tangent values for a spline.
         /// Resultant tangents guarantee second-order smoothness of the curve.
         /// </summary>
         /// <param name="knot">The knots defining the curve</param>
@@ -271,7 +271,7 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Use the Thomas algorithm to compute smooth tangent values for a spline.  
+        /// Use the Thomas algorithm to compute smooth tangent values for a spline.
         /// This method will assume that the spline is looped (i.e. that the last knot is followed by the first).
         /// Resultant tangents guarantee second-order smoothness of the curve.
         /// </summary>

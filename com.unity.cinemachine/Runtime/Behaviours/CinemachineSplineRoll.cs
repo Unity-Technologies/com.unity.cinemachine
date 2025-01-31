@@ -38,7 +38,7 @@ namespace Unity.Cinemachine
             public static implicit operator float(RollData roll) => roll.Value;
 
             /// <summary> Implicit conversion from float </summary>
-            /// <param name="roll"> The value with which to initialize the RollData setting. </param> 
+            /// <param name="roll"> The value with which to initialize the RollData setting. </param>
             /// <returns>A new RollData setting with the given value. </returns>
             public static implicit operator RollData(float roll) => new () { Value = roll };
         }
@@ -48,7 +48,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("When enabled, roll eases into and out of the data point values.  Otherwise, interpolation is linear.")]
         public bool Easing = true;
-        
+
         /// <summary>
         /// Get the appropriate interpolator for the RollData, depending on the Easing setting
         /// </summary>
@@ -66,7 +66,7 @@ namespace Unity.Cinemachine
         public struct LerpRollDataWithEasing : IInterpolator<RollData>
         {
             /// <inheritdoc/>
-            public RollData Interpolate(RollData a, RollData b, float t) 
+            public RollData Interpolate(RollData a, RollData b, float t)
             {
                 var t2 = t * t;
                 var d = 1f - t;
@@ -92,11 +92,11 @@ namespace Unity.Cinemachine
         // Only needed for drawing the gizmo
         internal ISplineContainer SplineContainer
         {
-            get 
-            { 
+            get
+            {
                 // In case behaviour was re-parented in the editor, we check every time
                 if (TryGetComponent(out ISplineReferencer referencer))
-                    return referencer.SplineSettings.Spline == null || referencer.SplineSettings.Spline.Splines.Count == 0 
+                    return referencer.SplineSettings.Spline == null || referencer.SplineSettings.Spline.Splines.Count == 0
                         ? null : referencer.SplineSettings.Spline;
                 if (TryGetComponent(out ISplineContainer container))
                     return container.Splines.Count > 0 ? container : null;

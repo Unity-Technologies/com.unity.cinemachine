@@ -16,7 +16,7 @@ namespace Unity.Cinemachine.Tests
         CinemachineSplineDollyLookAtTargets m_SplineLookatTargets;
         Vector3 m_FirstLookAtPoint = new Vector3(20, 10, 0);
         Vector3 m_SecondLookAtPoint = new Vector3(-10, 0, -10);
-        
+
         [SetUp]
         public void Setup()
         {
@@ -51,7 +51,7 @@ namespace Unity.Cinemachine.Tests
             m_Dolly.CameraRotation = CinemachineSplineDolly.RotationMode.Default;
             m_Dolly.Damping.Enabled = false;
         }
-        
+
         [UnityTest]
         public IEnumerator LookatTargetIsAppliedAndInterpolatedSmoothly()
         {
@@ -61,13 +61,13 @@ namespace Unity.Cinemachine.Tests
             yield return null;
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(
                 Vector3.Dot((m_SecondLookAtPoint - m_CmCam.State.GetFinalPosition()).normalized, m_CmCam.transform.forward), 1, 0.0001f);
-            
+
             m_Dolly.CameraPosition = 0.25f; // Test between two points
             m_CmCam.InternalUpdateCameraState(Vector3.up, 0);
             yield return null;
             UnityEngine.Assertions.Assert.AreApproximatelyEqual(
                 Vector3.Dot((Vector3.Lerp(m_FirstLookAtPoint, m_SecondLookAtPoint, 0.5f) - m_CmCam.State.GetFinalPosition()).normalized, m_CmCam.transform.forward), 1, 0.0001f);
-            
+
             m_Dolly.CameraPosition = 0.5f;
             m_CmCam.InternalUpdateCameraState(Vector3.up, 0);
             yield return null;

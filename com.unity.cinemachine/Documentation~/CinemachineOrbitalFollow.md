@@ -8,7 +8,7 @@ __Orbital Follow__ operates in 2 modes:
 
 The exact position of the camera on the surface is determined by 3 axis values in the __Orbital Follow__ component: horizontal, vertical, and radius. Radius controls the scale, allowing the camera to move towards or away from the target. You can control these values from a custom script, or with an Animator, or by other means that you may devise.
 
-If you attach an input controller to the CinemachineCamera, then the player can control the position of the camera on the defined surface using Unity's input controls. This allows the player to move the camera to any spot on the orbit surface around the target. 
+If you attach an input controller to the CinemachineCamera, then the player can control the position of the camera on the defined surface using Unity's input controls. This allows the player to move the camera to any spot on the orbit surface around the target.
 
 ![Orbital Transposer](images/OrbitalFollowInspector.png)
 

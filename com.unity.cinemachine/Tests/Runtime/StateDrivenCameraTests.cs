@@ -39,7 +39,7 @@ namespace Unity.Cinemachine.Tests
             }
             character.GetComponent<Animator>().runtimeAnimatorController = controller;
 
-            // Create a state-driven camera with two vcams 
+            // Create a state-driven camera with two vcams
             var stateDrivenCamera = CreateGameObject("CM StateDrivenCamera", typeof(CinemachineStateDrivenCamera)).GetComponent<CinemachineStateDrivenCamera>();
             stateDrivenCamera.AnimatedTarget = character.GetComponent<Animator>();
 

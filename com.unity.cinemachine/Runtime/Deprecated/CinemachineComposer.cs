@@ -115,7 +115,7 @@ namespace Unity.Cinemachine
         [Tooltip("A non-zero bias will move the target position vertically away from the center of the soft zone.")]
         public float m_BiasY = 0f;
 
-        /// <summary>Force target to center of screen when this camera activates.  
+        /// <summary>Force target to center of screen when this camera activates.
         /// If false, will clamp target to the edges of the dead zone</summary>
         [Tooltip("Force target to center of screen when this camera activates.  If false, will "
             + "clamp target to the edges of the dead zone")]
@@ -193,14 +193,14 @@ namespace Unity.Cinemachine
             m_CameraPosPrevFrame = pos;
             m_CameraOrientationPrevFrame = rot;
         }
-        
+
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(m_HorizontalDamping, m_VerticalDamping); 
+        public override float GetMaxDampTime()
+        {
+            return Mathf.Max(m_HorizontalDamping, m_VerticalDamping);
         }
 
         /// <summary>Sets the state's ReferenceLookAt, applying the offset.</summary>

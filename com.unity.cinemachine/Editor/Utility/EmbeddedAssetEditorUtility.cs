@@ -29,8 +29,8 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Call this to create an embedded inspector.  
-        /// Will draw the asset reference field, and the embedded editor, or a Create 
+        /// Call this to create an embedded inspector.
+        /// Will draw the asset reference field, and the embedded editor, or a Create
         /// Asset button if no asset is set.
         /// </summary>
         public static VisualElement EmbeddedAssetInspector<T>(
@@ -42,7 +42,7 @@ namespace Unity.Cinemachine.Editor
             var unassignedUx = ux.AddChild(AssetSelectorWithPresets<T>(property));
 
             var foldout = new Foldout() { text = property.displayName, tooltip = property.tooltip, value = s_CustomBlendsExpanded };
-            foldout.RegisterValueChangedCallback((evt) => 
+            foldout.RegisterValueChangedCallback((evt) =>
             {
                 if (evt.target == foldout)
                 {
@@ -58,8 +58,8 @@ namespace Unity.Cinemachine.Editor
             var borderColor = Color.grey;
             const float borderWidth = 1f;
             const float borderRadius = 5f;
-            var embeddedInspectorParent = foldout.AddChild(new VisualElement() { style = 
-            { 
+            var embeddedInspectorParent = foldout.AddChild(new VisualElement() { style =
+            {
                 borderTopColor = borderColor, borderTopWidth = borderWidth, borderTopLeftRadius = borderRadius,
                 borderBottomColor = borderColor, borderBottomWidth = borderWidth, borderBottomLeftRadius = borderRadius,
                 borderLeftColor = borderColor, borderLeftWidth = borderWidth, borderTopRightRadius = borderRadius,
@@ -67,9 +67,9 @@ namespace Unity.Cinemachine.Editor
             }});
 
             embeddedInspectorParent.Add(new HelpBox(
-                "This is a shared asset.  Changes made here will apply to all users of this asset.", 
+                "This is a shared asset.  Changes made here will apply to all users of this asset.",
                 HelpBoxMessageType.Info));
-    
+
             EmbeddedEditorContext context = new ();
             OnAssetChanged(property, context);
             ux.TrackPropertyValue(property, (p) => OnAssetChanged(p, context));
@@ -120,7 +120,7 @@ namespace Unity.Cinemachine.Editor
         /// Create an asset selector widget with a presets popup.
         /// </summary>
         public static VisualElement AssetSelectorWithPresets<T>(
-            SerializedProperty property, string label = null, 
+            SerializedProperty property, string label = null,
             string presetsPath = null, string warningTextIfNull = null) where T : ScriptableObject
         {
             VisualElement ux;
@@ -130,7 +130,7 @@ namespace Unity.Cinemachine.Editor
                 contents = new VisualElement { style = { flexGrow = 1, flexDirection = FlexDirection.Row }};
                 ux = contents;
             }
-            else 
+            else
             {
                 var row = new InspectorUtility.LabeledRow(label ?? property.displayName, property.tooltip);
                 contents = row.Contents;
@@ -146,10 +146,10 @@ namespace Unity.Cinemachine.Editor
                 contents.Insert(0, warningIcon);
             }
 
-            var presetName = contents.AddChild(new TextField 
-            { 
+            var presetName = contents.AddChild(new TextField
+            {
                 isReadOnly = true,
-                tooltip = property.tooltip, 
+                tooltip = property.tooltip,
                 style = { alignSelf = Align.Center, flexBasis = 40, flexGrow = 1, marginLeft = 0 }
             });
 
@@ -157,15 +157,15 @@ namespace Unity.Cinemachine.Editor
             var assetTypes = GetAssetTypes(typeof(T));
             var presetAssets = GetPresets(assetTypes, presetsPath, out var presetNames);
 
-            contents.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) => 
+            contents.Add(InspectorUtility.MiniPopupButton(null, new ContextualMenuManipulator((evt) =>
             {
-                evt.menu.AppendAction("Clear", 
-                    (action) => 
+                evt.menu.AppendAction("Clear",
+                    (action) =>
                     {
                         property.objectReferenceValue = null;
                         property.serializedObject.ApplyModifiedProperties();
-                    }, 
-                    (status) => 
+                    },
+                    (status) =>
                     {
                         var copyFrom = property.objectReferenceValue as ScriptableObject;
                         return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
@@ -174,16 +174,16 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; i < presetAssets.Count; ++i)
                 {
                     var a = presetAssets[i];
-                    evt.menu.AppendAction(presetNames[i], 
-                        (action) => 
+                    evt.menu.AppendAction(presetNames[i],
+                        (action) =>
                         {
                             property.objectReferenceValue = a;
                             property.serializedObject.ApplyModifiedProperties();
                         }
                     );
                 }
-                evt.menu.AppendAction("Clone", 
-                    (action) => 
+                evt.menu.AppendAction("Clone",
+                    (action) =>
                     {
                         var copyFrom = property.objectReferenceValue as ScriptableObject;
                         if (copyFrom != null)
@@ -196,8 +196,8 @@ namespace Unity.Cinemachine.Editor
                                 property.serializedObject.ApplyModifiedProperties();
                             }
                         }
-                    }, 
-                    (status) => 
+                    },
+                    (status) =>
                     {
                         var copyFrom = property.objectReferenceValue as ScriptableObject;
                         return copyFrom == null ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal;
@@ -206,8 +206,8 @@ namespace Unity.Cinemachine.Editor
                 for (int i = 0; i < assetTypes.Count; ++i)
                 {
                     var t = assetTypes[i];
-                    evt.menu.AppendAction("New " + InspectorUtility.NicifyClassName(t), 
-                        (action) => 
+                    evt.menu.AppendAction("New " + InspectorUtility.NicifyClassName(t),
+                        (action) =>
                         {
                             var asset = CreateAsset(t, null, defaultName, "Create New " + t.Name + " asset");
                             if (asset != null)
@@ -216,7 +216,7 @@ namespace Unity.Cinemachine.Editor
                                 property.serializedObject.ApplyModifiedProperties();
                             }
                         }
-                    );  
+                    );
                 }
             })));
 

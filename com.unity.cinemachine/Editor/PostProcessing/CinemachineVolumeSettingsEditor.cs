@@ -59,7 +59,7 @@ namespace Unity.Cinemachine.Editor
                     if (post.Profile != null && post.Profile.TryGet(out DepthOfField dof))
                     {
 #if CINEMACHINE_HDRP
-                        valid = dof.active 
+                        valid = dof.active
                             && (dof.focusDistance.overrideState || dof.focusDistanceMode == FocusDistanceMode.Camera)
                             && dof.focusMode.overrideState && dof.focusMode == DepthOfFieldMode.UsePhysicalCamera;
 #else
@@ -77,26 +77,26 @@ namespace Unity.Cinemachine.Editor
             {
                 var path = AssetDatabase.GenerateUniqueAssetPath("Volume Profile");
                 path = EditorUtility.SaveFilePanelInProject(
-                    "Create Volume Profile", Path.GetFileName(path), "asset", 
+                    "Create Volume Profile", Path.GetFileName(path), "asset",
                     "This asset will contain the Volume settings");
                 if (path.Length > 0)
                 {
                     profileProp.objectReferenceValue = CreateVolumeProfile(path);
                     serializedObject.ApplyModifiedProperties();
-                }                
+                }
             }) { text = "New", style = { marginRight = 0 }} );
             var cloneButton = row.Contents.AddChild(new Button(() =>
             {
                 var origin = profileProp.objectReferenceValue as VolumeProfile;
                 var path = AssetDatabase.GenerateUniqueAssetPath(AssetDatabase.GetAssetPath(origin));
                 path = EditorUtility.SaveFilePanelInProject(
-                    "Clone Volume Profile", Path.GetFileName(path), "asset", 
+                    "Clone Volume Profile", Path.GetFileName(path), "asset",
                     "This asset will contain the Volume settings", Path.GetDirectoryName(path));
                 if (path.Length > 0)
                 {
                     profileProp.objectReferenceValue = CopyVolumeProfile(origin, path);
                     serializedObject.ApplyModifiedProperties();
-                }                
+                }
             }) { text = "Clone", style = { marginLeft = 0 }} );
             cloneButton.TrackPropertyWithInitialCallback(profileProp, (p) => cloneButton.SetVisible(p.objectReferenceValue != null));
 

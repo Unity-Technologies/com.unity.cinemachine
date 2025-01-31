@@ -113,7 +113,7 @@ namespace Unity.Cinemachine.Editor
             // Draw the properties
             DrawRemainingPropertiesInInspector();
         }
-        
+
         protected virtual void OnGuiHandler(CinemachineBrain brain)
         {
             // Draw the camera guides
@@ -132,7 +132,7 @@ namespace Unity.Cinemachine.Editor
             // Screen guides
             bool isLive = targets.Length <= 1 && brain.IsLiveChild(vcam, true);
             m_GameViewGuides.OnGUI_DrawGuides(isLive, brain.OutputCamera, vcam.State.Lens);
-            
+
             // Draw an on-screen gizmo for the target
             if (Target.FollowTarget != null && isLive)
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(

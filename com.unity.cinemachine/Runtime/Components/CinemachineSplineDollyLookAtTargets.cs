@@ -5,7 +5,7 @@ using UnityEngine.Splines;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// CinemachineSplineDollyLookAtTargets is a component that allows the camera to look at 
+    /// CinemachineSplineDollyLookAtTargets is a component that allows the camera to look at
     /// specific points in the world as it moves along a spline.
     /// </summary>
     [ExecuteAlways, SaveDuringPlay]
@@ -26,7 +26,7 @@ namespace Unity.Cinemachine
             /// <summary>The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point</summary>
             [Tooltip("The offset (in local coords) from the LookAt target's origin.  If LookAt target is None, this will specify a world-space point.")]
             public Vector3 Offset;
-        
+
             /// <summary>Easing value for the Bezier curve. 0 is linear, 1 is smooth.</summary>
             [Tooltip("Controls how to ease in and out of this data point.  A value of 0 will linearly interpolate between "
                 + "LookAt points, while a value of 1 will slow down and briefly pause the rotation to look at the target.")]
@@ -34,7 +34,7 @@ namespace Unity.Cinemachine
             public float Easing;
 
             /// <summary>Get/set the LookAt point in world space.</summary>
-            public Vector3 WorldLookAt 
+            public Vector3 WorldLookAt
             {
                 readonly get => LookAt == null ? Offset : LookAt.TransformPoint(Offset);
                 set => Offset = LookAt == null ? value : LookAt.InverseTransformPoint(value);

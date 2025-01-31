@@ -1,4 +1,4 @@
-#if CINEMACHINE_PHYSICS 
+#if CINEMACHINE_PHYSICS
 
 using UnityEngine;
 
@@ -6,7 +6,7 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// An add-on module for CinemachineCamera that post-processes
-    /// the final position of the camera. It will confine the camera's position 
+    /// the final position of the camera. It will confine the camera's position
     /// to the volume specified in the Bounding Volume field.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine Confiner 3D")]
@@ -23,7 +23,7 @@ namespace Unity.Cinemachine
         /// <summary>Size of the slow-down zone at the edge of the bounding volume.</summary>
         [Tooltip("Size of the slow-down zone at the edge of the bounding volume.")]
         public float SlowingDistance = 0;
-        
+
         /// <summary>See whether the virtual camera has been moved by the confiner</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the confiner, in the event that the camera has children</param>
@@ -34,7 +34,7 @@ namespace Unity.Cinemachine
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the confiner, in the event that the camera has children</param>
         /// <returns>True if the virtual camera has been repositioned</returns>
-        public float GetCameraDisplacementDistance(CinemachineVirtualCameraBase vcam) 
+        public float GetCameraDisplacementDistance(CinemachineVirtualCameraBase vcam)
             => GetExtraState<VcamExtraState>(vcam).PreviousDisplacement.magnitude;
 
         void Reset()
@@ -70,13 +70,13 @@ namespace Unity.Cinemachine
         /// <param name="target">The object that was warped</param>
         /// <param name="positionDelta">The amount the target's position changed</param>
         public override void OnTargetObjectWarped(
-            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta) 
+            CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
         {
             var extra = GetExtraState<VcamExtraState>(vcam);
             if (extra.Vcam.Follow == target)
                 extra.PreviousCameraPosition += positionDelta;
         }
-        
+
         /// <summary>
         /// Callback to do the camera confining
         /// </summary>

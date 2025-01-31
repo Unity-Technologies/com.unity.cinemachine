@@ -40,7 +40,7 @@ namespace Unity.Cinemachine.Editor
             {
                 m_PackageInfo = packageInfo;
                 m_Samples = Sample.FindByPackage(packageInfo.name, packageInfo.version);
-                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration)) 
+                if (TryLoadSampleConfiguration(m_PackageInfo, out m_SampleConfiguration))
                     SamplePostprocessor.AssetImported += LoadAssetDependencies;
             }
             else if (!cmPackageInfo)
@@ -82,7 +82,7 @@ namespace Unity.Cinemachine.Editor
                             // Import common asset dependencies
                             assetsImported = ImportAssetDependencies(
                                 m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, out var sharedDestinations);
-                            
+
                             // Import sample-specific asset dependencies
                             assetsImported |= ImportAssetDependencies(
                                 m_PackageInfo, sampleEntry.AssetDependencies, out var localDestinations);
@@ -95,13 +95,13 @@ namespace Unity.Cinemachine.Editor
                                 ConvertMaterials(uniqueFolders);
                                 FixAssets(uniqueFolders, m_PackageInfo);
                             }
-                            
+
                             // Import common amd sample specific package dependencies
                             m_PackageDependencyIndex = 0;
                             m_PackageDependencies = new List<string>(m_SampleConfiguration.SharedPackageDependencies);
                             m_PackageDependencies.AddRange(sampleEntry.PackageDependencies);
-                            
-                            if (m_PackageDependencies.Count != 0 && 
+
+                            if (m_PackageDependencies.Count != 0 &&
                                 DoDependenciesNeedToBeImported(out var dependenciesToImport))
                             {
                                 if (PromptUserImportDependencyConfirmation(dependenciesToImport))
@@ -116,25 +116,25 @@ namespace Unity.Cinemachine.Editor
                         }
                         break;
                     }
-                } 
+                }
 
                 if (assetsImported)
                     AssetDatabase.Refresh();
             }
-            
+
             // local functions
             bool DoDependenciesNeedToBeImported(out List<string> packagesToImport)
             {
                 packagesToImport = new List<string>();
                 foreach (var packageName in m_PackageDependencies)
                 {
-                    if (!m_PackageChecker.ContainsPackage(packageName)) 
+                    if (!m_PackageChecker.ContainsPackage(packageName))
                         packagesToImport.Add(packageName);
                 }
 
                 return packagesToImport.Count != 0;
             }
-            
+
             void ImportPackageDependencies()
             {
                 if (m_PackageAddRequest != null && !m_PackageAddRequest.IsCompleted)
@@ -149,7 +149,7 @@ namespace Unity.Cinemachine.Editor
                     EditorApplication.update -= ImportPackageDependencies;
                 }
             }
-            
+
             static bool ImportAssetDependencies(PackageInfo packageInfo, string[] paths, out List<string> destinations)
             {
                 destinations = new List<string>();
@@ -162,7 +162,7 @@ namespace Unity.Cinemachine.Editor
                     var dependencyPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/{path}");
                     if (Directory.Exists(dependencyPath))
                     {
-                        var copyTo = 
+                        var copyTo =
                             $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
                         CopyDirectory(dependencyPath, copyTo);
                         destinations.Add(copyTo);
@@ -179,7 +179,7 @@ namespace Unity.Cinemachine.Editor
                     "Import Sample Package Dependencies",
                     "These samples contain package dependencies that your project does not have: \n" +
                     dependencies.Aggregate("", (current, dependency) => current + (dependency + "\n")),
-                    "Import samples and their dependencies", 
+                    "Import samples and their dependencies",
                     "Import samples without their dependencies");
             }
         }
@@ -199,9 +199,9 @@ namespace Unity.Cinemachine.Editor
                     var localPath = matInfo.FullName[Application.dataPath.Length..];
                     var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
 
-                    MaterialUpgrader.Upgrade(material, 
+                    MaterialUpgrader.Upgrade(material,
 #if CINEMACHINE_URP
-                    new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name), 
+                    new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name),
 #elif CINEMACHINE_HDRP
                     UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
 #endif
@@ -210,7 +210,7 @@ namespace Unity.Cinemachine.Editor
             }
 #endif
         }
-        
+
         static void FixAssets(IEnumerable<string> folders, PackageInfo packageInfo)
         {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
@@ -227,7 +227,7 @@ namespace Unity.Cinemachine.Editor
                 ReplaceAssets(hdrpFixPath, folder);
             }
 #endif
-            
+
 #if CINEMACHINE_HDRP || CINEMACHINE_UNITY_INPUTSYSTEM
             // local function
             static void ReplaceAssets(string fixPath, string prefabFolder)
@@ -237,7 +237,7 @@ namespace Unity.Cinemachine.Editor
                 var prefabDir = new DirectoryInfo(prefabPath);
                 if (!fixDirectory.Exists || !prefabDir.Exists)
                     return;
-                
+
                 // fix prefab assets
                 var fixPrefabs = fixDirectory.GetFiles("*.prefab");
                 foreach (var prefab in fixPrefabs)
@@ -259,8 +259,8 @@ namespace Unity.Cinemachine.Editor
 #endif
         }
 
-        
-        
+
+
         /// <summary>Copies a directory from the source to target path. Overwrites existing directories.</summary>
         static void CopyDirectory(string sourcePath, string targetPath)
         {
@@ -290,20 +290,20 @@ namespace Unity.Cinemachine.Editor
                 CopyDirectory(child.FullName, newDirectoryPath);
             }
         }
-        
+
         /// <summary>An AssetPostProcessor which will raise an event when a new asset is imported.</summary>
         class SamplePostprocessor : AssetPostprocessor
         {
             public static event Action<string> AssetImported;
 
-            static void OnPostprocessAllAssets(string[] importedAssets, 
+            static void OnPostprocessAllAssets(string[] importedAssets,
                 string[] deletedAssets, string[] movedAssets, string[] movedFromAssetPaths)
             {
                 foreach (var importedAsset in importedAssets)
                     AssetImported?.Invoke(importedAsset);
             }
         }
-        
+
         /// <summary>A configuration class defining information related to samples for the package.</summary>
         [Serializable]
         class SampleConfiguration
@@ -324,7 +324,7 @@ namespace Unity.Cinemachine.Editor
             public SampleEntry GetEntry(Sample sample) =>
                 SampleEntries?.FirstOrDefault(t => sample.resolvedPath.EndsWith(t.Path));
         }
-        
+
         class PackageChecker
         {
             ListRequest m_Request;
@@ -339,21 +339,21 @@ namespace Unity.Cinemachine.Editor
             {
                 if (m_Request != null && !m_Request.IsCompleted)
                     return; // need to wait for previous request to finish
-                
+
                 m_Request = Client.List(true);
                 EditorApplication.update += WaitForRequestToComplete;
             }
- 
+
             void WaitForRequestToComplete()
             {
                 if (m_Request.IsCompleted)
                 {
-                    if (m_Request.Status == StatusCode.Success) 
+                    if (m_Request.Status == StatusCode.Success)
                         m_Packages = m_Request.Result;
                     EditorApplication.update -= WaitForRequestToComplete;
                 }
             }
- 
+
             public bool ContainsPackage(string packageName)
             {
                 // Check each package and package dependency for packageName
@@ -365,7 +365,7 @@ namespace Unity.Cinemachine.Editor
                     if (package.dependencies.Any(dependencyInfo => string.Compare(dependencyInfo.name, packageName) == 0))
                         return true;
                 }
- 
+
                 return false;
             }
         }

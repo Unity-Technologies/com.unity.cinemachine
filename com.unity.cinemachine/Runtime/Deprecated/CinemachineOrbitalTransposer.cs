@@ -280,7 +280,7 @@ namespace Unity.Cinemachine
         /// private AxisState object, and that AxisState object will be updated and
         /// used to calculate the heading.
         /// </summary>
-        internal UpdateHeadingDelegate HeadingUpdater 
+        internal UpdateHeadingDelegate HeadingUpdater
             = (CinemachineOrbitalTransposer orbital, float deltaTime, Vector3 up) => {
                     return orbital.UpdateHeading(
                         deltaTime, up, ref orbital.m_XAxis,
@@ -349,7 +349,7 @@ namespace Unity.Cinemachine
         protected override void OnEnable()
         {
             base.OnEnable();
-            
+
             // GML todo: do we really need this?
             m_PreviousTarget = null;
             m_LastTargetPosition = Vector3.zero;
@@ -409,7 +409,7 @@ namespace Unity.Cinemachine
             m_LastCameraPosition = pos;
             m_XAxis.Value = GetAxisClosestValue(pos, VirtualCamera.State.ReferenceUp);
         }
-        
+
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
         /// <param name="fromCam">The camera being deactivated.  May be null.</param>
@@ -423,7 +423,7 @@ namespace Unity.Cinemachine
             m_RecenterToTargetHeading.CancelRecentering();
             if (fromCam != null //&& fromCam.Follow == FollowTarget
                 && m_BindingMode != BindingMode.LazyFollow
-                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_XAxis.Value = GetAxisClosestValue(fromCam.State.RawPosition, worldUp);
@@ -514,7 +514,7 @@ namespace Unity.Cinemachine
                     var dir0 = m_LastCameraPosition - lookAt;
                     var dir1 = curState.RawPosition - lookAt;
                     if (dir0.sqrMagnitude > 0.01f && dir1.sqrMagnitude > 0.01f)
-                        curState.RotationDampingBypass = curState.RotationDampingBypass 
+                        curState.RotationDampingBypass = curState.RotationDampingBypass
                             * UnityVectorExtensions.SafeFromToRotation(dir0, dir1, curState.ReferenceUp);
                 }
                 m_LastTargetPosition = targetPosition;
@@ -608,11 +608,11 @@ namespace Unity.Cinemachine
             c.HorizontalAxis.Wrap = m_XAxis.m_Wrap;
             c.HorizontalAxis.Center = c.HorizontalAxis.ClampValue(0);
             c.HorizontalAxis.Value = c.HorizontalAxis.ClampValue(m_XAxis.Value);
-            c.HorizontalAxis.Recentering = new () 
-            { 
-                Enabled = m_RecenterToTargetHeading.m_enabled, 
-                Time = m_RecenterToTargetHeading.m_RecenteringTime, 
-                Wait = m_RecenterToTargetHeading.m_WaitTime 
+            c.HorizontalAxis.Recentering = new ()
+            {
+                Enabled = m_RecenterToTargetHeading.m_enabled,
+                Time = m_RecenterToTargetHeading.m_RecenteringTime,
+                Wait = m_RecenterToTargetHeading.m_WaitTime
             };
 
             c.VerticalAxis.Center = c.VerticalAxis.Value = m_FollowOffset.y;

@@ -33,8 +33,8 @@ namespace Unity.Cinemachine.Editor
             var vcam = command.context as CinemachineVirtualCamera;
             vcam.m_Lens.SetFromLensSettings(CinemachineMenu.MatchSceneViewCamera(vcam.transform));
         }
-        
-        /// <summary>Get the property names to exclude in the inspector.  
+
+        /// <summary>Get the property names to exclude in the inspector.
         /// Implementation should call the base class implementation</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
@@ -68,7 +68,7 @@ namespace Unity.Cinemachine.Editor
                     return numNullComponents;
                 },
                 // SetComponent
-                (stage, type) => 
+                (stage, type) =>
                 {
                     Undo.SetCurrentGroupName("Cinemachine pipeline change");
                     foreach (var obj in targets)
@@ -145,7 +145,7 @@ namespace Unity.Cinemachine.Editor
                 ExcludeProperty("Header");
             }
         }
-        
+
         protected void DrawNonExcludedExtensionsWidgetInInspector()
         {
             if (!IsPropertyExcluded("Extensions"))
@@ -154,8 +154,8 @@ namespace Unity.Cinemachine.Editor
                 ExcludeProperty("Extensions");
             }
         }
-        
-        void ResetTargetOnUndo() 
+
+        void ResetTargetOnUndo()
         {
             ResetTarget();
             for (int i = 0; i < targets.Length; ++i)

@@ -339,7 +339,7 @@ namespace Unity.Cinemachine
                 pos /= length;
             return pos;
         }
-        
+
         /// <summary>Adds enable toggle to the inspector</summary>
         protected virtual void OnEnable() {}
 

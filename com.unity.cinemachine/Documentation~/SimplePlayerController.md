@@ -12,9 +12,9 @@ The player's forward can be locked to the camera's forward (strafe mode), or it 
 
 User input can be in one of three modes:
 
- - **Camera Space:** forward motion is in the camera's forward direction, 
- - **World Space:** forward motion is in the world's forward direction, 
- - **Player Space:** forward motion is in the player's forward direction.  
+ - **Camera Space:** forward motion is in the camera's forward direction,
+ - **World Space:** forward motion is in the world's forward direction,
+ - **Player Space:** forward motion is in the player's forward direction.
 
 User input is configured using the same mechanism that is used for CinemachineCameras: InputAxis members and [CinemachineInputAxisController](CinemachineInputAxisController.md) behaviours.  This is done to ensure that the controller remains agnostic about the input implementation.  It works for Unity's Input package as well as Unity's legacy input manager, and can be adapted for third-party input managers.  This is the only dependency on Cinemachine.  Apart from that, the Simple Character Controller is a standalone solution.
 
@@ -129,9 +129,9 @@ The animation clip speeds can be controlled using the following settings.  Out o
 
 This is a behaviour that works in conjunction with the SimplePlayerController to control the rotation of an invisible child object of the player.  It is intended to be used with Cinemachine's ThirdPersonFollow component, and the child object to be used as the CinemachineCamera's Tracking Target.  When used this way, the SimplePlayerAimController controls the camera's viewing angle based on the user's input.
 
-This component expects to be in a child object (the _Aiming Core_) of a player that has a SimplePlayerController behaviour.  It works intimately with that component.  The purpose of the Aiming Core is to decouple the camera rotation from the player rotation.  Camera rotation is determined by the rotation of the Aiming Core GameObject, and this behaviour provides input axes for controlling it.  
+This component expects to be in a child object (the _Aiming Core_) of a player that has a SimplePlayerController behaviour.  It works intimately with that component.  The purpose of the Aiming Core is to decouple the camera rotation from the player rotation.  Camera rotation is determined by the rotation of the Aiming Core GameObject, and this behaviour provides input axes for controlling it.
 
-When the Aiming Core is used as the target for a CinemachineCamera with a ThirdPersonFollow component, the camera looks along the core's forward axis, and pivots around the core's origin.  The Aiming Core is also used to define the origin and direction of player shooting, if player has that ability.  To implement player shooting, add a SimplePlayerShoot behaviour to the Aiming Core GameObject.  
+When the Aiming Core is used as the target for a CinemachineCamera with a ThirdPersonFollow component, the camera looks along the core's forward axis, and pivots around the core's origin.  The Aiming Core is also used to define the origin and direction of player shooting, if player has that ability.  To implement player shooting, add a SimplePlayerShoot behaviour to the Aiming Core GameObject.
 
 The ThirdPersonWithAimMode sample scene shows an example of how to set this up.
 

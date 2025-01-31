@@ -28,7 +28,7 @@ namespace Unity.Cinemachine.Tests
             CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain));
             m_CmCamera = CreateGameObject("CinemachineCamera", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_CmCamera.Priority.Value = 100;
-            
+
             s_AllCinemachineComponents = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineComponentBase),
                 (t) => !t.IsAbstract && t.GetCustomAttribute<CameraPipelineAttribute>() != null
                     && t.GetCustomAttribute<ObsoleteAttribute>() == null);
@@ -54,20 +54,20 @@ namespace Unity.Cinemachine.Tests
                 Assert.True(oldComponent != cmComponent);
                 AddComponent(m_CmCamera.gameObject, cmComponent);
                 Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after add
-            
+
                 if (oldComponent == null)
                     Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
                 else
                     Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == oldComponent); // pipeline is rebuilt correctly
             }
         }
-        
+
         [UnityTest]
         public IEnumerator AddAndDestroyAllOneByOne()
         {
             DestroyCinemachineComponents();
             yield return null;
-            Assert.False(m_CmCamera.PipelineCacheInvalidated); // pipeline is rebuilt 
+            Assert.False(m_CmCamera.PipelineCacheInvalidated); // pipeline is rebuilt
 
             foreach (var cmComponent in s_AllCinemachineComponents)
             {
@@ -75,14 +75,14 @@ namespace Unity.Cinemachine.Tests
                 Assert.True(m_CmCamera.PeekPipelineCacheType(stage) != cmComponent);
                 AddComponent(m_CmCamera.gameObject, cmComponent);
                 Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after add
-            
+
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage).GetType() == cmComponent); // pipeline is rebuilt correctly
-                
+
                 var component = m_CmCamera.gameObject.GetComponent(cmComponent);
                 RuntimeUtility.DestroyObject(component);
                 Assert.True(m_CmCamera.PipelineCacheInvalidated); // invalid pipeline after destroy
                 yield return null;
-            
+
                 Assert.True(m_CmCamera.GetCinemachineComponent(stage) == null); // pipeline is rebuilt correctly
             }
         }

@@ -105,7 +105,7 @@ namespace Unity.Cinemachine
         };
 
         /// <summary>Derived classes should call this from their OnValidate() implementation</summary>
-        protected virtual void OnValidate() 
+        protected virtual void OnValidate()
         {
             m_FollowOffset = EffectiveOffset;
         }
@@ -162,7 +162,7 @@ namespace Unity.Cinemachine
                 pos += m_TargetTracker.GetOffsetForMinimumTargetDistance(
                     this, pos, offset, curState.RawOrientation * Vector3.forward,
                     curState.ReferenceUp, targetPosition);
-                    
+
                 curState.RawPosition = pos + offset;
             }
         }
@@ -189,12 +189,12 @@ namespace Unity.Cinemachine
             base.ForceCameraPosition(pos, rot);
             m_TargetTracker.ForceCameraPosition(this, m_BindingMode, pos, rot, EffectiveOffset);
         }
-        
+
         internal Quaternion GetReferenceOrientation(Vector3 up)
         {
             return m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up);
         }
-        
+
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
         /// <param name="worldUp">Current effective world up</param>
         /// <returns>The position of the Follow target</returns>

@@ -35,7 +35,7 @@ namespace Unity.Cinemachine.Editor
             if (string.IsNullOrEmpty(memberName) || (type == null))
                 return default;
 
-            System.Reflection.BindingFlags bindingFlags 
+            System.Reflection.BindingFlags bindingFlags
                 = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic;
             if (obj != null)
                 bindingFlags |= System.Reflection.BindingFlags.Instance;
@@ -119,7 +119,7 @@ namespace Unity.Cinemachine.Editor
             {
                 modeOverrideProperty = property.FindPropertyRelative(() => s_Def.ModeOverride);
                 modeHelp = foldout.AddChild(
-                    new HelpBox("Lens Mode Override must be enabled in the Cinemachine Brain for Mode Override to take effect", 
+                    new HelpBox("Lens Mode Override must be enabled in the Cinemachine Brain for Mode Override to take effect",
                         HelpBoxMessageType.Warning));
                 foldout.AddChild(new PropertyField(modeOverrideProperty)).TrackPropertyValue(
                     modeOverrideProperty, (p) => InspectorUtility.RepaintGameView());
@@ -146,7 +146,7 @@ namespace Unity.Cinemachine.Editor
 
                 if (!HideModeOverride)
                 {
-                    var brainHasModeOverride = CinemachineBrain.ActiveBrainCount > 0 
+                    var brainHasModeOverride = CinemachineBrain.ActiveBrainCount > 0
                         && CinemachineBrain.GetActiveBrain(0).LensModeOverride.Enabled;
                     modeHelp.SetVisible(!brainHasModeOverride
                         && modeOverrideProperty.intValue != (int)LensSettings.OverrideModes.None);
@@ -159,7 +159,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Make the complicated FOV widget which works in 4 modes, with preset popups 
+        /// Make the complicated FOV widget which works in 4 modes, with preset popups
         /// and optional weird small label display
         /// </summary>
         class FovPropertyControl : InspectorUtility.LabeledRow
@@ -173,7 +173,7 @@ namespace Unity.Cinemachine.Editor
             enum Modes { Ortho, Physical, VFOV, HFOV };
             Modes GetLensMode()
             {
-                if (IsOrtho(m_LensProperty)) 
+                if (IsOrtho(m_LensProperty))
                     return Modes.Ortho;
                 if (IsPhysical(m_LensProperty))
                     return Modes.Physical;
@@ -388,7 +388,7 @@ namespace Unity.Cinemachine.Editor
                                 PhysicalProperties = ReadPhysicalSettings()
                             });
                         }
-                        else 
+                        else
                         {
                             // Apply the preset
                             var index = palette.GetPresetIndex(evt.newValue);
@@ -424,7 +424,7 @@ namespace Unity.Cinemachine.Editor
                                 VerticalFOV = fovProp.floatValue,
                             });
                         }
-                        else 
+                        else
                         {
                             // Apply the preset
                             var index = palette.GetPresetIndex(evt.newValue);

@@ -26,7 +26,7 @@ To add new channels:
 1. Inspect the **CinemachineImpulseChannels** (**Impulse Channel > Edit**) script by doing one of the following:
 
     - In the Cinemachine Impulse Listener inspector, navigate to the **Channel Mask** drop-down and click the **Edit** button next to it.
-    
+
     - In the Cinemachine Impulse Source or Cinemachine Collision Impulse Source inspector, navigate to the **Impulse Channel** drop-down and click the **Edit** button next to it.
 
 2. Expand the **Impulse Channels** property group and set the **Size** property to the number of channels you want. A new entry appears for each channel.
@@ -35,7 +35,7 @@ To add new channels:
 
     ![](images/InspectorImpulseChannelsScript.png)
 
-    Channels are available from the channel drop-down in the Inspector as soon as you add them. 
+    Channels are available from the channel drop-down in the Inspector as soon as you add them.
 
 ### Setting listen / broadcast channels
 
@@ -62,8 +62,8 @@ The Cinemachine Collision Impulse Source component has two **Trigger Object Filt
 
 - The **Ignore Tag** drop-down lists all of the Scene’s tags. When you select a tag, GameObjects with that tag do not trigger impulses when they collide with the Impulse Source, even if they are in a layer specified in Layer Mask.
 
-For example, in a Scene where a large animal is lumbering through a forest, you might want the camera to shake when it collides with large trees, but not small saplings. 
+For example, in a Scene where a large animal is lumbering through a forest, you might want the camera to shake when it collides with large trees, but not small saplings.
 
 One way to set that up would be to make the animal a Collision Impulse Source, put all of the large trees on their own layer, and select that as the Layer Mask.
 
-If all of the trees, large ones and saplings alike, are already on the same layer, you could assign a special tag to the saplings, and use the **Ignore Tag** property to filter them out. 
+If all of the trees, large ones and saplings alike, are already on the same layer, you could assign a special tag to the saplings, and use the **Ignore Tag** property to filter them out.

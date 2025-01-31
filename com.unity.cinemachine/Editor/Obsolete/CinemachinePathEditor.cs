@@ -393,9 +393,9 @@ namespace Unity.Cinemachine.Editor
              | GizmoType.InSelectionHierarchy | GizmoType.Pickable, typeof(CinemachinePath))]
         static void DrawGizmos(CinemachinePath path, GizmoType selectionType)
         {
-            var isActive = Selection.activeGameObject == path.gameObject; 
+            var isActive = Selection.activeGameObject == path.gameObject;
             DrawPathGizmo(
-                path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor, 
+                path, isActive ? path.m_Appearance.pathColor : path.m_Appearance.inactivePathColor,
                 isActive, LocalSpaceSamplePath);
         }
 
@@ -405,7 +405,7 @@ namespace Unity.Cinemachine.Editor
             float halfAngle = angle * 0.5F * Mathf.Deg2Rad;
             return new Quaternion(0, 0, Mathf.Sin(halfAngle), Mathf.Cos(halfAngle));
         }
-        
+
         static Vector4[] s_BezierWeightsCache;
 
         // Optimizer for gizmo drawing
@@ -491,7 +491,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Sample a path with a fixed number of samples per segment, in path-local space.  
+        /// Sample a path with a fixed number of samples per segment, in path-local space.
         /// Used for efficient gizmo drawing.
         /// </summary>
         /// <param name="samplesPerSegment">How many samples to take in each segment</param>
@@ -499,7 +499,7 @@ namespace Unity.Cinemachine.Editor
         /// <param name="rotations">Output buffer for rotation samples.  May be null if rotations are not needed.</param>
         /// <returns>Number of samples actually taken</returns>
         public delegate int BatchSamplerDelegate(CinemachinePathBase path, int samplesPerSegment, Vector3[] positions, Quaternion[] rotations);
-        
+
         public static void DrawPathGizmo(CinemachinePathBase path, Color pathColor, bool isActive, BatchSamplerDelegate batchSampler = null)
         {
             var oldColor = Gizmos.color;

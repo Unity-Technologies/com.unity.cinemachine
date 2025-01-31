@@ -12,7 +12,7 @@ namespace Unity.Cinemachine.Editor
         {
             var a = attribute as MinMaxRangeSliderAttribute;
 
-            var minField = new FloatField 
+            var minField = new FloatField
                 { value = property.vector2Value.x, isDelayed = true, style = { flexGrow = 1, flexBasis = 0 }};
             minField.AddToClassList(InspectorUtility.AlignFieldClassName);
             minField.TrackPropertyValue(property, (evt) => minField.value = evt.vector2Value.x);
@@ -25,14 +25,14 @@ namespace Unity.Cinemachine.Editor
             });
 
             var slider = new MinMaxSlider()
-            { 
+            {
                 focusable = false,
                 lowLimit = a.Min, highLimit = a.Max,
                 style = { flexGrow = 3, flexBasis = 0, paddingLeft = 5, paddingRight = 5 }
             };
             slider.BindProperty(property);
 
-            var maxField = new FloatField() 
+            var maxField = new FloatField()
                 { value = property.vector2Value.y, isDelayed = true, style = { flexGrow = 1, flexBasis = 0 } };
             maxField.TrackPropertyValue(property, (evt) => maxField.value = evt.vector2Value.y);
             maxField.RegisterValueChangedCallback((evt) =>

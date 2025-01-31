@@ -24,7 +24,7 @@ Note: if at any stage you get errors of this nature, just restart Unity:
 
 ## What has Changed in the API
 
-Some components were replaced by new components, others were renamed. Field names have changed. Namespaces have changed.  For most of these issues, you will see errors or deprecation warnings in the console, which will point you to the areas in your code that need attention. 
+Some components were replaced by new components, others were renamed. Field names have changed. Namespaces have changed.  For most of these issues, you will see errors or deprecation warnings in the console, which will point you to the areas in your code that need attention.
 
 One thing to note: the new `CinemachineCamera` class that replaces `CinemachineVirtualCamera` and `CinemachineFreeLook` inherits from `CinemachineVirtualCameraBase`.  If you can replace your script references to use this base class wherever possible, then the upgrader will be able to preserve existing component references across the conversion, since the old and new classes inherit from this same base class.
 
@@ -58,7 +58,7 @@ Old components have been replaced by new components. These are not renames, they
 - Cinemachine3rdPersonAim has been renamed to [CinemachineThirdPersonAim](CinemachineThirdPersonAim.md).
 - CinemachineBlendListCamera has been renamed to [CinemachineSequencerCamera](CinemachineSequencerCamera.md).
 
-### Renamed Fields 
+### Renamed Fields
 
 The old convention of using "m_FieldName" has been changed to follow Unity's latest naming conventions. Consequently, all of the "m_" prefixes have been removed from field names, everywhere. If your scripts don't compile because of this, the first remedy is to remove the "m_" from the field name that your script is referencing. Most of the time, that will be enough. Occasionally, some field names were changed more significantly. It should be fairly easy to find the appropriate replacements.
 
@@ -79,7 +79,7 @@ You will now see the `cm` child objects of your legacy CM vcams in the hierarchy
 User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.  [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller by inheriting InputAxisControllerBase.
 
 ### New Events Architecture
-While CM2.X has events in CinemachineVirtualCamera and CinemachineBrain, CM3 only fires global events via CinemachineCore.  Scripts can add listeners to those events and take action based on them. Listeners will receive events for all cameras and all Brains.  
+While CM2.X has events in CinemachineVirtualCamera and CinemachineBrain, CM3 only fires global events via CinemachineCore.  Scripts can add listeners to those events and take action based on them. Listeners will receive events for all cameras and all Brains.
 
 Camera-specific and Brain-specific events are now supported via two new behaviours: [Cinemachine Brain Events](CinemachineBrainEvents.md) and [Cinemachine Camera Events](CinemachineCameraEvents.md).  These monitor the global events and fire more specialized ones relating to the objects to which they are attached.
 
@@ -110,7 +110,7 @@ You can launch the Cinemachine Upgrader tool from any CM VirtualCamera or FreeLo
 ![Upgrader tool](images/Upgrader.png)
 
 ### Option 1: Converting a Single Object
-If you want to upgrade only the Cinemachine object currently being inspected, you can do this provided that it isn't a prefab instance. In this case, only the inspected objects will be converted to CM3 equivalents. Undo is supported, so you can try it out and then change your mind if you want.  
+If you want to upgrade only the Cinemachine object currently being inspected, you can do this provided that it isn't a prefab instance. In this case, only the inspected objects will be converted to CM3 equivalents. Undo is supported, so you can try it out and then change your mind if you want.
 
 Note that any script references to this object will be lost (because the class will change), as will any animation tracks that are writing to fields inside this camera (because classes and field names have changed).  Timelines referencing this object will lose their bindings.  If you have script references or animation tracks or if this camera is part of a prefab or prefab instance, then you need to use the "Upgrade Entire Project" option, which will scan the project for references and make the appropriate updates.
 

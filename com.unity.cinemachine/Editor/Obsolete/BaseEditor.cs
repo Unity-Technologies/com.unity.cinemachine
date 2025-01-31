@@ -19,7 +19,7 @@ namespace Unity.Cinemachine.Editor
         protected T Target { get { return target as T; } }
 
         /// <summary>
-        /// Return the Serialized property for a field, and exclude it from being automatically 
+        /// Return the Serialized property for a field, and exclude it from being automatically
         /// displayed in the inspector.  Call this when you need to provide a custom UX for a field.
         /// </summary>
         /// <typeparam name="TValue">Magic expression code</typeparam>
@@ -66,7 +66,7 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Exclude a property from automatic inclusion in the inspector 
+        /// Exclude a property from automatic inclusion in the inspector
         /// when DrawRemainingPropertiesInInspector() is called
         /// </summary>
         /// <param name="propertyName">The property to exclude</param>
@@ -77,7 +77,7 @@ namespace Unity.Cinemachine.Editor
 
         /// <summary>Check whether a property is in the excluded list</summary>
         /// <param name="propertyName">The property to check</param>
-        /// <returns>True if property is excluded from automatic inclusion in the inspector 
+        /// <returns>True if property is excluded from automatic inclusion in the inspector
         /// when DrawRemainingPropertiesInInspector() is called</returns>
         protected bool IsPropertyExcluded(string propertyName)
         {
@@ -96,7 +96,7 @@ namespace Unity.Cinemachine.Editor
         List<string> mExcluded = new List<string>();
 
         /// <summary>
-        /// Clients should call this at the start of OnInspectorGUI.  
+        /// Clients should call this at the start of OnInspectorGUI.
         /// Updates the serialized object and Sets up for excluded properties.
         /// </summary>
         protected virtual void BeginInspector()
@@ -107,8 +107,8 @@ namespace Unity.Cinemachine.Editor
         }
 
         /// <summary>
-        /// Draw a property in the inspector, if it is not excluded.  
-        /// Property is marked as drawn, so will not be drawn again 
+        /// Draw a property in the inspector, if it is not excluded.
+        /// Property is marked as drawn, so will not be drawn again
         /// by DrawRemainingPropertiesInInspector()
         /// </summary>
         /// <param name="p">The property to draw</param>

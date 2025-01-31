@@ -14,7 +14,7 @@ namespace Unity.Cinemachine
     static class CinemachineDebug
     {
         static List<StringBuilder> s_AvailableStringBuilders;
-        
+
 #if UNITY_EDITOR && CINEMACHINE_UIELEMENTS
         const string k_DebugUIName = "Cinemachine__internal__DebugUI";
         static Dictionary<Camera, VisualElement> s_CameraViewRectContainers = new();
@@ -27,7 +27,7 @@ namespace Unity.Cinemachine
             if (!uiDocumentHolder.TryGetComponent(out s_UIDocument))
             {
                 s_UIDocument = uiDocumentHolder.AddComponent<UIDocument>();
-                
+
                 const string path = CinemachineCore.kPackageRoot + "/Runtime/Debug/";
                 s_UIDocument.panelSettings = AssetDatabase.LoadAssetAtPath<PanelSettings>(path + "CinemachinePanelSettings.asset");
             }
@@ -36,7 +36,7 @@ namespace Unity.Cinemachine
             {
                 if (s_CameraViewRectContainers[outputCamera].childCount != 0)
                     return s_CameraViewRectContainers[outputCamera];
-                
+
                 s_CameraViewRectContainers[outputCamera].RemoveFromHierarchy();
                 s_CameraViewRectContainers.Remove(outputCamera);
             }
@@ -54,9 +54,9 @@ namespace Unity.Cinemachine
             SetRoot(viewportContainer);
             viewportContainer.schedule.Execute(() => PositionWithinCameraView(viewportContainer, outputCamera)).Every(0);
             s_CameraViewRectContainers.Add(outputCamera, viewportContainer);
-            
+
             return viewportContainer;
-            
+
             // local functions
             static GameObject GetUIDocumentHolder()
             {
@@ -118,7 +118,7 @@ namespace Unity.Cinemachine
 #endif
 
         /// <summary>
-        /// Delegate for OnGUI debugging.  
+        /// Delegate for OnGUI debugging.
         /// This will be called by the CinemachineDebugBrain in its OnGUI (editor only)
         /// </summary>
         public static Action<CinemachineBrain> OnGUIHandlers;
@@ -129,7 +129,7 @@ namespace Unity.Cinemachine
         public static bool GameViewGuidesEnabled;
 
         /// <summary>Get a pre-allocated StringBuilder from the pool</summary>
-        /// <returns>The pre-allocated StringBuilder from the pool.  
+        /// <returns>The pre-allocated StringBuilder from the pool.
         /// Client must call ReturnToPool when done</returns>
         public static StringBuilder SBFromPool()
         {

@@ -9,7 +9,7 @@ namespace Unity.Cinemachine.Editor
     ///  define and name them, and create masks to filter only the channels you want.
     /// </summary>
     [Serializable]
-    public class CinemachineChannelNames : ScriptableObject 
+    public class CinemachineChannelNames : ScriptableObject
     {
         static CinemachineChannelNames s_Instance = null;
         static bool s_AlreadySearched = false;
@@ -41,7 +41,7 @@ namespace Unity.Cinemachine.Editor
                 if (InstanceIfExists == null)
                 {
                     var newAssetPath = EditorUtility.SaveFilePanelInProject(
-                            "Create Channel Names asset", "CinemachineChannelNames", "asset", 
+                            "Create Channel Names asset", "CinemachineChannelNames", "asset",
                             "This editor-only file will define the Cinemachine Channel Names for this project");
                     if (!string.IsNullOrEmpty(newAssetPath))
                     {

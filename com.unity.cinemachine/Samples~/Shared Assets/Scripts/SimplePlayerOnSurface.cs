@@ -6,18 +6,18 @@ using UnityEngine.Events;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This behaviour keeps a player upright on surfaces.  It can be used to make the player walk 
-    /// on walls and ceilings or on the surfaces of arbitrary meshes.  It rotates the player 
+    /// This behaviour keeps a player upright on surfaces.  It can be used to make the player walk
+    /// on walls and ceilings or on the surfaces of arbitrary meshes.  It rotates the player
     /// up to match the surface normal.  This script assumes that the pivot point of the player is at the bottom.
-    /// 
+    ///
     /// Raycasts are used to detect walkable surfaces.
-    /// 
-    /// When using this component, SimpleSplayerController's Up Mode should be set to _Player_, and it 
-    /// should not have a Character Controller component, as that does not play nicely with 
+    ///
+    /// When using this component, SimpleSplayerController's Up Mode should be set to _Player_, and it
+    /// should not have a Character Controller component, as that does not play nicely with
     /// nonstandard Up directions.
-    /// 
-    /// Also, when CinemachineCameras are being used to track the character, the 
-    /// [CinemachineBrain](CinemachineBrain.md)'s World Up Override setting should be set to the Player, 
+    ///
+    /// Also, when CinemachineCameras are being used to track the character, the
+    /// [CinemachineBrain](CinemachineBrain.md)'s World Up Override setting should be set to the Player,
     /// so that the Camera's Up matches the Player's Up.
     /// </summary>
     public class SimplePlayerOnSurface : MonoBehaviour
@@ -44,7 +44,7 @@ namespace Unity.Cinemachine.Samples
         float m_FreeFallRaycastAngle = 0;
 
         public bool PreviousSateIsValid { get; set; }
-        
+
         void OnEnable() => PreviousSateIsValid = false;
 
         void OnValidate()
@@ -83,16 +83,16 @@ namespace Unity.Cinemachine.Samples
 
             // Check whether we have walked into a surface
             bool haveHit = false;
-            if (Physics.Raycast(m_PreviousPosition, motionDir, out var hit, 
+            if (Physics.Raycast(m_PreviousPosition, motionDir, out var hit,
                 motionLen + playerRadius, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
                 desiredUp = CaptureUpDirection(hit);
             }
 
-            var raycastLength = Mathf.Max(MaxRaycastDistance, PreviousSateIsValid 
+            var raycastLength = Mathf.Max(MaxRaycastDistance, PreviousSateIsValid
                 ? (m_PreviousGroundPoint - downRaycastOrigin).magnitude + PlayerHeight : MaxRaycastDistance);
-            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out hit, 
+            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out hit,
                 raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
@@ -102,8 +102,8 @@ namespace Unity.Cinemachine.Samples
             // If nothing is directly under our feet, try to find a surface in the direction
             // where we came from.  This handles the case of sudden convex direction changes in the floor
             // (e.g. going around the lip of a surface)
-            if (!haveHit && PreviousSateIsValid 
-                && Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit, 
+            if (!haveHit && PreviousSateIsValid
+                && Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit,
                     MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
@@ -116,7 +116,7 @@ namespace Unity.Cinemachine.Samples
             else
             {
                 SetCurrentSurface(null);
-                if (FreeFallRecovery 
+                if (FreeFallRecovery
                     && Vector3.Dot(motionDir, desiredUp) <= 0
                     && FindNearestSurface(downRaycastOrigin, raycastLength, out var surfacePoint))
                 {
@@ -173,7 +173,7 @@ namespace Unity.Cinemachine.Samples
             else
                 m_FreeFallRaycastAngle += kVerticalStep;
 
-            // We'll do a horizontal sweep at this angle to find the nearest surface 
+            // We'll do a horizontal sweep at this angle to find the nearest surface
             var up = transform.up;
             var dir = Quaternion.AngleAxis(m_FreeFallRaycastAngle, transform.right) * -up;
             const float kHorizontalalSteps = 12;
@@ -185,7 +185,7 @@ namespace Unity.Cinemachine.Samples
             for (int i = 0; i < kHorizontalalSteps; ++i, dir = rotStep * dir)
             {
                 //Debug.DrawLine(playerPos, playerPos + dir * raycastLength, Color.yellow, 1);
-                if (Physics.Raycast(playerPos, dir, out var hit, 
+                if (Physics.Raycast(playerPos, dir, out var hit,
                     raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.distance < nearestDistance)
@@ -206,7 +206,7 @@ namespace Unity.Cinemachine.Samples
             public Vector3[] Normals;
             public int[] Indices;
         }
-        List<MeshCache> m_MeshCacheList = new(); 
+        List<MeshCache> m_MeshCacheList = new();
         const int kMaxMeshCacheSize = 5;
         MeshCache GetMeshCache(MeshCollider collider)
         {

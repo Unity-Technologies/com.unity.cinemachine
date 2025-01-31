@@ -15,7 +15,7 @@ namespace Cinemachine.Cookbook.Recipes;
 
 public class ProjectTest : RecipeBase
 {
-    
+
 
     protected override ISet<Job> LoadJobs()
         => Combine.Collections(GetJobs()).SelectJobs();
@@ -23,12 +23,12 @@ public class ProjectTest : RecipeBase
     public string GetJobName(string packageShortName, string project, string editorVersion, SystemType systemType)
         => $"Test Project - {packageShortName} - {project} - {editorVersion} - {systemType}";
 
-    
+
     public IEnumerable<Dependency> AsDependencies()
     {
         return this.Jobs.ToDependencies(this);
     }
-    
+
     public IEnumerable<IJobBuilder> GetJobs()
     {
         List<IJobBuilder> builders = new();
@@ -64,7 +64,7 @@ public class ProjectTest : RecipeBase
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
                             .WithArtifact(new Artifact("artifacts", "artifacts/*"));
                             ;
-                            
+
                         builders.Add(job);
                     }
                 }

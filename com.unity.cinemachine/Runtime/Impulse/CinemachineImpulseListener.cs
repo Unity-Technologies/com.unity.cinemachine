@@ -16,7 +16,7 @@ namespace Unity.Cinemachine
     public class CinemachineImpulseListener : CinemachineExtension
     {
         /// <summary>
-        /// When to apply the impulse reaction.  Default is Noise.  
+        /// When to apply the impulse reaction.  Default is Noise.
         /// Modify this if necessary to influence the ordering of extension effects
         /// </summary>
         [Tooltip("When to apply the impulse reaction.  Default is after the Noise stage.  "
@@ -55,10 +55,10 @@ namespace Unity.Cinemachine
         public bool UseCameraSpace;
 
         /// <summary>
-        /// This controls the secondary reaction of the listener to the incoming impulse.  
+        /// This controls the secondary reaction of the listener to the incoming impulse.
         /// The impulse might be for example a sharp shock, and the secondary reaction could
-        /// be a vibration whose amplitude and duration is controlled by the size of the 
-        /// original impulse.  This allows different listeners to respond in different ways 
+        /// be a vibration whose amplitude and duration is controlled by the size of the
+        /// original impulse.  This allows different listeners to respond in different ways
         /// to the same impulse signal.
         /// </summary>
         [Serializable]
@@ -73,11 +73,11 @@ namespace Unity.Cinemachine
             /// <summary>
             /// Gain to apply to the amplitudes defined in the signal source asset.
             /// </summary>
-            [Tooltip("Gain to apply to the amplitudes defined in the signal source.  "  
+            [Tooltip("Gain to apply to the amplitudes defined in the signal source.  "
                 + "1 is normal.  Setting this to 0 completely mutes the signal.")]
             [FormerlySerializedAs("m_AmplitudeGain")]
             public float AmplitudeGain;
-        
+
             /// <summary>
             /// Scale factor to apply to the time axis.
             /// </summary>
@@ -120,7 +120,7 @@ namespace Unity.Cinemachine
             /// <param name="rot">output reaction rotation delta</param>
             /// <returns>True if there is a reaction effect, false otherwise</returns>
             public bool GetReaction(
-                float deltaTime, Vector3 impulsePos, 
+                float deltaTime, Vector3 impulsePos,
                 out Vector3 pos, out Quaternion rot)
             {
                 if (!m_Initialized)
@@ -147,7 +147,7 @@ namespace Unity.Cinemachine
                 else
                     m_CurrentTime += deltaTime * FrequencyGain;
 
-                // Adjust the envelope height and duration of the secondary noise, 
+                // Adjust the envelope height and duration of the secondary noise,
                 // according to the strength of the incoming signal
                 m_CurrentAmount = Mathf.Max(m_CurrentAmount, Mathf.Sqrt(sqrMag));
                 m_CurrentDamping = Mathf.Max(m_CurrentDamping, Mathf.Max(1, Mathf.Sqrt(m_CurrentAmount)) * Duration);
@@ -165,10 +165,10 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// This controls the secondary reaction of the listener to the incoming impulse.  
+        /// This controls the secondary reaction of the listener to the incoming impulse.
         /// The impulse might be for example a sharp shock, and the secondary reaction could
-        /// be a vibration whose amplitude and duration is controlled by the size of the 
-        /// original impulse.  This allows different listeners to respond in different ways 
+        /// be a vibration whose amplitude and duration is controlled by the size of the
+        /// original impulse.  This allows different listeners to respond in different ways
         /// to the same impulse signal.
         /// </summary>
         [Tooltip("This controls the secondary reaction of the listener to the incoming impulse.  "
@@ -186,9 +186,9 @@ namespace Unity.Cinemachine
             Gain = 1;
             Use2DDistance = false;
             UseCameraSpace = true;
-            ReactionSettings = new ImpulseReaction 
-            { 
-                AmplitudeGain = 1, 
+            ReactionSettings = new ImpulseReaction
+            {
+                AmplitudeGain = 1,
                 FrequencyGain = 1,
                 Duration = 1f
             };
@@ -206,7 +206,7 @@ namespace Unity.Cinemachine
             if (stage == ApplyAfter && deltaTime >= 0)
             {
                 bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.GetFinalPosition(), Use2DDistance, ChannelMask, 
+                    state.GetFinalPosition(), Use2DDistance, ChannelMask,
                     out var impulsePos, out var impulseRot);
                 bool haveReaction = ReactionSettings.GetReaction(
                     deltaTime, impulsePos, out var reactionPos, out var reactionRot);

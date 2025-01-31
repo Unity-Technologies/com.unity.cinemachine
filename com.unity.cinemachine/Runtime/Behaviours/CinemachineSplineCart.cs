@@ -5,8 +5,8 @@ using UnityEngine.Splines;
 namespace Unity.Cinemachine
 {
     /// <summary>
-    /// This is a very simple behaviour that constrains its transform to a Spline.  
-    /// It can be used to animate any objects along a path, or as a tracking target for 
+    /// This is a very simple behaviour that constrains its transform to a Spline.
+    /// It can be used to animate any objects along a path, or as a tracking target for
     /// Cinemachine Cameras.
     /// </summary>
     [ExecuteAlways]
@@ -20,7 +20,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [SerializeField, FormerlySerializedAs("SplineSettings")]
         SplineSettings m_SplineSettings = new () { Units = PathIndexUnit.Normalized };
-        
+
         /// <summary>This enum defines the options available for the update method.</summary>
         public enum UpdateMethods
         {
@@ -40,7 +40,7 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         [Tooltip("Controls how automatic dollying occurs.  A tracking target may be necessary to use this feature.")]
         public SplineAutoDolly AutomaticDolly;
-        
+
         /// <summary>Used only by Automatic Dolly settings that require it</summary>
         [Tooltip("Used only by Automatic Dolly settings that require it")]
         public Transform TrackingTarget;

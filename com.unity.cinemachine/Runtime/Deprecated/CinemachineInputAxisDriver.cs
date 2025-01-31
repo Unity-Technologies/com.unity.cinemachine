@@ -56,14 +56,14 @@ namespace Unity.Cinemachine
         [Tooltip("The amount of time in seconds it takes to decelerate to a lower speed")]
         public float decelTime;
 
-        /// <summary>The name of this axis as specified in Unity Input manager. 
+        /// <summary>The name of this axis as specified in Unity Input manager.
         /// Setting to an empty string will disable the automatic updating of this axis</summary>
         [Tooltip("The name of this axis as specified in Unity Input manager. "
             + "Setting to an empty string will disable the automatic updating of this axis")]
         public string name;
 
-        /// <summary>The value of the input axis.  A value of 0 means no input.  You can drive 
-        /// "this directly from a custom input system, or you can set the Axis Name and 
+        /// <summary>The value of the input axis.  A value of 0 means no input.  You can drive
+        /// "this directly from a custom input system, or you can set the Axis Name and
         /// have the value driven by the internal Input Manager</summary>
         [NoSaveDuringPlay]
         [Tooltip("The value of the input axis.  A value of 0 means no input.  You can drive "
@@ -140,7 +140,7 @@ namespace Unity.Cinemachine
             axis.Value = a.m_Value;
             return changed;
         }
-        
+
         float ClampValue(ref AxisBase axis, float v)
         {
             float r = axis.m_MaxValue - axis.m_MinValue;

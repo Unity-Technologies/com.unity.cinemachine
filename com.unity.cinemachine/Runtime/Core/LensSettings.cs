@@ -12,8 +12,8 @@ namespace Unity.Cinemachine
     {
         /// <summary>
         /// This is the camera vertical field of view in degrees. Display will be in vertical degress, unless the
-        /// associated camera has its FOV axis setting set to Horizontal, in which case display will 
-        /// be in horizontal degress.  Internally, it is always vertical degrees.  
+        /// associated camera has its FOV axis setting set to Horizontal, in which case display will
+        /// be in horizontal degress.  Internally, it is always vertical degrees.
         /// For cinematic people, a 50mm lens on a super-35mm sensor would equal a 19.6 degree FOV.
         /// </summary>
         [Tooltip("This setting controls the Field of View or Local Length of the lens, depending "
@@ -56,21 +56,21 @@ namespace Unity.Cinemachine
         /// </summary>
         public enum OverrideModes
         {
-            /// <summary> Perspective/Ortho, IsPhysical 
+            /// <summary> Perspective/Ortho, IsPhysical
             /// will not be changed in Unity Camera.  This is the default setting.</summary>
             None = 0,
             /// <summary>Orthographic projection mode will be pushed to the Unity Camera</summary>
             Orthographic,
             /// <summary>Perspective projection mode will be pushed to the Unity Camera</summary>
             Perspective,
-            /// <summary>A physically-modeled Perspective projection type will be pushed 
+            /// <summary>A physically-modeled Perspective projection type will be pushed
             /// to the Unity Camera</summary>
             Physical
         }
 
         /// <summary>
         /// Allows you to select a different camera mode to apply to the Camera component
-        /// when Cinemachine activates this Virtual Camera. 
+        /// when Cinemachine activates this Virtual Camera.
         /// </summary>
         [Tooltip("Allows you to select a different camera mode to apply to the Camera component "
             + "when Cinemachine activates this Virtual Camera.")]
@@ -94,7 +94,7 @@ namespace Unity.Cinemachine
             [Tooltip("Position of the gate relative to the film back")]
             public Vector2 LensShift;
 
-            /// <summary>Distance from the camera lens at which focus is sharpest.  
+            /// <summary>Distance from the camera lens at which focus is sharpest.
             /// The Depth of Field Volume override uses this value if you set FocusDistanceMode to Camera</summary>
             [Tooltip("Distance from the camera lens at which focus is sharpest.  The Depth of Field Volume "
                 + "override uses this value if you set FocusDistanceMode to Camera")]
@@ -128,7 +128,7 @@ namespace Unity.Cinemachine
             [Range(0, 1)]
             public float BarrelClipping;
 
-            /// <summary>Stretches the sensor to simulate an anamorphic look.  Positive values distort 
+            /// <summary>Stretches the sensor to simulate an anamorphic look.  Positive values distort
             /// the camera vertically, negative values distore the camera horizontally</summary>
             [Tooltip("Stretches the sensor to simulate an anamorphic look.  Positive values distort the "
                 + "camera vertically, negative values distort the camera horizontally")]
@@ -166,22 +166,22 @@ namespace Unity.Cinemachine
         /// currently associated Unity camera.
         /// Do not set this property.  Instead, use the ModeOverride field to set orthographic mode.
         /// </summary>
-        public bool Orthographic => ModeOverride == OverrideModes.Orthographic 
+        public bool Orthographic => ModeOverride == OverrideModes.Orthographic
             || (ModeOverride == OverrideModes.None && m_OrthoFromCamera);
 
         /// <summary>
-        /// This property will be true if the camera mode is set, either directly or 
+        /// This property will be true if the camera mode is set, either directly or
         /// indirectly, to Physical Camera
         /// Do not set this property.  Instead, use the ModeOverride field to set physical mode.
         /// </summary>
-        public bool IsPhysicalCamera => ModeOverride == OverrideModes.Physical 
+        public bool IsPhysicalCamera => ModeOverride == OverrideModes.Physical
             || (ModeOverride == OverrideModes.None && m_PhysicalFromCamera);
-                
+
         /// <summary>
-        /// For physical cameras, this is the Sensor aspect.  
+        /// For physical cameras, this is the Sensor aspect.
         /// For nonphysical cameras, this is the screen aspect pulled from the camera, if any.
         /// </summary>
-        public float Aspect => IsPhysicalCamera 
+        public float Aspect => IsPhysicalCamera
             ? PhysicalProperties.SensorSize.x / PhysicalProperties.SensorSize.y : m_AspectFromCamera;
 
         /// <summary>Default Lens Settings</summary>
@@ -297,13 +297,13 @@ namespace Unity.Cinemachine
             // non-lerpable settings taken care of here
             if (t < 0.5f)
             {
-                var blendedLens = lensA; 
+                var blendedLens = lensA;
                 blendedLens.Lerp(lensB, t);
                 return blendedLens;
             }
             else
             {
-                var blendedLens = lensB; 
+                var blendedLens = lensB;
                 blendedLens.Lerp(lensA, 1 - t);
                 return blendedLens;
             }

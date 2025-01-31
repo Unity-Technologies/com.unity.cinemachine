@@ -86,8 +86,8 @@ namespace Unity.Cinemachine
             + "Using different settings per axis can yield a wide range of camera behaviors.")]
         public float m_ZDamping = 1f;
 
-        /// <summary>If set, damping will apply only to target motion, and not when 
-        /// the camera rotation changes.  Turn this on to get an instant response when 
+        /// <summary>If set, damping will apply only to target motion, and not when
+        /// the camera rotation changes.  Turn this on to get an instant response when
         /// the rotation changes</summary>
         [Tooltip("If set, damping will apply  only to target motion, but not to camera "
             + "rotation changes.  Turn this on to get an instant response when the rotation changes.  ")]
@@ -300,7 +300,7 @@ namespace Unity.Cinemachine
         /// Always returns the Body stage</summary>
         public override CinemachineCore.Stage Stage { get { return CinemachineCore.Stage.Body; } }
 
-        /// <summary>FramingTransposer's algorithm tahes camera orientation as input, 
+        /// <summary>FramingTransposer's algorithm tahes camera orientation as input,
         /// so even though it is a Body component, it must apply after Aim</summary>
         public override bool BodyAppliesAfterAim { get { return true; } }
 
@@ -340,14 +340,14 @@ namespace Unity.Cinemachine
             m_PreviousCameraPosition = pos;
             m_prevRotation = rot;
         }
-        
+
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() 
-        { 
-            return Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping)); 
+        public override float GetMaxDampTime()
+        {
+            return Mathf.Max(m_XDamping, Mathf.Max(m_YDamping, m_ZDamping));
         }
 
         /// <summary>Notification that this virtual camera is going live.
@@ -359,8 +359,8 @@ namespace Unity.Cinemachine
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            if (fromCam != null 
-                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+            if (fromCam != null
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
@@ -520,8 +520,8 @@ namespace Unity.Cinemachine
                 cameraOffset.z = targetZ - cameraMax;
 
             // Move along the XY plane
-            float screenSize = lens.Orthographic 
-                ? lens.OrthographicSize 
+            float screenSize = lens.Orthographic
+                ? lens.OrthographicSize
                 : Mathf.Tan(0.5f * verticalFOV * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
             Rect softGuideOrtho = ScreenToOrtho(SoftGuideRect, screenSize, lens.Aspect);
             if (!previousStateIsValid)
@@ -540,7 +540,7 @@ namespace Unity.Cinemachine
                     cameraOffset, new Vector3(m_XDamping, m_YDamping, m_ZDamping), deltaTime);
 
                 // Make sure the real target (not the lookahead one) is still in the frame
-                if (!m_UnlimitedSoftZone 
+                if (!m_UnlimitedSoftZone
                     && (deltaTime < 0 || VirtualCamera.FollowTargetAttachment > 1 - Epsilon))
                 {
                     Rect hardGuideOrtho = ScreenToOrtho(HardGuideRect, screenSize, lens.Aspect);

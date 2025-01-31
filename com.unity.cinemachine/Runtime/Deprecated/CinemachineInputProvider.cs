@@ -69,8 +69,8 @@ namespace Unity.Cinemachine
         /// <summary>
         /// In a multi-player context, actions are associated with specific players
         /// This resolves the appropriate action reference for the specified player.
-        /// 
-        /// Because the resolution involves a search, we also cache the returned 
+        ///
+        /// Because the resolution involves a search, we also cache the returned
         /// action to make future resolutions faster.
         /// </summary>
         /// <param name="axis">Which input axis (0, 1, or 2)</param>
@@ -86,13 +86,13 @@ namespace Unity.Cinemachine
                 m_cachedActions = new InputAction[NUM_AXES];
             if (m_cachedActions[axis] != null && actionRef.action.id != m_cachedActions[axis].id)
                 m_cachedActions[axis] = null;
-            
+
             if (m_cachedActions[axis] == null)
             {
                 m_cachedActions[axis] = actionRef.action;
                 if (PlayerIndex != -1)
                     m_cachedActions[axis] = GetFirstMatch(InputUser.all[PlayerIndex], actionRef);
-        
+
                 if (AutoEnableInputs && actionRef != null && actionRef.action != null)
                     actionRef.action.Enable();
             }
@@ -104,11 +104,11 @@ namespace Unity.Cinemachine
                 else
                     m_cachedActions[axis].Disable();
             }
-            
+
             return m_cachedActions[axis];
-            
+
             // local function to wrap the lambda which otherwise causes a tiny gc
-            InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) => 
+            InputAction GetFirstMatch(in InputUser user, InputActionReference aRef) =>
                 user.actions.First(x => x.id == aRef.action.id);
         }
 
@@ -124,7 +124,7 @@ namespace Unity.Cinemachine
 {
     /// <summary>
     /// This is an add-on to override the legacy input system and read input using the
-    /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera 
+    /// UnityEngine.Input package API.  Add this behaviour to any CinemachineVirtualCamera
     /// or FreeLook that requires user input, and drag in the the desired actions.
     /// If the Input System Package is not installed, then this behaviour does nothing.
     /// </summary>

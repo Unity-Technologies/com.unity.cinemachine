@@ -20,8 +20,8 @@ namespace Unity.Cinemachine.Samples
         bool SplineAutoDolly.ISplineAutoDolly.RequiresTrackingTarget => false;
 
         public float GetSplinePosition(
-            MonoBehaviour sender, Transform target, 
-            SplineContainer spline, float currentPosition, 
+            MonoBehaviour sender, Transform target,
+            SplineContainer spline, float currentPosition,
             PathIndexUnit positionUnits, float deltaTime)
         {
             if (Application.isPlaying && deltaTime > 0)

@@ -40,13 +40,13 @@ namespace Unity.Cinemachine
         [Tooltip("The camera will not move along its z-axis if the target is within "
             + "this distance of the specified camera distance")]
         public float DeadZoneDepth = 0;
-        
+
         /// <summary>Settings for screen-space composition</summary>
         [Header("Composition")]
         [HideFoldout]
         public ScreenComposerSettings Composition = ScreenComposerSettings.Default;
 
-        /// <summary>Force target to center of screen when this camera activates.  
+        /// <summary>Force target to center of screen when this camera activates.
         /// If false, will clamp target to the edges of the dead zone</summary>
         [Tooltip("Force target to center of screen when this camera activates.  If false, will "
             + "clamp target to the edges of the dead zone")]
@@ -110,13 +110,13 @@ namespace Unity.Cinemachine
             DeadZoneDepth = Mathf.Max(0, DeadZoneDepth);
             Composition.Validate();
         }
-        
+
         ScreenComposerSettings CinemachineFreeLookModifier.IModifiableComposition.Composition
         {
             get => Composition;
             set => Composition = value;
         }
-        
+
         Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
         {
             get => Damping;
@@ -128,7 +128,7 @@ namespace Unity.Cinemachine
             get => CameraDistance;
             set => CameraDistance = value;
         }
-        
+
         /// <summary>True if component is enabled and has a valid Follow target</summary>
         public override bool IsValid => enabled && FollowTarget != null;
 
@@ -136,7 +136,7 @@ namespace Unity.Cinemachine
         /// Always returns the Body stage</summary>
         public override CinemachineCore.Stage Stage => CinemachineCore.Stage.Body;
 
-        /// <summary>FramingTransposer algorithm takes camera orientation as input, 
+        /// <summary>FramingTransposer algorithm takes camera orientation as input,
         /// so even though it is a Body component, it must apply after Aim</summary>
         public override bool BodyAppliesAfterAim => true;
 
@@ -169,12 +169,12 @@ namespace Unity.Cinemachine
             m_PreviousCameraPosition = pos;
             m_prevRotation = rot;
         }
-        
+
         /// <summary>
         /// Report maximum damping time needed for this component.
         /// </summary>
         /// <returns>Highest damping setting in this component</returns>
-        public override float GetMaxDampTime() => Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z)); 
+        public override float GetMaxDampTime() => Mathf.Max(Damping.x, Mathf.Max(Damping.y, Damping.z));
 
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation does nothing.</summary>
@@ -185,8 +185,8 @@ namespace Unity.Cinemachine
         public override bool OnTransitionFromCamera(
             ICinemachineCamera fromCam, Vector3 worldUp, float deltaTime)
         {
-            if (fromCam != null 
-                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0 
+            if (fromCam != null
+                && (VirtualCamera.State.BlendHint & CameraState.BlendHints.InheritPosition) != 0
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
@@ -291,8 +291,8 @@ namespace Unity.Cinemachine
                 cameraOffset.z = targetZ - cameraMax;
 
             // Move along the XY plane
-            float screenSize = lens.Orthographic 
-                ? lens.OrthographicSize 
+            float screenSize = lens.Orthographic
+                ? lens.OrthographicSize
                 : Mathf.Tan(0.5f * verticalFOV * Mathf.Deg2Rad) * (targetZ - cameraOffset.z);
             var softGuideOrtho = ScreenToOrtho(Composition.DeadZoneRect, screenSize, lens.Aspect);
             if (!previousStateIsValid)
@@ -310,7 +310,7 @@ namespace Unity.Cinemachine
                 cameraOffset = VirtualCamera.DetachedFollowTargetDamp(cameraOffset, Damping, deltaTime);
 
                 // Make sure the real target (not the lookahead one) is still in the frame
-                if (Composition.HardLimits.Enabled 
+                if (Composition.HardLimits.Enabled
                     && (deltaTime < 0 || VirtualCamera.FollowTargetAttachment > 1 - Epsilon))
                 {
                     var hardGuideOrtho = ScreenToOrtho(Composition.HardLimitsRect, screenSize, lens.Aspect);

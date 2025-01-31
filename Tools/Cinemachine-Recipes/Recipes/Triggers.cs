@@ -12,7 +12,7 @@ public class Triggers : RecipeBase
 {
     private readonly CinemachineSettings config = new ();
     private const string packageName = "com.unity.cinemachine";
-    
+
     protected override ISet<Job> LoadJobs()
         => Combine.Collections(GetTriggers()).SelectJobs();
 
@@ -26,7 +26,7 @@ public class Triggers : RecipeBase
             .WithDependencies(projectTests)
             .WithDependencies(validationTests)
             .WithDescription("Nightly check on main")
-            
+
         );
         builders.Add(JobBuilder.Create($"All Trigger")
             .WithDependencies(projectTests)
@@ -35,9 +35,9 @@ public class Triggers : RecipeBase
             .WithPullRequestTrigger(pr => pr.ExcludeDraft())
             .WithDescription("All tests defined in recipes.")
         );
-        
+
         var prsubset = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("windows") || job.JobId.Contains("6000"));
-        
+
         builders.Add(JobBuilder.Create("Package CI")
             .WithDependencies(prsubset)
             .WithPullRequestTrigger(pr => pr.ExcludeDraft())

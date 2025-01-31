@@ -16,10 +16,10 @@ namespace Unity.Cinemachine.Tests
         public override void SetUp()
         {
             base.SetUp();
-            
+
             m_Cam = CreateGameObject("MainCamera", typeof(Camera), typeof(CinemachineBrain)).GetComponent<Camera>();
             m_Cam.usePhysicalProperties = true;
-            
+
             var vcamHolder = CreateGameObject("CM Vcam", typeof(CinemachineCamera), typeof(CinemachineConfiner2D));
             m_CmCamera = vcamHolder.GetComponent<CinemachineCamera>();
         }
@@ -29,12 +29,12 @@ namespace Unity.Cinemachine.Tests
         {
             base.TearDown();
         }
-        
+
         [UnityTest]
         public IEnumerator IsPhysical()
         {
             yield return null;
-            
+
             Assert.True(m_Cam.usePhysicalProperties);
             Assert.True(m_CmCamera.Lens.IsPhysicalCamera);
         }
@@ -71,7 +71,7 @@ namespace Unity.Cinemachine.Tests
         {
             Assert.That(camera.sensorSize, Is.EqualTo(state.Lens.PhysicalProperties.SensorSize));
             Assert.That(camera.gateFit, Is.EqualTo(state.Lens.PhysicalProperties.GateFit));
-            Assert.That(camera.focalLength, 
+            Assert.That(camera.focalLength,
                 Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.PhysicalProperties.SensorSize.y)));
             Assert.That(camera.lensShift, Is.EqualTo(state.Lens.PhysicalProperties.LensShift));
             Assert.That(camera.focusDistance, Is.EqualTo(state.Lens.PhysicalProperties.FocusDistance));
@@ -83,12 +83,12 @@ namespace Unity.Cinemachine.Tests
             Assert.That(camera.barrelClipping, Is.EqualTo(state.Lens.PhysicalProperties.BarrelClipping));
             Assert.That(camera.anamorphism, Is.EqualTo(state.Lens.PhysicalProperties.Anamorphism));
         }
-        
+
         static void CompareLensProperties(LensSettings lens, CameraState state)
         {
             Assert.That(lens.PhysicalProperties.SensorSize, Is.EqualTo(state.Lens.PhysicalProperties.SensorSize));
             Assert.That(lens.PhysicalProperties.GateFit, Is.EqualTo(state.Lens.PhysicalProperties.GateFit));
-            Assert.That(Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.PhysicalProperties.SensorSize.y), 
+            Assert.That(Camera.FieldOfViewToFocalLength(lens.FieldOfView, lens.PhysicalProperties.SensorSize.y),
                 Is.EqualTo(Camera.FieldOfViewToFocalLength(state.Lens.FieldOfView, state.Lens.PhysicalProperties.SensorSize.y)));
             Assert.That(lens.PhysicalProperties.LensShift, Is.EqualTo(state.Lens.PhysicalProperties.LensShift));
             Assert.That(lens.PhysicalProperties.FocusDistance, Is.EqualTo(state.Lens.PhysicalProperties.FocusDistance));
