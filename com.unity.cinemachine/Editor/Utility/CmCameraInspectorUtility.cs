@@ -291,24 +291,27 @@ namespace Unity.Cinemachine.Editor
             button.AddManipulator(menu);
             ux.Add(row);
         }
-        
+
         public static void AddGroupTargetInfoBox(this UnityEditor.Editor editor, VisualElement ux)
         {
-            var groupHelp = ux.AddChild(new HelpBox(
-                "Consider adding a Cinemachine Group Framing extension to frame the members of the Target Group.", 
-                HelpBoxMessageType.Info));
-            groupHelp.SetVisible(false);
-            ux.TrackAnyUserActivity(() =>
+            if (editor.target is CinemachineVirtualCameraBase target)
             {
-                var visible = false;
-                if (editor.target is CinemachineVirtualCameraBase target)
+                var groupHelp = ux.AddChild(new HelpBox(
+                    "Consider adding a Cinemachine Group Framing extension to frame the members of the Target Group.", 
+                    HelpBoxMessageType.Info));
+                groupHelp.SetVisible(false);
+                ux.TrackAnyUserActivity(() =>
                 {
-                    target.UpdateTargetCache();
-                    if (target.LookAtTargetAsGroup != null)
-                        visible = !target.HasExtension(typeof(CinemachineGroupFraming));
-                }
-                groupHelp.SetVisible(visible);
-            });
+                    var visible = false;
+                    if (target != null)
+                    {
+                        target.UpdateTargetCache();
+                        if (target.LookAtTargetAsGroup != null)
+                            visible = !target.HasExtension(typeof(CinemachineGroupFraming));
+                    }
+                    groupHelp.SetVisible(visible);
+                });
+            }
         }
 
         /// <summary>
