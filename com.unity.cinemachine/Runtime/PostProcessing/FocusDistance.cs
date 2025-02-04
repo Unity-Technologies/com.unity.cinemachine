@@ -14,7 +14,6 @@ namespace Unity.Cinemachine
             internal const string FocusDistanceKeyword = "FOCUS_DISTANCE";
         }
 
-
         [Tooltip("Stickier auto focus is more stable (less switching back and forth as tiny "
             + "grass blades cross the camera), but requires looking at a bigger uniform-ish area to switch focus to it.")]
         [Range(0, 1)]
@@ -50,11 +49,11 @@ namespace Unity.Cinemachine
         // Same As FocusDistance.compute
         struct FocusDistanceParams
         {
-            public uint  VoteBias;		    // 0...15
-            public float DepthTolerance;	// 0.02
-            public float SampleRadius;		// 0.02
-            public float SamplePosX;		// 0
-            public float SamplePosY;		// 0
+            public uint  VoteBias;          // 0...15
+            public float DepthTolerance;    // 0.02
+            public float SampleRadius;       // 0.02
+            public float SamplePosX;         // 0
+            public float SamplePosY;         // 0
             public float DefaultFocusDistance; // current focus distance
         };
         ComputeBuffer m_FocusDistanceParamsCB;

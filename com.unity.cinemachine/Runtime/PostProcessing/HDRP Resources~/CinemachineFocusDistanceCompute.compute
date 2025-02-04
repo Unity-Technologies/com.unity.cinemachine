@@ -15,34 +15,35 @@ float LinearEyeDepth(float depth, float4 zBufferParam) { return 1.0 / (zBufferPa
 
 // 16 samples, won't handle a different number
 static const uint kSampleCount = 16;
-static const float2 kDiskKernel[kSampleCount] = {
-    float2(0,0),
-    float2(0.54545456,0),
-    float2(0.16855472,0.5187581),
-    float2(-0.44128203,0.3206101),
-    float2(-0.44128197,-0.3206102),
-    float2(0.1685548,-0.5187581),
-    float2(1,0),
-    float2(0.809017,0.58778524),
-    float2(0.30901697,0.95105654),
-    float2(-0.30901703,0.9510565),
-    float2(-0.80901706,0.5877852),
-    float2(-1,0),
-    float2(-0.80901694,-0.58778536),
-    float2(-0.30901664,-0.9510566),
-    float2(0.30901712,-0.9510565),
-    float2(0.80901694,-0.5877853),
+static const float2 kDiskKernel[kSampleCount] =
+{
+    float2(0, 0),
+    float2(0.54545456, 0),
+    float2(0.16855472, 0.5187581),
+    float2(-0.44128203, 0.3206101),
+    float2(-0.44128197, -0.3206102),
+    float2(0.1685548, -0.5187581),
+    float2(1, 0),
+    float2(0.809017, 0.58778524),
+    float2(0.30901697, 0.95105654),
+    float2(-0.30901703, 0.9510565),
+    float2(-0.80901706, 0.5877852),
+    float2(-1, 0),
+    float2(-0.80901694, -0.58778536),
+    float2(-0.30901664, -0.9510566),
+    float2(0.30901712, -0.9510565),
+    float2(0.80901694, -0.5877853),
 };
 // Kernel above taken from PostProcessing/Shaders/Builtins/DiskKernels.hlsl
 
 struct FocusDistanceParams
 {
-    uint VoteBias;			// 0...15
-    float DepthTolerance;	// 0.02
-    float SampleRadius;		// 0.02
-    float SamplePosX;		// 0
-    float SamplePosY;		// 0
-    float DefaultFocusDistance;	// current focus distance
+    uint VoteBias; // 0...15
+    float DepthTolerance; // 0.02
+    float SampleRadius; // 0.02
+    float SamplePosX; // 0
+    float SamplePosY; // 0
+    float DefaultFocusDistance; // current focus distance
 };
 
 struct FocusDistanceOutput
@@ -50,10 +51,10 @@ struct FocusDistanceOutput
     float FocusDistance;
 };
 
-RWStructuredBuffer<FocusDistanceParams> _FocusDistanceParams;// : register(u2);
-RWStructuredBuffer<FocusDistanceOutput> _FocusDistanceOutput;// : register(u3);
+RWStructuredBuffer<FocusDistanceParams> _FocusDistanceParams; // : register(u2);
+RWStructuredBuffer<FocusDistanceOutput> _FocusDistanceOutput; // : register(u3);
 
-[numthreads(1,1,1)]
+[numthreads(1, 1, 1)]
 void CSMain(uint3 id : SV_DispatchThreadID)
 {
     // Settings
@@ -65,8 +66,8 @@ void CSMain(uint3 id : SV_DispatchThreadID)
     float2 kernelPos = float2(params.SamplePosX, params.SamplePosY);
 
     // Buckets
-    float depths[kSampleCount] = { -1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
-    uint votes[kSampleCount] = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    float depths[kSampleCount] = {-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1,-1 };
+    uint votes[kSampleCount]   = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
     // Init the first bucket with the current target depth
     // Even though it might actually not be hit by any sample, and
