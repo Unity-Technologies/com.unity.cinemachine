@@ -14,6 +14,7 @@ namespace Unity.Cinemachine
             internal const string FocusDistanceKeyword = "FOCUS_DISTANCE";
         }
 
+
         [Tooltip("Stickier auto focus is more stable (less switching back and forth as tiny "
             + "grass blades cross the camera), but requires looking at a bigger uniform-ish area to switch focus to it.")]
         [Range(0, 1)]

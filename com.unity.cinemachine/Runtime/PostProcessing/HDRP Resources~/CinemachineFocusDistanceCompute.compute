@@ -1,4 +1,4 @@
-﻿#pragma kernel CSMain
+#pragma kernel CSMain
 
 #if 1 // Includes are available only when HDRP is installed
 #include "Packages/com.unity.render-pipelines.core/ShaderLibrary/Common.hlsl"

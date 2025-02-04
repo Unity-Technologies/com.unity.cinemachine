@@ -15,7 +15,7 @@ Unity hereby grants to you a worldwide, non-exclusive, no-charge, and royalty-fr
 
 3.3 You have a license to those derivative works. Subject to this License, Unity grants to you the same worldwide, non-exclusive, no-charge, and royalty-free copyright license to derivative works of the Software you create as is granted to you for the Software under this License.
 
-4. Trademarks. You are not granted any right or license under this License to use any trademarks, service marks, trade names, products names, or branding of Unity or its affiliates ("Trademarks"). Descriptive uses of Trademarks are permitted; see, for example, Unity’s Branding Usage Guidelines at https://unity3d.com/public-relations/brand.
+4. Trademarks. You are not granted any right or license under this License to use any trademarks, service marks, trade names, products names, or branding of Unity or its affiliates ("Trademarks"). Descriptive uses of Trademarks are permitted; see, for example, Unity's Branding Usage Guidelines at https://unity3d.com/public-relations/brand.
 
 5. Notices & Third-Party Rights. This License, including the copyright notice above, must be provided in all substantial portions of the Software and derivative works thereof (or, if that is impracticable, in any other location where such notices are customarily placed). Further, if the Software is accompanied by a Unity "third-party notices" or similar file, you acknowledge and agree that software identified in that file is governed by those separate license terms.
 
