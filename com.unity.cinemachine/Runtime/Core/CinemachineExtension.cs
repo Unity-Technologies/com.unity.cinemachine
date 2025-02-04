@@ -110,9 +110,9 @@ namespace Unity.Cinemachine
         /// <param name="stage">The current pipeline stage</param>
         /// <param name="state">The current virtual camera state</param>
         /// <param name="deltaTime">The current applicable deltaTime</param>
-        protected abstract void PostPipelineStageCallback(
+        protected virtual void PostPipelineStageCallback(
             CinemachineVirtualCameraBase vcam,
-            CinemachineCore.Stage stage, ref CameraState state, float deltaTime);
+            CinemachineCore.Stage stage, ref CameraState state, float deltaTime) {}
 
         /// <summary>This is called to notify the extension that a target got warped,
         /// so that the extension can update its internal state to make the camera
