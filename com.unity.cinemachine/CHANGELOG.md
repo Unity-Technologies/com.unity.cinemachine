@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [2.10.4] - 2025-02-06
 - Bugfix: FramingTransposer with a dead zone would sometimes drift.
+- Cinemachine Shot Editor longer provides UX to create cameras when editing a prefab.
 
 
 ## [2.10.3] - 2024-11-05
