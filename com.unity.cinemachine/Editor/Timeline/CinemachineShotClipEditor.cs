@@ -77,11 +77,13 @@ public class CinemachineShotClipEditor : ClipEditor
             var director = TimelineEditor.inspectedDirector;
             if (director != null)
             {
+#if UNITY_2021_3_OR_NEWER
                 var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
                 bool isPrefabOrInPrefabMode = (PrefabUtility.IsPartOfPrefabAsset(director) 
                     || (prefabStage != null && prefabStage.IsPartOfPrefabContents(director.gameObject))
                     && !PrefabUtility.IsPartOfPrefabInstance(director.gameObject));
                 if (!isPrefabOrInPrefabMode)
+#endif
                 {
                     var asset = clip.asset as CinemachineShot;
                     var vcam = CinemachineShotEditor.CreatePassiveVcamFromSceneView();

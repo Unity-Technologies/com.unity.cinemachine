@@ -96,6 +96,7 @@ using UnityEditor.SceneManagement;
 
         private void OnEnable()
         {
+#if UNITY_2021_3_OR_NEWER
             var director = TimelineEditor.inspectedDirector;
             var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
             m_IsPrefabOrInPrefabMode = director == null;
@@ -105,6 +106,9 @@ using UnityEditor.SceneManagement;
                     && (PrefabUtility.IsPartOfPrefabAsset(director) 
                         || (prefabStage != null && prefabStage.IsPartOfPrefabContents(director.gameObject)));
             }
+#else
+            m_IsPrefabOrInPrefabMode = false;
+#endif
         }
 
         private void OnDisable()
