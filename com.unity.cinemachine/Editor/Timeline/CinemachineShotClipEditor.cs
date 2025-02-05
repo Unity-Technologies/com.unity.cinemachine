@@ -5,6 +5,7 @@ using UnityEditor.Timeline;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEditor.SceneManagement;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -65,13 +66,24 @@ namespace Unity.Cinemachine.Editor
             base.OnCreate(clip, track, clonedFrom);
             if (CinemachineTimelinePrefs.AutoCreateShotFromSceneView.Value)
             {
-                var asset = clip.asset as CinemachineShot;
-                var vcam = CinemachineShotEditor.CreatePassiveVcamFromSceneView();
-                var d = TimelineEditor.inspectedDirector;
-                if (d != null && d.GetReferenceValue(asset.VirtualCamera.exposedName, out bool idValid) == null)
+                var director = TimelineEditor.inspectedDirector;
+                if (director != null)
                 {
-                    asset.VirtualCamera.exposedName = System.Guid.NewGuid().ToString();
-                    d.SetReferenceValue(asset.VirtualCamera.exposedName, vcam);
+                    var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+                    bool isPrefabOrInPrefabMode = (PrefabUtility.IsPartOfPrefabAsset(director) 
+                        || (prefabStage != null && prefabStage.IsPartOfPrefabContents(director.gameObject))
+                        && !PrefabUtility.IsPartOfPrefabInstance(director.gameObject));
+                    if (!isPrefabOrInPrefabMode)
+                    {
+                        var asset = clip.asset as CinemachineShot;
+                        var vcam = CinemachineShotEditor.CreatePassiveVcamFromSceneView();
+                        var d = TimelineEditor.inspectedDirector;
+                        if (d != null && d.GetReferenceValue(asset.VirtualCamera.exposedName, out bool idValid) == null)
+                        {
+                            asset.VirtualCamera.exposedName = System.Guid.NewGuid().ToString();
+                            d.SetReferenceValue(asset.VirtualCamera.exposedName, vcam);
+                        }
+                    }
                 }
             }
         }
