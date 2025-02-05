@@ -150,7 +150,7 @@ using UnityEditor.SceneManagement;
             EditorGUILayout.Space();
 
             if (m_IsPrefabOrInPrefabMode)
-                EditorGUILayout.HelpBox("Only virtual cameras inside the prefab can be assigned.", MessageType.Info);
+                EditorGUILayout.HelpBox("Only virtual cameras inside the prefab can be assigned, and the Property must be Exposed.", MessageType.Info);
 
             CinemachineVirtualCameraBase vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;;
             if (m_IsPrefabOrInPrefabMode || vcam != null)
