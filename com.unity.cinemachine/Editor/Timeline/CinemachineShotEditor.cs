@@ -9,6 +9,7 @@ using Cinemachine.Editor;
 using System.Collections.Generic;
 using UnityEditor.Timeline;
 using Cinemachine;
+using UnityEditor.SceneManagement;
 
 //namespace Cinemachine.Timeline
 //{
@@ -83,12 +84,27 @@ using Cinemachine;
         GUIContent m_ClearText = new GUIContent("Clear", "Clear the target position scrubbing cache");
 #endif
 
+        bool m_IsPrefabOrInPrefabMode;
+
         /// <summary>Get the property names to exclude in the inspector.</summary>
         /// <param name="excluded">Add the names to this list</param>
         protected override void GetExcludedPropertiesInInspector(List<string> excluded)
         {
             base.GetExcludedPropertiesInInspector(excluded);
             excluded.Add(FieldPath(x => x.VirtualCamera));
+        }
+
+        private void OnEnable()
+        {
+            var director = TimelineEditor.inspectedDirector;
+            var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+            m_IsPrefabOrInPrefabMode = director == null;
+            if (!m_IsPrefabOrInPrefabMode)
+            {
+                m_IsPrefabOrInPrefabMode = !PrefabUtility.IsPartOfPrefabInstance(director)
+                    && (PrefabUtility.IsPartOfPrefabAsset(director) 
+                        || (prefabStage != null && prefabStage.IsPartOfPrefabContents(director.gameObject)));
+            }
         }
 
         private void OnDisable()
@@ -132,9 +148,12 @@ using Cinemachine;
 #endif
 
             EditorGUILayout.Space();
-            CinemachineVirtualCameraBase vcam
-                = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
-            if (vcam != null)
+
+            if (m_IsPrefabOrInPrefabMode)
+                EditorGUILayout.HelpBox("Only virtual cameras inside the prefab can be assigned, and the Property must be Exposed.", MessageType.Info);
+
+            CinemachineVirtualCameraBase vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;;
+            if (m_IsPrefabOrInPrefabMode || vcam != null)
                 EditorGUILayout.PropertyField(vcamProperty, kVirtualCameraLabel);
             else
             {
