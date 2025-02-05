@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
 using System.Collections.Generic;
+using UnityEditor.Timeline;
+using UnityEditor.SceneManagement;
 
 namespace Unity.Cinemachine.Editor
 {
@@ -12,6 +14,8 @@ namespace Unity.Cinemachine.Editor
     class CinemachineShotEditor : UnityEditor.Editor
     {
         CinemachineShot Target => target as CinemachineShot;
+
+        bool m_IsPrefabOrInPrefabMode;
 
         [InitializeOnLoad]
         class SyncCacheEnabledSetting
@@ -32,6 +36,19 @@ namespace Unity.Cinemachine.Editor
                 Undo.SetTransformParent(vcam.transform, d.transform, "");
 #endif
             return vcam;
+        }
+
+        private void OnEnable()
+        {
+            var director = TimelineEditor.inspectedDirector;
+            var prefabStage = PrefabStageUtility.GetCurrentPrefabStage();
+            m_IsPrefabOrInPrefabMode = director == null;
+            if (!m_IsPrefabOrInPrefabMode)
+            {
+                m_IsPrefabOrInPrefabMode = !PrefabUtility.IsPartOfPrefabInstance(director)
+                    && (PrefabUtility.IsPartOfPrefabAsset(director) 
+                        || (prefabStage != null && prefabStage.IsPartOfPrefabContents(director.gameObject)));
+            }
         }
 
 #if CINEMACHINE_TIMELINE_1_8_2
@@ -125,7 +142,7 @@ namespace Unity.Cinemachine.Editor
             var clearCacheButton = row.Right.AddChild(new Button
             {
                 text = "Clear",
-                style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5 }
+                style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5, marginRight = 0 }
             });
             clearCacheButton.RegisterCallback<ClickEvent>((evt) => TargetPositionCache.ClearCache());
             clearCacheButton.SetEnabled(CinemachineTimelinePrefs.UseScrubbingCache.Value);
@@ -135,22 +152,15 @@ namespace Unity.Cinemachine.Editor
                 clearCacheButton.SetEnabled(evt.newValue);
             });
 
-            // Camera Reference - we do it in IMGUI until the ExposedReference UITK bugs are fixed
             m_ParentElement.AddSpace();
+            if (m_IsPrefabOrInPrefabMode)
+                m_ParentElement.Add(new HelpBox(
+                    "Only Cinemachine Cameras inside the prefab may be assigned.", 
+                    HelpBoxMessageType.Info));
+
+            // Camera Reference
             var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
-            row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
-            row.Left.AddChild(new Label("Cinemachine Camera")
-            {
-                tooltip = "The Cinemachine camera to use for this shot",
-                style = { alignSelf = Align.Center, flexGrow = 1 }
-            });
-            row.Right.Add(new IMGUIContainer(() =>
-            {
-                EditorGUI.BeginChangeCheck();
-                EditorGUILayout.PropertyField(vcamProperty, GUIContent.none);
-                if (EditorGUI.EndChangeCheck())
-                    serializedObject.ApplyModifiedProperties();
-            }) { style = { flexGrow = 1, marginBottom = 2 }} );
+            row = m_ParentElement.AddChild(InspectorUtility.PropertyRow(vcamProperty, out _, "Cinemachine Camera"));
             m_CreateButton = row.Right.AddChild(new Button(() =>
             {
                 vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
@@ -159,7 +169,7 @@ namespace Unity.Cinemachine.Editor
             {
                 text = "Create",
                 tooltip = "Create a passive Cinemachine camera matching the scene view",
-                style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5 }
+                style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5, marginBottom = 2, marginRight = 0 }
             });
 
             // Display name
@@ -178,7 +188,9 @@ namespace Unity.Cinemachine.Editor
                 return;
 
             var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
-            m_CreateButton.SetVisible(vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
+            if (vcamProperty == null)
+                return;
+            m_CreateButton.SetVisible(!m_IsPrefabOrInPrefabMode && vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase == null);
             var vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
 
             m_ComponentsCache.Clear();
@@ -241,10 +253,15 @@ namespace Unity.Cinemachine.Editor
             GUI.enabled = true;
 
             EditorGUILayout.Space();
+
+            if (m_IsPrefabOrInPrefabMode)
+                EditorGUILayout.HelpBox(
+                    "Only Cinemachine Cameras inside the prefab may be assigned, and the Property must be Exposed.", 
+                    MessageType.Info);
+
             var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
-            CinemachineVirtualCameraBase vcam
-                = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
-            if (vcam != null)
+            CinemachineVirtualCameraBase vcam = vcamProperty.exposedReferenceValue as CinemachineVirtualCameraBase;
+            if (m_IsPrefabOrInPrefabMode || vcam != null)
                 EditorGUILayout.PropertyField(vcamProperty, s_CmCameraLabel);
             else
             {

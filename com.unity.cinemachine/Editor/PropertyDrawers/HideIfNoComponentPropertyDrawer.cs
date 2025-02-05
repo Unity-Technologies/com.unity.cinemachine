@@ -15,6 +15,8 @@ namespace Unity.Cinemachine.Editor
             var ux = new PropertyField(property);
             ux.TrackAnyUserActivity(() =>
             {
+                if (property.serializedObject == null)
+                    return;
                 bool hasComponent = false;
                 var targets = property.serializedObject.targetObjects;
                 for (int i = 0; !hasComponent && i < targets.Length; ++i)
