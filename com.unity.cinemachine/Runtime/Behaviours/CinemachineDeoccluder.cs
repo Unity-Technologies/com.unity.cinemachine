@@ -303,7 +303,7 @@ namespace Unity.Cinemachine
             }
             public void UpdateDistanceSmoothing(float distance)
             {
-                if (m_SmoothedDistance == 0 || distance < m_SmoothedDistance)
+                if (!StateIsValid || m_SmoothedDistance == 0 || distance < m_SmoothedDistance)
                 {
                     m_SmoothedDistance = distance;
                     m_SmoothedTime = CinemachineCore.CurrentTime;
@@ -381,8 +381,11 @@ namespace Unity.Cinemachine
                 extra.DebugResolutionPath?.Clear();
                 extra.OccludingObjects?.Clear();
 
-                if (!AvoidObstacles.Enabled)
+                if (!vcam.PreviousStateIsValid)
                     extra.StateIsValid = false;
+
+                if (!AvoidObstacles.Enabled)
+                    extra.StateIsValid = false;  // invalidate the occlusion state
                 else
                 {
                     var initialCamPos = state.GetCorrectedPosition();
@@ -420,6 +423,9 @@ namespace Unity.Cinemachine
                     // to the target for a while, to reduce popping in and out on bumpy objects
                     if (hasResolutionTarget && AvoidObstacles.SmoothingTime > Epsilon)
                     {
+                        if (extra.StateIsValid)
+                            extra.ResetDistanceSmoothing(0);
+
                         var pos = initialCamPos + displacement;
                         var dir = pos - resolutionTargetPoint;
                         var distance = dir.magnitude;
@@ -443,15 +449,15 @@ namespace Unity.Cinemachine
 
                     // Apply damping
                     float dampTime = AvoidObstacles.DampingWhenOccluded;
-                    if (deltaTime >= 0 && vcam.PreviousStateIsValid && extra.StateIsValid
+                    if (deltaTime >= 0 && extra.StateIsValid 
                         && AvoidObstacles.DampingWhenOccluded + AvoidObstacles.Damping > Epsilon)
                     {
                         // To ease the transition between damped and undamped regions, we damp the damp time
                         var dispSqrMag = displacement.sqrMagnitude;
                         dampTime = dispSqrMag > extra.PreviousDisplacement.sqrMagnitude
                             ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
-                        if (dispSqrMag < Epsilon)
-                            dampTime = extra.PreviousDampTime - Damper.Damp(extra.PreviousDampTime, dampTime, deltaTime);
+                        if (dispSqrMag < Epsilon && dampTime != extra.PreviousDampTime)
+                            dampTime = extra.PreviousDampTime + Damper.Damp(dampTime - extra.PreviousDampTime, dampTime, deltaTime);
 
                         var prevDisplacement = resolutionTargetPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
                         displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
@@ -466,7 +472,7 @@ namespace Unity.Cinemachine
                         // Restore the lookAt offset
                         var q = Quaternion.LookRotation(lookAtPoint - newCamPos, up);
                         state.RawOrientation = q.ApplyCameraRotation(-lookAtScreenOffset, up);
-                        if (vcam.PreviousStateIsValid && extra.StateIsValid)
+                        if (extra.StateIsValid)
                         {
                             var dir0 = extra.PreviousCameraPosition - lookAtPoint;
                             var dir1 = newCamPos - lookAtPoint;
