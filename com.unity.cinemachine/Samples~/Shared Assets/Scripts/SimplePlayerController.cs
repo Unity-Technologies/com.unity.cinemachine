@@ -6,79 +6,7 @@ using UnityEngine.Events;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// This is the base class for SimplePlayerController and SimplePlayerController2D.
-    /// You can also use it as a base class for your custom controllers.
-    /// It provides the following:
-    ///
-    /// **Services:**
-    ///
-    ///  - 2D motion axes (MoveX and MoveZ)
-    ///  - Jump button
-    ///  - Sprint button
-    ///  - API for strafe mode
-    ///
-    /// **Actions:**
-    ///
-    ///  - PreUpdate - invoked at the beginning of `Update()`
-    ///  - PostUpdate - invoked at the end of `Update()`
-    ///  - StartJump - invoked when the player starts jumping
-    ///  - EndJump - invoked when the player stops jumping
-    ///
-    /// **Events:**
-    ///
-    ///  - Landed - invoked when the player lands on the ground
-    /// </summary>
-    public abstract class SimplePlayerControllerBase : MonoBehaviour, Unity.Cinemachine.IInputAxisOwner
-    {
-        [Tooltip("Ground speed when walking")]
-        public float Speed = 1f;
-        [Tooltip("Ground speed when sprinting")]
-        public float SprintSpeed = 4;
-        [Tooltip("Initial vertical speed when jumping")]
-        public float JumpSpeed = 4;
-        [Tooltip("Initial vertical speed when sprint-jumping")]
-        public float SprintJumpSpeed = 6;
-
-        public Action PreUpdate;
-        public Action<Vector3, float> PostUpdate;
-        public Action StartJump;
-        public Action EndJump;
-
-        [Header("Input Axes")]
-        [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
-        public InputAxis MoveX = InputAxis.DefaultMomentary;
-
-        [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward movement")]
-        public InputAxis MoveZ = InputAxis.DefaultMomentary;
-
-        [Tooltip("Jump movement.  Value is 0 or 1. Controls the vertical movement")]
-        public InputAxis Jump = InputAxis.DefaultMomentary;
-
-        [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
-        public InputAxis Sprint = InputAxis.DefaultMomentary;
-
-        [Header("Events")]
-        [Tooltip("This event is sent when the player lands after a jump.")]
-        public UnityEvent Landed = new ();
-
-        /// Report the available input axes to the input axis controller.
-        /// We use the Input Axis Controller because it works with both the Input package
-        /// and the Legacy input system.  This is sample code and we
-        /// want it to work everywhere.
-        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
-        {
-            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
-            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
-            axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
-            axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
-        }
-
-        public virtual void SetStrafeMode(bool b) {}
-        public abstract bool IsMoving { get; }
-    }
-
-    /// <summary>
-    /// Building on top of SimplePlayerControllerBase, this is the 3D character controller.
+    /// This is the 3D character controller.
     /// It provides the following services and settings:
     ///
     /// - Damping (applied to the player's velocity, and to the player's rotation)
@@ -101,8 +29,17 @@ namespace Unity.Cinemachine.Samples
     /// The Simple Player Controller has an ad-hoc technique of resolving this discontinuity,
     /// (you can see this in the code), but it is only used in this very specific situation.
     /// </summary>
-    public class SimplePlayerController : SimplePlayerControllerBase
+    public class SimplePlayerController : MonoBehaviour, IInputAxisOwner, ISimplePlayerAimable, ISimplePlayerAnimatable
     {
+        [Tooltip("Ground speed when walking")]
+        public float Speed = 1f;
+        [Tooltip("Ground speed when sprinting")]
+        public float SprintSpeed = 4;
+        [Tooltip("Initial vertical speed when jumping")]
+        public float JumpSpeed = 4;
+        [Tooltip("Initial vertical speed when sprint-jumping")]
+        public float SprintJumpSpeed = 6;
+        
         [Tooltip("Transition duration (in seconds) when the player changes velocity or rotation.")]
         public float Damping = 0.5f;
 
@@ -132,6 +69,41 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Force of gravity in the down direction (m/s^2)")]
         public float Gravity = 10;
 
+        [Tooltip("Makes possible to influence the direction of motion while the character is "
+            + "in the air.  Otherwise, the more realistic rule that the feet must be touching the ground applies.")]
+        public bool MotionControlWhileInAir;
+
+        [Header("Input Axes")]
+        [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
+        public InputAxis MoveX = InputAxis.DefaultMomentary;
+
+        [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward movement")]
+        public InputAxis MoveZ = InputAxis.DefaultMomentary;
+
+        [Tooltip("Jump movement.  Value is 0 or 1. Controls the vertical movement")]
+        public InputAxis Jump = InputAxis.DefaultMomentary;
+
+        [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
+        public InputAxis Sprint = InputAxis.DefaultMomentary;
+
+        /// Report the available input axes to the input axis controller.
+        /// We use the Input Axis Controller because it works with both the Input package
+        /// and the Legacy input system.  This is sample code and we
+        /// want it to work everywhere.
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
+        {
+            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
+            axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
+        }
+        
+        [Header("Events")]
+        [Tooltip("This event is sent when the player lands after a jump.")]
+        public UnityEvent Landed = new ();
+
+        public Action PreUpdate;
+
         const float kDelayBeforeInferringJump = 0.3f;
         float m_TimeLastGrounded = 0;
 
@@ -141,6 +113,7 @@ namespace Unity.Cinemachine.Samples
         bool m_IsSprinting;
         bool m_IsJumping;
         CharacterController m_Controller; // optional
+        Transform m_Transform; // cached for efficiency
 
         // These are part of a strategy to combat input gimbal lock when controlling a player
         // that can move freely on surfaces that go upside-down relative to the camera.
@@ -152,17 +125,39 @@ namespace Unity.Cinemachine.Samples
         Vector3 m_LastRawInput;
         Quaternion m_Upsidedown = Quaternion.AngleAxis(180, Vector3.left);
 
-        public override void SetStrafeMode(bool b) => Strafe = b;
-        public override bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
-
         public bool IsSprinting => m_IsSprinting;
-        public bool IsJumping => m_IsJumping;
         public Camera Camera => CameraOverride == null ? Camera.main : CameraOverride;
+        public bool IsGrounded() => GetDistanceFromGround(m_Transform.position, UpDirection, 10) < 0.01f;
+        public Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : m_Transform.up;
 
-        public bool IsGrounded() => GetDistanceFromGround(transform.position, UpDirection, 10) < 0.01f;
+        // ISimplePlayerAimable implementation
+        public Quaternion PlayerRotation { get => m_Transform.rotation; set => m_Transform.rotation = value; }
+        public Vector3 PlayerUp => m_Transform.up;
+        public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
+        public bool StrafeMode { get => Strafe; set => Strafe = value; }
+        public ref Action PreUpdateAction { get => ref PreUpdate; }
 
-        // Note that m_Controller is an optional component: we'll use it if it's there.
-        void Start() => TryGetComponent(out m_Controller);
+        // ISimplePlayerAnimatable implementation
+        public bool IsJumping => m_IsJumping;
+        public float JumpScale => m_IsSprinting ? JumpSpeed / SprintJumpSpeed : 1;
+        public Vector3 LocalSpaceVelocity
+        {
+            get
+            {
+                var vel = Quaternion.Inverse(m_Transform.rotation) * m_CurrentVelocityXZ;
+                vel.y = m_CurrentVelocityY;
+                return vel;                
+            }
+        }
+
+        void Start() 
+        {
+            // Cache this for efficiency
+            m_Transform = transform;
+
+            // Note that m_Controller is an optional component: we'll use it if it's there.
+            TryGetComponent(out m_Controller);
+        }
 
         private void OnEnable()
         {
@@ -189,8 +184,8 @@ namespace Unity.Cinemachine.Samples
             if (m_LastInput.sqrMagnitude > 1)
                 m_LastInput.Normalize();
 
-            // Compute the new velocity and move the player, but only if not mid-jump
-            if (!m_IsJumping)
+            // Compute the new velocity and move the player
+            if (MotionControlWhileInAir || !m_IsJumping)
             {
                 m_IsSprinting = Sprint.Value > 0.5f;
                 var desiredVelocity = m_LastInput * (m_IsSprinting ? SprintSpeed : Speed);
@@ -211,24 +206,14 @@ namespace Unity.Cinemachine.Samples
             if (!Strafe && m_CurrentVelocityXZ.sqrMagnitude > 0.001f)
             {
                 var fwd = inputFrame * Vector3.forward;
-                var qA = transform.rotation;
+                var qA = m_Transform.rotation;
                 var qB = Quaternion.LookRotation(
                     (InputForward == ForwardModes.Player && Vector3.Dot(fwd, m_CurrentVelocityXZ) < 0)
                         ? -m_CurrentVelocityXZ : m_CurrentVelocityXZ, UpDirection);
                 var damping = justLanded ? 0 : Damping;
-                transform.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
-            }
-
-            if (PostUpdate != null)
-            {
-                // Get local-space velocity
-                var vel = Quaternion.Inverse(transform.rotation) * m_CurrentVelocityXZ;
-                vel.y = m_CurrentVelocityY;
-                PostUpdate(vel, m_IsSprinting ? JumpSpeed / SprintJumpSpeed : 1);
+                m_Transform.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
             }
         }
-
-        Vector3 UpDirection => UpMode == UpModes.World ? Vector3.up : transform.up;
 
         // Get the reference frame for the input.  The idea is to map camera fwd/right
         // to the player's XZ plane.  There is some complexity here to avoid
@@ -240,12 +225,12 @@ namespace Unity.Cinemachine.Samples
             switch (InputForward)
             {
                 case ForwardModes.Camera: frame = Camera.transform.rotation; break;
-                case ForwardModes.Player: return transform.rotation;
+                case ForwardModes.Player: return m_Transform.rotation;
                 case ForwardModes.World: break;
             }
 
             // Map the raw input frame to something that makes sense as a direction for the player
-            var playerUp = transform.up;
+            var playerUp = m_Transform.up;
             var up = frame * Vector3.up;
 
             // Is the player in the top or bottom hemisphere?  This is needed to avoid gimbal lock,
@@ -320,10 +305,7 @@ namespace Unity.Cinemachine.Samples
                     m_IsJumping = true;
 
                 if (m_IsJumping)
-                {
-                    StartJump?.Invoke();
                     grounded = false;
-                }
             }
 
             if (grounded)
@@ -334,7 +316,6 @@ namespace Unity.Cinemachine.Samples
                 // If we were jumping, complete the jump
                 if (m_IsJumping)
                 {
-                    EndJump?.Invoke();
                     m_IsJumping = false;
                     justLanded = true;
                     Landed.Invoke();
@@ -349,7 +330,7 @@ namespace Unity.Cinemachine.Samples
                 m_Controller.Move((m_CurrentVelocityY * UpDirection + m_CurrentVelocityXZ) * Time.deltaTime);
             else
             {
-                var pos = transform.position + m_CurrentVelocityXZ * Time.deltaTime;
+                var pos = m_Transform.position + m_CurrentVelocityXZ * Time.deltaTime;
 
                 // Don't fall below ground
                 var up = UpDirection;
@@ -368,7 +349,7 @@ namespace Unity.Cinemachine.Samples
                         m_CurrentVelocityY = 0;
                     }
                 }
-                transform.position = pos + m_CurrentVelocityY * up * Time.deltaTime;
+                m_Transform.position = pos + m_CurrentVelocityY * up * Time.deltaTime;
             }
         }
 

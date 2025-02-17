@@ -1,4 +1,7 @@
+using System;
+using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 namespace Unity.Cinemachine.Samples
 {
@@ -12,8 +15,17 @@ namespace Unity.Cinemachine.Samples
     /// Ground detection only works if the player has a small trigger collider under its feet.
     /// </summary>
     [RequireComponent(typeof(Rigidbody2D))]
-    public class SimplePlayerController2D : SimplePlayerControllerBase
+    public class SimplePlayerController2D : MonoBehaviour, IInputAxisOwner, ISimplePlayerAnimatable
     {
+        [Tooltip("Ground speed when walking")]
+        public float Speed = 1f;
+        [Tooltip("Ground speed when sprinting")]
+        public float SprintSpeed = 4;
+        [Tooltip("Initial vertical speed when jumping")]
+        public float JumpSpeed = 4;
+        [Tooltip("Initial vertical speed when sprint-jumping")]
+        public float SprintJumpSpeed = 6;
+
         [Tooltip("Reference to the child object that holds the player's visible geometry.  "
             + "'It is rotated to face the direction of motion")]
         public Transform PlayerGeometry;
@@ -22,22 +34,65 @@ namespace Unity.Cinemachine.Samples
             + "in the air.  Otherwise, the more realistic rule that the feet must be touching the ground applies.")]
         public bool MotionControlWhileInAir;
 
+        [Header("Input Axes")]
+        [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
+        public InputAxis MoveX = InputAxis.DefaultMomentary;
+
+        [Tooltip("Z Axis movement.  Value is -1..1. Controls the forward movement")]
+        public InputAxis MoveZ = InputAxis.DefaultMomentary;
+
+        [Tooltip("Jump movement.  Value is 0 or 1. Controls the vertical movement")]
+        public InputAxis Jump = InputAxis.DefaultMomentary;
+
+        [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
+        public InputAxis Sprint = InputAxis.DefaultMomentary;
+
+        /// Report the available input axes to the input axis controller.
+        /// We use the Input Axis Controller because it works with both the Input package
+        /// and the Legacy input system.  This is sample code and we
+        /// want it to work everywhere.
+        void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
+        {
+            axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
+            axes.Add(new () { DrivenAxis = () => ref MoveZ, Name = "Move Z", Hint = IInputAxisOwner.AxisDescriptor.Hints.Y });
+            axes.Add(new () { DrivenAxis = () => ref Jump, Name = "Jump" });
+            axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
+        }
+        
+        [Header("Events")]
+        [Tooltip("This event is sent when the player lands after a jump.")]
+        public UnityEvent Landed = new ();
+
+        public Action PreUpdate;
+
         bool m_IsSprinting;
         bool m_IsGrounded;
         Rigidbody2D m_Rigidbody2D;
 
 #if UNITY_6000_1_OR_NEWER
-        public override bool IsMoving => Mathf.Abs(m_Rigidbody2D.linearVelocity.x) > 0.01f;
+        public bool IsMoving => Mathf.Abs(m_Rigidbody2D.linearVelocity.x) > 0.01f;
 #else
         #pragma warning disable CS0618 // obsolete for 6000.0.0f11 and newer
-        public override bool IsMoving => Mathf.Abs(m_Rigidbody2D.velocity.x) > 0.01f;
+        public bool IsMoving => Mathf.Abs(m_Rigidbody2D.velocity.x) > 0.01f;
         #pragma warning restore CS0618
 #endif
 
-        public bool IsSprinting => m_IsSprinting;
+        // ISimplePlayerAnimatable implementation
         public bool IsJumping => !m_IsGrounded;
+        public float JumpScale => m_IsSprinting ? JumpSpeed / SprintJumpSpeed : 1;
+        public Vector3 LocalSpaceVelocity
+        {
+            get
+            {
+                var vel = m_Rigidbody2D.velocity;
+                return new Vector3(0, vel.y, Mathf.Abs(vel.x));                
+            }
+        }
+
+        public bool IsSprinting => m_IsSprinting;
 
         void Start() => TryGetComponent(out m_Rigidbody2D);
+
         private void OnEnable()
         {
             m_IsGrounded = true;
@@ -80,9 +135,6 @@ namespace Unity.Cinemachine.Samples
             m_Rigidbody2D.velocity = vel;
             #pragma warning restore CS0618
 #endif
-            PostUpdate?.Invoke(
-                new Vector3(0, vel.y, Mathf.Abs(vel.x)),
-                m_IsSprinting ? JumpSpeed / SprintJumpSpeed : 1);
         }
 
         // Ground detection only works if the player has a small trigger collider under its feet
@@ -90,7 +142,6 @@ namespace Unity.Cinemachine.Samples
         {
             if (!collision.isTrigger && !m_IsGrounded)
             {
-                EndJump?.Invoke();
                 Landed.Invoke();
                 m_IsGrounded = true;
             }
@@ -98,10 +149,7 @@ namespace Unity.Cinemachine.Samples
         void OnTriggerExit2D(Collider2D collision)
         {
             if (!collision.isTrigger && m_IsGrounded)
-            {
-                StartJump?.Invoke();
                 m_IsGrounded = false;
-            }
         }
         void OnTriggerStay2D(Collider2D collision) => OnTriggerEnter2D(collision);
     }
