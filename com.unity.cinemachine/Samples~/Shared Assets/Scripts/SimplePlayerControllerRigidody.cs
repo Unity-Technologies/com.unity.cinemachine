@@ -91,7 +91,7 @@ namespace Unity.Cinemachine.Samples
 //        public bool IsGrounded() => GetDistanceFromGround(m_Transform.position, UpDirection, 10) < 0.01f;
 
         // ISimplePlayerAimable implementation
-        public Quaternion PlayerRotation { get => m_Rb.rotation; set => m_Rb.rotation = value; }
+        public Quaternion PlayerRotation { get => m_Rb.rotation; set => m_Rb.MoveRotation(value); }
         public Vector3 PlayerUp => m_Rb.rotation * Vector3.up;
         public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
         public bool StrafeMode { get => Strafe; set => Strafe = value; }
@@ -114,21 +114,15 @@ namespace Unity.Cinemachine.Samples
                 #pragma warning restore CS0618
 #endif
             }
-            set
-            {
-#if UNITY_6000_1_OR_NEWER
-                m_Rb.linearVelocity = value;
-#else
-                #pragma warning disable CS0618 // obsolete for 6000.0.0f11 and newer
-                m_Rb.velocity = value;
-                #pragma warning restore CS0618
-#endif
-            }
         }
 
         void Start() 
         {
             m_Rb = GetComponent<Rigidbody>();
+            m_Rb.interpolation = RigidbodyInterpolation.Interpolate;
+        
+            // Freeze rotation to prevent unwanted physics-based rotation
+            m_Rb.constraints = RigidbodyConstraints.FreezeRotationX | RigidbodyConstraints.FreezeRotationZ;
         }
 
         private void OnEnable()
@@ -156,7 +150,7 @@ namespace Unity.Cinemachine.Samples
                 m_LastInput.Normalize();
 
             var vel = Velocity;
-            float velY = vel.y; vel.y = 0;
+            vel.y = 0;
 
             // Compute the new velocity and move the player
             if (MotionControlWhileInAir || !m_IsJumping)
@@ -171,7 +165,7 @@ namespace Unity.Cinemachine.Samples
             }
 
             // Apply the position change
-            Velocity = new Vector3(vel.x, velY, vel.z);
+            m_Rb.MovePosition(m_Rb.position + new Vector3(vel.x, 0, vel.z) * Time.fixedDeltaTime);
 
             // If not strafing, rotate the player to face movement direction
             if (!Strafe && vel.sqrMagnitude > 0.001f)
@@ -181,7 +175,7 @@ namespace Unity.Cinemachine.Samples
                 var qB = Quaternion.LookRotation(
                     (InputForward == ForwardModes.Player && Vector3.Dot(fwd, vel) < 0) ? -vel : vel, Vector3.up);
                 var damping = justLanded ? 0 : Damping;
-                m_Rb.rotation = Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime));
+                m_Rb.MoveRotation(Quaternion.Slerp(qA, qB, Damper.Damp(1, damping, Time.deltaTime)));
             }
         }
 
