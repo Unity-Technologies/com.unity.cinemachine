@@ -74,22 +74,19 @@ namespace Unity.Cinemachine.Samples
         ISimplePlayerAimable m_Controller;
         Quaternion m_DesiredWorldRotation;
         Transform m_Transform; // cached for efficiency
+        Transform m_Parent; // cached for efficiency
+        Rigidbody m_Rb;
 
-        /// User input:
-        /// 
-        /// We use InputAxis to hold aim state because it can be driven by both the Input package
-        /// and the Legacy input system, so that the sample code will always work.
-        /// Also it implements recentering, which is nice.
-        /// 
+        /// We use the InputAxis because it works with both the Input package
+        /// and the Legacy input system.  The axis values are driven by the InputAxisController.
+        /// This can be replaced by any other desired method of reading user input.
         [Tooltip("Horizontal Rotation.  Value is in degrees, with 0 being centered.")]
         public InputAxis HorizontalLook = new () { Range = new Vector2(-180, 180), Wrap = true, Recentering = InputAxis.RecenteringSettings.Default };
 
         [Tooltip("Vertical Rotation.  Value is in degrees, with 0 being centered.")]
         public InputAxis VerticalLook = new () { Range = new Vector2(-70, 70), Recentering = InputAxis.RecenteringSettings.Default };
 
-        /// Report the available input axes so that the InpusAxisController component 
-        /// will discover the axes and drive them with user input.
-        /// You may remove this implementation and drive the InputAxis values in an alternative way.
+        /// Report the available input axes so they can be discovered by the InpusAxisController component.
         void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
             axes.Add(new () { DrivenAxis = () => ref HorizontalLook, Name = "Horizontal Look", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
@@ -106,6 +103,25 @@ namespace Unity.Cinemachine.Samples
             }
         }
 
+        Quaternion Rotation
+        {
+            get
+            {
+                if (m_Rb != null)
+                    return m_Rb.rotation;
+                return m_Transform.rotation;
+            }
+            set
+            {
+                if (m_Rb != null)
+                    m_Rb.MoveRotation(value);
+                else
+                    m_Transform.rotation = value;
+            }
+        }
+
+        Quaternion ParentRotation => m_Rb != null ? m_Rb.rotation : m_Parent.rotation;
+
         void OnValidate()
         {
             HorizontalLook.Validate();
@@ -116,8 +132,14 @@ namespace Unity.Cinemachine.Samples
 
         void OnEnable()
         {
-            m_Controller = GetComponentInParent<ISimplePlayerAimable>();
             m_Transform = transform;
+            m_Parent = m_Transform.parent;
+
+            m_Rb = GetComponent<Rigidbody>();
+            if (m_Rb != null)
+                m_Rb.isKinematic = true;
+
+            m_Controller = GetComponentInParent<ISimplePlayerAimable>();
             if (m_Controller != null)
                 m_Controller.PreUpdateAction += OnPreUpdate;
             else
@@ -134,11 +156,12 @@ namespace Unity.Cinemachine.Samples
         /// <param name="damping">How long the recentering should take</param>
         public void RecenterPlayer(float damping = 0)
         {
+        return;
             if (m_Controller == null)
                 return;
 
             // Get my rotation relative to parent
-            var rot = m_Transform.localRotation.eulerAngles;
+            var rot = (m_DesiredWorldRotation * Quaternion.Inverse(ParentRotation)).eulerAngles;
             rot.y = NormalizeAngle(rot.y);
             var delta = rot.y;
             delta = Damper.Damp(delta, damping, Time.deltaTime);
@@ -153,7 +176,7 @@ namespace Unity.Cinemachine.Samples
             axisValues.y -= delta;
             AxisValues = axisValues;
             rot.y -= delta;
-            m_Transform.localRotation = Quaternion.Euler(rot);
+            //m_Transform.localRotation = Quaternion.Euler(rot);
         }
 
         /// <summary>
@@ -166,8 +189,8 @@ namespace Unity.Cinemachine.Samples
         {
             if (m_Controller == null)
                 return;
-            var rot = (Quaternion.Inverse(m_Controller.PlayerRotation)
-                * Quaternion.LookRotation(worldspaceDirection, m_Controller.PlayerUp)).eulerAngles;
+            var rot = (Quaternion.LookRotation(worldspaceDirection, m_Controller.PlayerUp)
+                * Quaternion.Inverse(ParentRotation)).eulerAngles;
             AxisValues = new Vector2(VerticalLook.ClampValue(NormalizeAngle(rot.x)), HorizontalLook.ClampValue(rot.y));
         }
 
@@ -175,11 +198,9 @@ namespace Unity.Cinemachine.Samples
         // We use this opportunity to set the strafe mode and pre-rotate the player if necessary.
         void OnPreUpdate()
         {
-            // Set the aim direction from the current user input
-            m_Transform.localRotation = Quaternion.Euler(AxisValues);
-
             // Couple it to the player's rotation if desired
-            m_DesiredWorldRotation = m_Transform.rotation;
+            m_DesiredWorldRotation = ParentRotation * Quaternion.Euler(AxisValues);
+
             switch (PlayerRotation)
             {
                 case CouplingMode.Coupled:
@@ -210,15 +231,20 @@ namespace Unity.Cinemachine.Samples
         // Update our rotation after player controller has updated its own.
         void LateUpdate()
         {
-            VerticalLook.UpdateRecentering(Time.deltaTime, VerticalLook.TrackValueChange());
-            HorizontalLook.UpdateRecentering(Time.deltaTime, HorizontalLook.TrackValueChange());
+            //VerticalLook.UpdateRecentering(Time.deltaTime, VerticalLook.TrackValueChange());
+            //HorizontalLook.UpdateRecentering(Time.deltaTime, HorizontalLook.TrackValueChange());
 
+Debug.Log(m_DesiredWorldRotation.eulerAngles);
+Debug.Log(m_Parent.rotation.eulerAngles);
+
+            m_Transform.rotation = m_DesiredWorldRotation;
+//return;
             if (m_Controller != null && PlayerRotation == CouplingMode.Decoupled)
             {
                 // After player has been rotated, we subtract any rotation change
                 // from our own transform, to maintain our world rotation
-                m_Transform.rotation = m_DesiredWorldRotation;
-                var delta = (Quaternion.Inverse(m_Controller.PlayerRotation) * m_DesiredWorldRotation).eulerAngles;
+                var delta = (m_DesiredWorldRotation * Quaternion.Inverse(ParentRotation)).eulerAngles;
+Debug.Log(delta);
                 AxisValues = new Vector2(NormalizeAngle(delta.x), NormalizeAngle(delta.y));
             }
         }
