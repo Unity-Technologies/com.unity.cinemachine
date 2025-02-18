@@ -36,6 +36,7 @@ namespace Unity.Cinemachine.Samples
     /// When a ISimplePlayerAnimatable is detected, the SimplePlayerAnimator can detect
     /// jump state and react accordingly.
     /// </summary>
+    [RequireComponent(typeof(Animator))]
     public class SimplePlayerAnimator : MonoBehaviour
     {
         [Tooltip("Tune this to the animation in the model: feet should not slide when walking at this speed")]
@@ -53,7 +54,9 @@ namespace Unity.Cinemachine.Samples
         ISimplePlayerAnimatable m_Controller;
         Vector3 m_PreviousPosition; // used if m_Controller == null or disabled
         Transform m_Transform;  // cached for efficiency
+        Animator m_Animator;
 
+        // These match the blackboard values of the motion controller
         protected struct AnimationParams
         {
             public bool IsWalking;
@@ -67,7 +70,7 @@ namespace Unity.Cinemachine.Samples
 
         const float k_IdleThreshold = 0.2f;
 
-        public enum States { Idle, Walk, Run, Jump, RunJump }
+        public enum States { Idle, Walk, Run, Jump }
 
         /// <summary>Current state of the player</summary>
         public States State
@@ -75,16 +78,19 @@ namespace Unity.Cinemachine.Samples
             get
             {
                 if (m_AnimationParams.IsJumping)
-                    return m_AnimationParams.IsRunning ? States.RunJump : States.Jump;
+                    return States.Jump;
                 if (m_AnimationParams.IsRunning)
                     return States.Run;
-                return m_AnimationParams.IsWalking ? States.Walk : States.Idle;
+                if (m_AnimationParams.IsWalking)
+                    return States.Walk;
+                return States.Idle;
             }
         }
 
         protected virtual void Start()
         {
             m_Transform = transform;
+            m_Animator = GetComponent<Animator>();
             m_PreviousPosition = m_Transform.position;
             m_Controller = GetComponentInParent<ISimplePlayerAnimatable>();
         }
@@ -153,18 +159,13 @@ namespace Unity.Cinemachine.Samples
         /// </summary>
         protected virtual void UpdateAnimation(AnimationParams animationParams)
         {
-            if (!TryGetComponent(out Animator animator))
-            {
-                Debug.LogError("SimplePlayerAnimator: An Animator component is required");
-                return;
-            }
-            animator.SetFloat("DirX", animationParams.Direction.x);
-            animator.SetFloat("DirZ", animationParams.Direction.z);
-            animator.SetFloat("MotionScale", animationParams.MotionScale);
-            animator.SetBool("Walking", animationParams.IsWalking);
-            animator.SetBool("Running", animationParams.IsRunning);
-            animator.SetBool("Jumping", animationParams.IsJumping);
-            animator.SetFloat("JumpScale", animationParams.JumpScale);
+            m_Animator.SetFloat("DirX", animationParams.Direction.x);
+            m_Animator.SetFloat("DirZ", animationParams.Direction.z);
+            m_Animator.SetFloat("MotionScale", animationParams.MotionScale);
+            m_Animator.SetBool("Walking", animationParams.IsWalking);
+            m_Animator.SetBool("Running", animationParams.IsRunning);
+            m_Animator.SetBool("Jumping", animationParams.IsJumping);
+            m_Animator.SetFloat("JumpScale", animationParams.JumpScale);
         }
     }
 }

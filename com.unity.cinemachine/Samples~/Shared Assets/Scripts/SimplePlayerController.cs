@@ -73,6 +73,9 @@ namespace Unity.Cinemachine.Samples
             + "in the air.  Otherwise, the more realistic rule that the feet must be touching the ground applies.")]
         public bool MotionControlWhileInAir;
 
+        /// We use the InputAxis because it works with both the Input package
+        /// and the Legacy input system.  
+        /// This can be replaced by any other desired method of reading user input.
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
         public InputAxis MoveX = InputAxis.DefaultMomentary;
@@ -86,10 +89,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
         public InputAxis Sprint = InputAxis.DefaultMomentary;
 
-        /// Report the available input axes to the input axis controller.
-        /// We use the Input Axis Controller because it works with both the Input package
-        /// and the Legacy input system.  This is sample code and we
-        /// want it to work everywhere.
+        /// Report the available input axes so they can be discovered by the input axis controller.
         void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
             axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
@@ -135,7 +135,7 @@ namespace Unity.Cinemachine.Samples
         public Vector3 PlayerUp => m_Transform.up;
         public bool IsMoving => m_LastInput.sqrMagnitude > 0.01f;
         public bool StrafeMode { get => Strafe; set => Strafe = value; }
-        public ref Action PreUpdateAction { get => ref PreUpdate; }
+        public ref Action PreUpdateAction => ref PreUpdate;
 
         // ISimplePlayerAnimatable implementation
         public bool IsJumping => m_IsJumping;

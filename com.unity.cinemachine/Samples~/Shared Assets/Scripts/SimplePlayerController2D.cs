@@ -34,6 +34,9 @@ namespace Unity.Cinemachine.Samples
             + "in the air.  Otherwise, the more realistic rule that the feet must be touching the ground applies.")]
         public bool MotionControlWhileInAir;
 
+        /// We use the InputAxis because it works with both the Input package
+        /// and the Legacy input system.  The axis values are driven by the InputAxisController.
+        /// This can be replaced by any other desired method of reading user input.
         [Header("Input Axes")]
         [Tooltip("X Axis movement.  Value is -1..1.  Controls the sideways movement")]
         public InputAxis MoveX = InputAxis.DefaultMomentary;
@@ -47,10 +50,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Sprint movement.  Value is 0 or 1. If 1, then is sprinting")]
         public InputAxis Sprint = InputAxis.DefaultMomentary;
 
-        /// Report the available input axes to the input axis controller.
-        /// We use the Input Axis Controller because it works with both the Input package
-        /// and the Legacy input system.  This is sample code and we
-        /// want it to work everywhere.
+        /// Report the available input axes so they can be discovered by the InpusAxisController component.
         void IInputAxisOwner.GetInputAxes(List<IInputAxisOwner.AxisDescriptor> axes)
         {
             axes.Add(new () { DrivenAxis = () => ref MoveX, Name = "Move X", Hint = IInputAxisOwner.AxisDescriptor.Hints.X });
@@ -85,7 +85,7 @@ namespace Unity.Cinemachine.Samples
             get
             {
                 var vel = m_Rigidbody2D.velocity;
-                return new Vector3(0, vel.y, Mathf.Abs(vel.x));                
+                return new Vector3(0, vel.y, Mathf.Abs(vel.x));  // always moving forwards              
             }
         }
 
@@ -101,7 +101,7 @@ namespace Unity.Cinemachine.Samples
 
         void FixedUpdate()
         {
-            PreUpdate?.Invoke();
+            //PreUpdate?.Invoke();
 #if UNITY_6000_1_OR_NEWER
             var vel = m_Rigidbody2D.linearVelocity;
 #else
