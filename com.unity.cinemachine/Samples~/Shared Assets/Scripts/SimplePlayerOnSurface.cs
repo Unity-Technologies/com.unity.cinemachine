@@ -83,7 +83,7 @@ namespace Unity.Cinemachine.Samples
 
             // Check whether we have walked into a surface
             bool haveHit = false;
-            if (Physics.Raycast(m_PreviousPosition, motionDir, out var hit,
+            if (UnityEngine.Physics.Raycast(m_PreviousPosition, motionDir, out var hit,
                 motionLen + playerRadius, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
@@ -92,7 +92,7 @@ namespace Unity.Cinemachine.Samples
 
             var raycastLength = Mathf.Max(MaxRaycastDistance, PreviousSateIsValid
                 ? (m_PreviousGroundPoint - downRaycastOrigin).magnitude + PlayerHeight : MaxRaycastDistance);
-            if (!haveHit && Physics.Raycast(downRaycastOrigin, down, out hit,
+            if (!haveHit && UnityEngine.Physics.Raycast(downRaycastOrigin, down, out hit,
                 raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
@@ -103,7 +103,7 @@ namespace Unity.Cinemachine.Samples
             // where we came from.  This handles the case of sudden convex direction changes in the floor
             // (e.g. going around the lip of a surface)
             if (!haveHit && PreviousSateIsValid
-                && Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit,
+                && UnityEngine.Physics.Raycast(downRaycastOrigin, m_PreviousGroundPoint - downRaycastOrigin, out hit,
                     MaxRaycastDistance, GroundLayers, QueryTriggerInteraction.Ignore))
             {
                 haveHit = true;
@@ -185,7 +185,7 @@ namespace Unity.Cinemachine.Samples
             for (int i = 0; i < kHorizontalalSteps; ++i, dir = rotStep * dir)
             {
                 //Debug.DrawLine(playerPos, playerPos + dir * raycastLength, Color.yellow, 1);
-                if (Physics.Raycast(playerPos, dir, out var hit,
+                if (UnityEngine.Physics.Raycast(playerPos, dir, out var hit,
                     raycastLength, GroundLayers, QueryTriggerInteraction.Ignore))
                 {
                     if (hit.distance < nearestDistance)

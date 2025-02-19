@@ -140,7 +140,7 @@ namespace Unity.Cinemachine.Samples
         float m_CurrentVelocityY;
         bool m_IsSprinting;
         bool m_IsJumping;
-        CharacterController m_Controller; // optional
+        UnityEngine.CharacterController m_Controller; // optional
 
         // These are part of a strategy to combat input gimbal lock when controlling a player
         // that can move freely on surfaces that go upside-down relative to the camera.
@@ -375,7 +375,7 @@ namespace Unity.Cinemachine.Samples
         float GetDistanceFromGround(Vector3 pos, Vector3 up, float max)
         {
             float kExtraHeight = m_Controller == null ? 2 : 0; // start a little above the player in case it's moving down fast
-            if (Physics.Raycast(pos + up * kExtraHeight, -up, out var hit,
+            if (UnityEngine.Physics.Raycast(pos + up * kExtraHeight, -up, out var hit,
                     max + kExtraHeight, GroundLayers, QueryTriggerInteraction.Ignore))
                 return hit.distance - kExtraHeight;
             return max + 1;

@@ -34,7 +34,7 @@ namespace Unity.Cinemachine.Samples
             if (m_Speed > 0)
             {
                 var t = transform;
-                if (Physics.Raycast(
+                if (UnityEngine.Physics.Raycast(
                     t.position, t.forward, out var hitInfo, m_Speed * Time.deltaTime, CollisionLayers,
                     QueryTriggerInteraction.Ignore))
                 {
