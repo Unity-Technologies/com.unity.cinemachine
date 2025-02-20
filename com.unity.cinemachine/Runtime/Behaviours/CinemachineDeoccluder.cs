@@ -424,7 +424,7 @@ namespace Unity.Cinemachine
                     // to the target for a while, to reduce popping in and out on bumpy objects
                     if (hasResolutionTarget && AvoidObstacles.SmoothingTime > Epsilon)
                     {
-                        if (extra.StateIsValid)
+                        if (!extra.StateIsValid)
                             extra.ResetDistanceSmoothing(0);
 
                         var pos = initialCamPos + displacement;
