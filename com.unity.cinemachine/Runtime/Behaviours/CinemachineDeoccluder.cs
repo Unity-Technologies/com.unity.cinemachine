@@ -381,7 +381,7 @@ namespace Unity.Cinemachine
                 extra.DebugResolutionPath?.Clear();
                 extra.OccludingObjects?.Clear();
 
-                if (!vcam.PreviousStateIsValid)
+                if (!vcam.PreviousStateIsValid || deltaTime < 0)
                     extra.StateIsValid = false;
 
                 if (!AvoidObstacles.Enabled)
@@ -393,8 +393,8 @@ namespace Unity.Cinemachine
                     var hasLookAt = state.HasLookAt();
                     var lookAtPoint = hasLookAt ? state.ReferenceLookAt : state.GetCorrectedPosition();
                     var hasResolutionTarget = GetAvoidanceResolutionTargetPoint(vcam, ref state, out var resolutionTargetPoint);
-                    var lookAtScreenOffset = hasLookAt ? state.RawOrientation.GetCameraRotationToTarget(
-                        lookAtPoint - initialCamPos, up) : Vector2.zero;
+                    var lookAtScreenOffset = hasLookAt 
+                        ? state.RawOrientation.GetCameraRotationToTarget(lookAtPoint - initialCamPos, up) : Vector2.zero;
 
                     // Rotate the previous collision correction along with the camera
                     var dampingBypass = state.RotationDampingBypass;
@@ -404,6 +404,7 @@ namespace Unity.Cinemachine
                     // Calculate the desired collision correction
                     var displacement = hasResolutionTarget
                         ? PreserveLineOfSight(ref state, ref extra, resolutionTargetPoint) : Vector3.zero;
+
                     if (AvoidObstacles.MinimumOcclusionTime > Epsilon)
                     {
                         // If minimum occlusion time set, ignore new occlusions until they've lasted long enough
@@ -449,20 +450,29 @@ namespace Unity.Cinemachine
 
                     // Apply damping
                     float dampTime = AvoidObstacles.DampingWhenOccluded;
-                    if (deltaTime >= 0 && extra.StateIsValid 
+                    if (hasResolutionTarget && extra.StateIsValid 
                         && AvoidObstacles.DampingWhenOccluded + AvoidObstacles.Damping > Epsilon)
                     {
-                        // To ease the transition between damped and undamped regions, we damp the damp time
-                        var dispSqrMag = displacement.sqrMagnitude;
-                        dampTime = dispSqrMag > extra.PreviousDisplacement.sqrMagnitude
-                            ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
-                        if (dispSqrMag < Epsilon && dampTime != extra.PreviousDampTime)
-                            dampTime = extra.PreviousDampTime + Damper.Damp(dampTime - extra.PreviousDampTime, dampTime, deltaTime);
+                        var dispMag = displacement.sqrMagnitude;
+                        var prevDispMag = extra.PreviousDisplacement.sqrMagnitude;
+                        if (Mathf.Abs(dispMag - prevDispMag) > Epsilon)
+                        {
+                            dampTime = dispMag > prevDispMag ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
 
-                        var prevDisplacement = resolutionTargetPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
-                        displacement = prevDisplacement + Damper.Damp(displacement - prevDisplacement, dampTime, deltaTime);
+                            // To ease the transition between damped and undamped regions, we damp the damp time
+                            if (dispMag < Epsilon && dampTime < extra.PreviousDampTime)
+                                dampTime = extra.PreviousDampTime + Damper.Damp(dampTime - extra.PreviousDampTime, dampTime, deltaTime);
+
+                            var newOffset = initialCamPos + displacement - resolutionTargetPoint;
+                            var newOffsetMag = newOffset.magnitude;
+                            var newOffsetDir = newOffset / newOffsetMag;
+                            var prevOffsetMag = extra.PreviousCameraOffset.magnitude;
+
+                            newOffsetMag = prevOffsetMag + Damper.Damp(newOffsetMag - prevOffsetMag, dampTime, deltaTime);
+                            newCamPos = resolutionTargetPoint + newOffsetDir * newOffsetMag;
+                            displacement = newCamPos - initialCamPos;
+                        }
                     }
-
                     state.PositionCorrection += displacement;
                     newCamPos = state.GetCorrectedPosition();
 
@@ -480,7 +490,6 @@ namespace Unity.Cinemachine
                                 state.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(dir0, dir1, up);
                         }
                     }
-
                     extra.PreviousDisplacement = displacement;
                     extra.PreviousCameraOffset = newCamPos - resolutionTargetPoint;
                     extra.PreviousCameraPosition = newCamPos;
