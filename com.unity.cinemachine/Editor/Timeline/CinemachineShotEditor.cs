@@ -174,7 +174,7 @@ namespace Unity.Cinemachine.Editor
                 EditorGUILayout.PropertyField(vcamProperty, GUIContent.none);
                 if (EditorGUI.EndChangeCheck())
                     serializedObject.ApplyModifiedProperties();
-            }) { style = { flexGrow = 1, marginTop = 1, marginLeft = 1 }} );
+            }) { style = { flexGrow = 1, marginTop = 2, marginBottom = 3, marginLeft = 2 }} );
 #else
             row = m_ParentElement.AddChild(InspectorUtility.PropertyRow(vcamProperty, out _, "Cinemachine Camera"));
 #endif
