@@ -27,6 +27,7 @@ namespace Unity.Cinemachine.Editor
         {
             var vcam = CinemachineMenu.CreatePassiveCmCamera("CinemachineCamera", null, false);
             vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
+            InspectorUtility.RepaintGameView();
 #if false
             // GML this is too bold.  What if timeline is a child of something moving?
             // also, SetActive(false) prevents the animator from being able to animate the object
@@ -160,7 +161,25 @@ namespace Unity.Cinemachine.Editor
 
             // Camera Reference
             var vcamProperty = serializedObject.FindProperty(() => Target.VirtualCamera);
+#if true
+            // we do it in IMGUI until the ExposedReference UITK bugs are fixed
+            row = m_ParentElement.AddChild(new InspectorUtility.LeftRightRow());
+            row.Left.AddChild(new Label("Cinemachine Camera") 
+            { 
+                tooltip = "The Cinemachine camera to use for this shot", 
+                style = { alignSelf = Align.Center, flexGrow = 1 }
+            });
+            row.Right.Add(new IMGUIContainer(() =>
+            {
+                EditorGUI.BeginChangeCheck();
+                EditorGUILayout.PropertyField(vcamProperty, GUIContent.none);
+                if (EditorGUI.EndChangeCheck())
+                    serializedObject.ApplyModifiedProperties();
+            }) { style = { flexGrow = 1, marginBottom = 2 }} );
+#else
+            // Camera Reference
             row = m_ParentElement.AddChild(InspectorUtility.PropertyRow(vcamProperty, out _, "Cinemachine Camera"));
+#endif
             m_CreateButton = row.Right.AddChild(new Button(() =>
             {
                 vcamProperty.exposedReferenceValue = CreatePassiveVcamFromSceneView();
@@ -171,7 +190,6 @@ namespace Unity.Cinemachine.Editor
                 tooltip = "Create a passive Cinemachine camera matching the scene view",
                 style = { flexGrow = 0, alignSelf = Align.Center, marginLeft = 5, marginBottom = 2, marginRight = 0 }
             });
-
             // Display name
             m_ParentElement.Add(new PropertyField(serializedObject.FindProperty(() => Target.DisplayName)));
             m_ParentElement.AddSpace();
