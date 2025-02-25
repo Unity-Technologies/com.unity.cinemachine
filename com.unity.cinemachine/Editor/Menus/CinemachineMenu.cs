@@ -274,7 +274,7 @@ namespace Unity.Cinemachine.Editor
         /// <returns>The instance of the component that is added to the new <see cref="GameObject"/>.</returns>
         static T CreateCinemachineObject<T>(string name, GameObject parentObject, bool select) where T : Component
         {
-            var selected = Selection.activeGameObject;
+            var selected = Selection.activeObject;
 
             // We always enforce the existence of the CM brain
             GetOrCreateBrain();
@@ -290,7 +290,7 @@ namespace Unity.Cinemachine.Editor
             // Place vcam as set by the unity editor preferences
             ObjectFactory.PlaceGameObject(go, parentObject);
 
-            Selection.activeGameObject = select ? go : selected;
+            Selection.activeObject = select ? go : selected;
 
             return component;
         }
