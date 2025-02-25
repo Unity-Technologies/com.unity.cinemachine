@@ -286,6 +286,7 @@ namespace Unity.Cinemachine.Editor
                     unityTextAlign = TextAnchor.MiddleLeft
                 }
             });
+            button.clickable = null;
             menu.activators.Clear();
             menu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
             button.AddManipulator(menu);
