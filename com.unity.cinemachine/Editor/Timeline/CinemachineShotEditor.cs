@@ -27,7 +27,6 @@ namespace Unity.Cinemachine.Editor
         {
             var vcam = CinemachineMenu.CreatePassiveCmCamera("CinemachineCamera", null, false);
             vcam.StandbyUpdate = CinemachineVirtualCameraBase.StandbyUpdateMode.Never;
-            InspectorUtility.RepaintGameView();
 #if false
             // GML this is too bold.  What if timeline is a child of something moving?
             // also, SetActive(false) prevents the animator from being able to animate the object
