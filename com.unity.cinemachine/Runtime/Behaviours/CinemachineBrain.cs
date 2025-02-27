@@ -516,11 +516,18 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
-        /// Call this method explicitly from an external script to update the CinemachineCameras
-        /// and position the main camera, if the UpdateMode is set to ManualUpdate.
-        /// For other update modes, this method is called automatically, and should not be
-        /// called from elsewhere.
+        /// Updates CinemachineCameras and positions the main camera when UpdateMode is set to ManualUpdate.
+        /// This method should only be called externally in ManualUpdate mode. For other modes, updates occur 
+        /// automatically and this method should not be called explicitly.
         /// </summary>
+        /// <remarks>
+        /// Important usage notes:
+        /// <list type="bullet">
+        /// <item>Only call this method from Update or LateUpdate, never from FixedUpdate.</item>
+        /// <item>This method must be called exactly once per render frame - more frequent calls 
+        /// will not update the cameras, and less frequent calls may cause jerky camera movement.</item>
+        /// </list>
+        /// </remarks>
         public void ManualUpdate()
         {
             m_LastFrameUpdated = Time.frameCount;
