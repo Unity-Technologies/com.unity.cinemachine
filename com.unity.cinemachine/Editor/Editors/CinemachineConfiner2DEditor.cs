@@ -80,8 +80,11 @@ namespace Unity.Cinemachine.Editor
 
             ux.Add(new Button(() =>
             {
-                Target.InvalidateBoundingShapeCache();
-                EditorUtility.SetDirty(Target);
+                for (int i = 0; i < targets.Length; i++)
+                {
+                    (targets[i] as CinemachineConfiner2D).InvalidateBoundingShapeCache();
+                    EditorUtility.SetDirty(targets[i]);
+                }
             })
             {
                 text = "Invalidate Bounding Shape Cache",
