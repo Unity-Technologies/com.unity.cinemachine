@@ -295,14 +295,6 @@ namespace Unity.Cinemachine
                     extra.BakedSolution = m_ShapeCache.ConfinerOven.GetBakedSolution(extra.FrustumHeight);
                 }
 
-                // If the confining shape isn't baked, do nothing
-                if (m_ShapeCache.ConfinerOven.State != ConfinerOven.BakingState.BAKED)
-                {
-                    extra.PreviousDisplacement = Vector3.zero;
-                    extra.DampedDisplacement = Vector3.zero;
-                    extra.PreviousCameraPosition = camPos;
-                    return;
-                }
                 var fwd = state.GetCorrectedOrientation() * Vector3.forward;
                 var newPos = ConfinePoint(camPos, extra, fwd);
 
@@ -358,7 +350,7 @@ namespace Unity.Cinemachine
         float GetDistanceFromEdge(Vector3 p, Vector3 dirUnit, float max, VcamExtraState extra, Vector3 fwd)
         {
             p += dirUnit * max;
-            return max - (ConfinePoint(p, extra, fwd) - p).magnitude;
+            return Mathf.Max(0, max - (ConfinePoint(p, extra, fwd) - p).magnitude);
         }
 
         /// <summary>
