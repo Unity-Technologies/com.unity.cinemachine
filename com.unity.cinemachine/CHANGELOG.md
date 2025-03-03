@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes
 - Deoccluder did not always properly reset its state.
 - Mac only: Extensions dropdown in CinemachineCamera inspector did not work consistently.
+- Regresion fix: Confiner2D was not always confining when a camera was newly activated.
 
 ### Changed
 - Cinemachine Shot Editor longer provides UX to create cameras when editing a prefab.
