@@ -8,7 +8,7 @@ To enable the functionality of the Cinemachine Group Framing component, you must
   * Make sure the Cinemachine Target Group has at least one member, and has a nonzero size.
 * Set the Cinemachine Camera's Tracking Target property to target the created Cinemachine Target Group.
 
-![](images/ref-component-cinemachine-group-framing.png)
+![The Cinemachine Group Framing component and its properties in the Inspector.](images/ref-component-cinemachine-group-framing.png)
 
 ## Properties
 

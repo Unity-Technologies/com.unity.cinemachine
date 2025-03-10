@@ -10,8 +10,7 @@ A functional Cinemachine setup involves three main types of elements:
 * A [**Cinemachine Brain**](#cinemachine-brain) which enables the Cinemachine functionality in the Unity Camera, and
 * One or multiple [**Cinemachine Cameras**](#cinemachine-cameras) which take turns controlling the Unity Camera according to their status.
 
-![](images/concept-base.png)
-_Cinemachine setup example: the Unity Camera with its Cinemachine Brain component and three Cinemachine Cameras._
+![Cinemachine setup example: the Unity Camera with its Cinemachine Brain component and three Cinemachine Cameras.](images/concept-base.png)
 
 ## Unity Camera
 
@@ -46,8 +45,7 @@ Cinemachine Camera GameObjects are separate from the Unity Camera GameObject.
 * They must include a [Cinemachine Camera component](CinemachineCamera.md).
 * They can include additional Cinemachine components to manage [procedural motion](concept-procedural-motion.md) and add extended functionality.
 
-![](images/CinemachineSceneHierarchy.png)
-_Hierarchy example: a Scene containing a Unity Camera with Cinemachine Brain and multiple Cinemachine Cameras._
+![Hierarchy example: a Scene containing a Unity Camera with Cinemachine Brain and multiple Cinemachine Cameras.](images/CinemachineSceneHierarchy.png)
 
 ### Single or multiple Cinemachine Cameras
 

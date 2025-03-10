@@ -18,8 +18,7 @@ To cut between two CinemachineCameras, place the clips next to each other.
 
 To blend between two CinemachineCameras, overlap the clips.
 
-![](images/CinemachineTimelineShotClips.png)
-_Example: Cinemachine Shot Clips in Timeline, with a cut between Shots A-B and a blend between Shots B-C._
+![Example: Cinemachine Shot Clips in Timeline, with a cut between Shots A-B and a blend between Shots B-C.](images/CinemachineTimelineShotClips.png)
 
 ## Multiple Cinemachine Tracks
 
@@ -33,9 +32,9 @@ It's also possible to have multiple Timelines with Cinemachine tracks.  In this 
 
 You can blend a Cinemachine Shot Clip with another one that is in a separate Cinemachine Track, or even with the Cinemachine Camera currently identified as the Live one by the Cinemachine Brain.
 
-For this, change the **Ease In Duration** and **Ease Out Duration** time values of the the clip in the Inspector.
+For this, change the **Ease In Duration** and **Ease Out Duration** time values of the clip in the Inspector.
 
-![Shot Easing](images/ShotEasing.png)
+![Cinemachine Shot Clip properties in the Inspector, with an emphasis on the Ease In Duration and Ease Out Duration properties.](images/ShotEasing.png)
 
 ## Additional resources
 

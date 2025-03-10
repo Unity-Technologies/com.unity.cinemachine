@@ -45,14 +45,14 @@ Blends allow you to create sophisticated camera motion by combining relatively s
 
 A Cinemachine blend is not a fade, wipe, or dissolve. Rather, Cinemachine performs a smooth animation of the position, rotation, and other settings of the Unity Camera from one Cinemachine Camera to the next, taking care to preserve the view of the target object, and to respect the Up direction.
 
-![](images/concept-transition-blend.png)
+![Diagram that shows the smooth transition of camera control between two Cinemachine Cameras during a blend.](images/concept-transition-blend.png)  
 _**Blend:** The two Cinemachine Cameras simultaneously control the Unity Camera during the blend, smoothly exchanging full control over a predetermined time._
 
 ### Cuts
 
 By definition, a cut is an abrupt transition from a shot to another. In Cinemachine, a cut between two Cinemachine Cameras corresponds to a blend that occurs instantly, without smooth transition between Cinemachine Camera properties.
 
-![](images/concept-transition-cut.png)
+![Diagram that shows the abrupt transition of camera control between two Cinemachine Cameras in two cuts.](images/concept-transition-cut.png)  
 _**Cut example:** two Cinemachine Cameras taking turns controlling the Unity Camera instantly._
 
 ## Additional resources

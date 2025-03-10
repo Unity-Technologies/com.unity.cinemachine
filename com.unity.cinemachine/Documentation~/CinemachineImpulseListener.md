@@ -8,7 +8,7 @@ When you add an **Impulse Listener** extension to a CinemachineCamera, it makes 
 
 In the image below, the figure’s feet are Impulse Sources. When they collide with the floor (A) they generate impulses. The camera is an Impulse Listener and reacts to the impulses by shaking (B), which shakes the resulting image in the Game view (C).
 
-![In this Scene, the figure’s feet are Impulse Sources. When they collide with the floor (A) they generate impulses. The camera is an Impulse Listener and reacts to the impulses by shaking (B), which shakes the resulting image in the Game view (C). ](images/ImpulseOverview.png)
+![Left: In the Scene view, the running figure generates an impulse and the camera receives it. Right: In the Game view, the camera shakes.](images/ImpulseOverview.png)
 
 To add an Impulse Listener to a Cinemachine CinemachineCamera:
 
@@ -16,13 +16,15 @@ To add an Impulse Listener to a Cinemachine CinemachineCamera:
 
 2. Go to **Extensions > Add Extension**, and select **CinemachineImpulseListener**.
 
-![](images/ImpulseListener.png)
+![The Cinemachine Impulse Listener component and its properties in the Inspector.](images/ImpulseListener.png)
 
 In the real world, some cameras are mounted less rigidly than others, and tend to shake more as a result. The Impulse Listener’s **Gain** property emulates this behavior by amplifying or attenuating impulse vibration signals. Higher values cause the camera to shake more.
 
->**TIP:** You can create your own Impulse Listener to interpret vibration signals any way you like.
+> [!TIP]
+> You can create your own Impulse Listener to interpret vibration signals any way you like.
 
->**TIP:** To add impulse listening capabilities to GameObjects that are not CinemachineCameras, you can use the __CinemachineExternalImpulseListener__ behaviour.
+> [!TIP]
+> To add impulse listening capabilities to GameObjects that are not CinemachineCameras, you can use the __CinemachineExternalImpulseListener__ behaviour.
 
 By default, an Impulse Listener reacts to every Impulse Source in range, but you can apply [channel filtering](CinemachineImpulseFiltering.md#ChannelFiltering) to make a Listener respond to some Sources and ignore others.
 

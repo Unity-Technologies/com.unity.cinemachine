@@ -33,7 +33,7 @@ To add new channels:
 
 3. Rename your new channels.
 
-    ![](images/InspectorImpulseChannelsScript.png)
+    ![The Cinemachine Impulse Channels script properties in the Inspector, with several channels added.](images/InspectorImpulseChannelsScript.png)
 
     Channels are available from the channel drop-down in the Inspector as soon as you add them.
 
@@ -43,11 +43,11 @@ After setting up your channels, you need to define how your Impulse Listeners an
 
 - Inspect each Impulse Listener, and choose the channels you want it to listen to from the **Channel Mask** drop-down.
 
-    ![](images/InspectorImpulseListenerChannelsMenu.png)
+    ![The Cinemachine Impulse Listener component in the Inspector, with an emphasis on the Channel Mask property.](images/InspectorImpulseListenerChannelsMenu.png)
 
 - Inspect each Impulse Source or Collision Impulse Source, and choose the channels you want it to broadcast on from the **Impulse Channel** drop-down.
 
-    ![](images/InspectorImpulseSourceChannelsMenu.png)
+    ![The Cinemachine Collision Impulse Source component in the Inspector, with an emphasis on the Impulse Channel property.](images/InspectorImpulseSourceChannelsMenu.png)
 
     You can select multiple filters from the drop down. You can also choose **Everything** to use all filters, or **Nothing** to use none of them.
 

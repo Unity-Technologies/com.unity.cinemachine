@@ -6,8 +6,6 @@ __Cinemachine Pixel Perfect__ is an [extension](concept-procedural-motion.md#ext
 
 To add this extension to your CinemachineCameras, use the __Add Extension__ dropdown menu on the CinemachineCamera Inspector window. Add this extension to each CinemachineCamera in your Project.
 
-![](images/2Dpixelperfect_ex.png)
-
 For each CinemachineCamera attached with this extension, the Pixel Perfect Camera component then calculates a pixel-perfect orthographic size that best matches the original size of the CinemachineCamera during __Play Mode __ or when __Run In Edit Mode__ is enabled. This is done to match the original framing of each CinemachineCamera as close as possible when the pixel-perfect calculations are implemented.
 
 When the [Cinemachine Brain](CinemachineBrain.md) component [blends](CinemachineBlending.md) between multiple CinemachineCameras, the rendered image is temporarily not pixel-perfect during the transition between cameras. The image becomes pixel-perfect once the view fully transitions to a single CinemachineCamera.
