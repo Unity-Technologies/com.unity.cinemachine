@@ -35,7 +35,7 @@ When you create a first Cinemachine Camera in a Scene, Unity automatically adds 
 
 ## Adjust the Cinemachine Camera properties
 
-1. Open the Game view.
+1. Open the Game view.  
    It shows the Scene through the lens of the Unity Camera according to the current settings of the Cinemachine Camera.
 
 2. In the Hierarchy, select the Cinemachine Camera GameObject.

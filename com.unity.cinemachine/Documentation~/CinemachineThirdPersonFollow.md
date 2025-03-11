@@ -16,11 +16,11 @@ For example, a rig set up with these values:
 
 Produces this virtual rig in the Scene view:
 
-![](images/CinemachineRigSceneView.png)
+![The corresponding rig in the Scene view: the origin on the followed target (A), the shoulder offset to the right (B), the hand offset up (C), and the camera behind (D).](images/CinemachineRigSceneView.png)
 
 Which results in this Game view:
 
-![](images/CinemachineRigGameViewExample.png)
+![The result from the camera's point of view in the Game view.](images/CinemachineRigGameViewExample.png)
 
 The rig and the camera position are defined by three pivot points (the origin, the shoulder, and the hand) as well as by a camera that is positioned behind the hand.
 
@@ -32,10 +32,10 @@ The rig and the camera position are defined by three pivot points (the origin, t
 Note the rotations on the rig;</br>
 
 - **B rotates horizontally around A**. Using A as the origin, B's position is calculated from the Shoulder Offset's X, Y, and Z values.</br>
-   ![](images/CMShoulderOffsetexample.png)
+   ![A representation of the shoulder offset values in the Scene view: X, Y, and Z.](images/CMShoulderOffsetexample.png)
 
 - **C rotates vertically around B**. C's position is calculated from the Vertical Arm Length from B. Positive values result with C above B, and negative values result with C below B.</br>
-   ![](images/CMVerticalDistanceexample.png)
+   ![A representation of the hand offset in the Scene view: up or down from the shoulder.](images/CMVerticalDistanceexample.png)
 
 
 ## Controlling the Camera

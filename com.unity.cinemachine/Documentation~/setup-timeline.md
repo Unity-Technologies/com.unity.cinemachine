@@ -30,7 +30,7 @@ Set up [Timeline in a Cinemachine environment](concept-timeline.md) to choreogra
 
    Unity adds a Cinemachine Track targeting the Unity Camera in Timeline.
 
-![](images/setup-timeline-cinemachine-track.png)
+![The Timeline window with a Cinemachine Track targeting the Unity Camera.](images/setup-timeline-cinemachine-track.png)
 
 2. From the Hierarchy, drag a first Cinemachine Camera GameObject onto the added Cinemachine Track.
 
@@ -49,7 +49,7 @@ To produce a camera [cut](concept-camera-control-transitions.md#cuts) between tw
 
 * Place the two Cinemachine Shot Clips or edit their boundaries so that the clips stick to each other without overlapping.
 
-![](images/setup-timeline-camera-cut.png)
+![The Timeline window with a Cinemachine Track and several Cinemachine Shot Clips arranged side by side without overlaps.](images/setup-timeline-camera-cut.png)
 
 ## Create camera blends
 
@@ -59,4 +59,4 @@ To make the Cinemachine Cameras [blend](concept-camera-control-transitions.md#bl
 
    The resulting overlap area defines the blend duration.
 
-![](images/setup-timeline-camera-blend.png)
+![The Timeline window with a Cinemachine Track and several Cinemachine Shot Clips arranged side by side; two of them overlap.](images/setup-timeline-camera-blend.png)
