@@ -10,10 +10,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes
 - Deoccluder did not always properly reset its state.
 - Mac only: Extensions dropdown in CinemachineCamera inspector did not work consistently.
-- Regresion fix: Confiner2D was not always confining when a camera was newly activated.
+- Regression fix: Confiner2D was not always confining when a camera was newly activated.
+- The RotationComposer no longer damps in response to composition changes from the FreeLookModifier.
+- The game-view composer guides dynamically reflect the current composition when a FreeLookModifier is changing it.
 
 ### Changed
 - Cinemachine Shot Editor longer provides UX to create cameras when editing a prefab.
+- When a FreeLookModifier is enabled for composition, the game-view composer guides are not draggable.
  
 ### Added
 
