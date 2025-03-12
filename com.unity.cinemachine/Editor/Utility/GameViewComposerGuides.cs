@@ -22,12 +22,18 @@ namespace Unity.Cinemachine.Editor
         /// <returns>The target object whose guides are being drawn</returns>
         public delegate SerializedObject ObjectGetter();
 
+        /// <summary>Delegete to test if the guides can be dragged</summary>
+        /// <returns>True if the guides can be dragged</returns>
+        public delegate bool BoolGetter();
+
         /// <summary>Get the Composition settings.  Client must implement this</summary>
         public CompositionGetter GetComposition;
         /// <summary>Get the Composition settings.  Client must implement this</summary>
         public CompositionSetter SetComposition;
         /// <summary>Get the target object whose guides are being drawn.  Client must implement this</summary>
         public ObjectGetter Target;
+        /// <summary>Delegete to test if the guides can be dragged</summary>
+        public BoolGetter IsDraggable = () => CinemachineCorePrefs.DraggableComposerGuides.Value;
 
         // This is necessary because we don't get mouse events in the game view in Edit mode.
         // We need to trigger repaint when the mouse moves over the window.
@@ -228,7 +234,7 @@ namespace Unity.Cinemachine.Editor
             m_DragBars[(int)DragBar.Center] = ClipToCamera(new Rect(dead.xMin, dead.yMin, dead.xMax - dead.xMin, dead.yMax - dead.yMin));
 
             // Handle dragging bars
-            if (CinemachineCorePrefs.DraggableComposerGuides.Value && isLive)
+            if (IsDraggable() && isLive)
                 OnGuiHandleBarDragging(cameraRect.width, cameraRect.height, ref composition);
 
             // Draw the masks
