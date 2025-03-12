@@ -22,8 +22,7 @@ namespace Unity.Cinemachine.Editor
         /// <returns>The target object whose guides are being drawn</returns>
         public delegate SerializedObject ObjectGetter();
 
-        /// <summary>Delegete to test if the guides can be dragged</summary>
-        /// <returns>True if the guides can be dragged</returns>
+        /// <summary>Delegete to get a bool value</summary>
         public delegate bool BoolGetter();
 
         /// <summary>Get the Composition settings.  Client must implement this</summary>
