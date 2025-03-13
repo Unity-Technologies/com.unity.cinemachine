@@ -5,6 +5,7 @@ using System.Reflection;
 using Unity.Cinemachine.Editor;
 using UnityEngine.UIElements;
 using UnityEditor.UIElements;
+using UnityEngine;
 
 namespace Unity.Cinemachine
 {
@@ -17,9 +18,12 @@ namespace Unity.Cinemachine
         {
             var ux = new VisualElement();
 
-            ux.Add(new HelpBox("This component is optional and can be removed if you don't need it.  "
+            var instructionsMsg = ux.AddChild(new HelpBox("This component is optional and can be removed if you don't need it.  "
                 + "The modifiers you add will override settings for the top and bottom portions "
                 + "of the camera's vertical orbit.",
+                HelpBoxMessageType.Info));
+
+            var noSaveDuringPlayMsg = ux.AddChild(new HelpBox("SaveDuringPlay will not save changes to this component.",
                 HelpBoxMessageType.Info));
 
             var invalidSrcMsg = ux.AddChild(
@@ -73,7 +77,16 @@ namespace Unity.Cinemachine
             button.AddManipulator(manipulator);
             button.clickable = null;
 
-            ux.TrackAnyUserActivity(() => invalidSrcMsg.SetVisible(Target != null && !Target.HasValueSource()));
+            ux.TrackAnyUserActivity(() => 
+            {
+                if (Target == null)
+                    return;
+                var hasModifiableSource = Target.HasValueSource();
+                var hasModifiers = Target.Modifiers.Count > 0;
+                invalidSrcMsg.SetVisible(!hasModifiableSource);
+                instructionsMsg.SetVisible(hasModifiableSource && !hasModifiers);
+                noSaveDuringPlayMsg.SetVisible(Application.isPlaying && SaveDuringPlay.Enabled && hasModifiers);
+            });
 
             return ux;
         }

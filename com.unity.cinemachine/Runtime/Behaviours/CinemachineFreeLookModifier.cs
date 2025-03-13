@@ -8,8 +8,7 @@ namespace Unity.Cinemachine
     /// This is an add-on for CinemachineCameras containing the OrbitalFollow component.
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
-    [SaveDuringPlay]
-    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine FreeLook Modifier")] // Hide in menu
+    [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine FreeLook Modifier")]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLookModifier.html")]
@@ -577,7 +576,7 @@ namespace Unity.Cinemachine
         /// These will modify settings as a function of the FreeLook's Vertical axis value.
         /// </summary>
         [Tooltip("These will modify settings as a function of the FreeLook's Vertical axis value")]
-        [SerializeReference] [NoSaveDuringPlay] public List<Modifier> Modifiers = new ();
+        [SerializeReference] public List<Modifier> Modifiers = new ();
 
         IModifierValueSource m_ValueSource;
         float m_CurrentValue;
