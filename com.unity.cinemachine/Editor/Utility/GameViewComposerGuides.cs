@@ -22,7 +22,7 @@ namespace Unity.Cinemachine.Editor
         /// <returns>The target object whose guides are being drawn</returns>
         public delegate SerializedObject ObjectGetter();
 
-        /// <summary>Delegete to get a bool value</summary>
+        /// <summary>Delegate to get a bool value</summary>
         public delegate bool BoolGetter();
 
         /// <summary>Get the Composition settings.  Client must implement this</summary>
@@ -31,7 +31,7 @@ namespace Unity.Cinemachine.Editor
         public CompositionSetter SetComposition;
         /// <summary>Get the target object whose guides are being drawn.  Client must implement this</summary>
         public ObjectGetter Target;
-        /// <summary>Delegete to test if the guides can be dragged</summary>
+        /// <summary>Override whether the guides may be dragged.  Client may optionally implement this</summary>
         public BoolGetter IsDraggable = () => CinemachineCorePrefs.DraggableComposerGuides.Value;
 
         // This is necessary because we don't get mouse events in the game view in Edit mode.
