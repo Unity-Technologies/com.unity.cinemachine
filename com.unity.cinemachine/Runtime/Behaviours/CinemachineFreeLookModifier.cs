@@ -9,6 +9,7 @@ namespace Unity.Cinemachine
     /// It modifies the camera distance as a function of vertical angle.
     /// </summary>
     [AddComponentMenu("Cinemachine/Procedural/Extensions/Cinemachine FreeLook Modifier")]
+    [SaveDuringPlay]
     [ExecuteAlways]
     [DisallowMultipleComponent]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineFreeLookModifier.html")]

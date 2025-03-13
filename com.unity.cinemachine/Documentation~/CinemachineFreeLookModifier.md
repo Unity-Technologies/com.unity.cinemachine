@@ -14,4 +14,8 @@ As an example, if the CinemachineCamera has a lens FOV of 60, and you add a lens
 
 ![Free Look Modifier Inspector Lens](images/FreeLookModifierInspectorLens.png)
 
-**Note:** When the FreeLook Modifier is modifying the Composition, the Game View guides will show the dynamic result of the modified composition.  In this situation, the Game View guides will not be draggable on-screen.  The inspector will have to be used to set the top, center, and bottom values.
+> [!TIP] 
+> When the FreeLook Modifier is modifying the Composition, the Game View guides will show the dynamic result of the modified composition.  In this situation, the Game View guides will not be draggable on-screen.  The inspector will have to be used to set the top, center, and bottom values.
+
+> [!TIP] 
+> SaveDuringPlay will track changes to properties of the existing items in the Modifiers list.  However, if you add or remove modifiers while in play mode, those changes will not be tracked by SaveDuringPlay.
