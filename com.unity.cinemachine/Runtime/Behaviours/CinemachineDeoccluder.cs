@@ -455,7 +455,7 @@ namespace Unity.Cinemachine
                     {
                         var dispMag = displacement.sqrMagnitude;
                         var prevDispMag = extra.PreviousDisplacement.sqrMagnitude;
-                        if (Mathf.Abs(dispMag - prevDispMag) > Epsilon)
+                        if (Mathf.Abs(dispMag - prevDispMag) > Epsilon * Epsilon)
                         {
                             dampTime = dispMag > prevDispMag ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
 
