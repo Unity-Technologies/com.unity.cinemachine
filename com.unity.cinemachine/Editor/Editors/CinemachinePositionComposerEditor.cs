@@ -14,9 +14,19 @@ namespace Unity.Cinemachine.Editor
 
         protected virtual void OnEnable()
         {
-            m_GameViewGuides.GetComposition = () => Target.Composition;
-            m_GameViewGuides.SetComposition = (s) => Target.Composition = s;
+            m_GameViewGuides.GetComposition = () => Target.GetEffectiveComposition;
+            m_GameViewGuides.SetComposition = (s) => 
+            {
+                if (m_GameViewGuides.IsDraggable()) 
+                    Target.Composition = s;
+            };
             m_GameViewGuides.Target = () => serializedObject;
+            m_GameViewGuides.IsDraggable = () => 
+            {
+                return Target.GetEffectiveComposition.ScreenPosition == Target.Composition.ScreenPosition
+                    && Target.GetEffectiveComposition.DeadZoneRect == Target.Composition.DeadZoneRect
+                    && Target.GetEffectiveComposition.HardLimitsRect == Target.Composition.HardLimitsRect;
+            };
             m_GameViewGuides.OnEnable();
 
             CinemachineDebug.OnGUIHandlers -= OnGuiHandler;

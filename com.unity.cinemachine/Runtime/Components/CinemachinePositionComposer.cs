@@ -81,12 +81,16 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public LookaheadSettings Lookahead;
 
+        /// <summary>Internal API for inspector</summary>
+        internal ScreenComposerSettings GetEffectiveComposition => m_CompositionLastFrame;
+
         const float kMinimumCameraDistance = 0.01f;
 
         /// <summary>State information for damping</summary>
         Vector3 m_PreviousCameraPosition = Vector3.zero;
         internal PositionPredictor m_Predictor = new PositionPredictor(); // internal for tests
         Quaternion m_prevRotation;
+        ScreenComposerSettings m_CompositionLastFrame;
 
         bool m_InheritingPosition;
 
@@ -321,6 +325,7 @@ namespace Unity.Cinemachine
             }
             curState.RawPosition = camPosWorld + localToWorld * cameraOffset;
             m_PreviousCameraPosition = curState.RawPosition;
+            m_CompositionLastFrame = Composition;
 
             m_InheritingPosition = false;
         }

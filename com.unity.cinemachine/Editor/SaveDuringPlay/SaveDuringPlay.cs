@@ -193,8 +193,16 @@ namespace Unity.Cinemachine.Editor
                         var currentLength = list.Count;
                         for (int i = 0; i < currentLength - newLength; ++i)
                             list.RemoveAt(currentLength - i - 1); // make list shorter if needed
-                        for (int i = 0;  i < newLength - currentLength; ++i)
-                            list.Add(GetValue(type.GetGenericArguments()[0])); // make list longer if needed
+
+                        // Can only grow non-serializereference lists
+                        var elementType = type.GetGenericArguments()[0];
+                        var attributes = elementType.GetCustomAttributes(typeof(SerializeReference), true);
+                        if (attributes == null || attributes.Length == 0)
+                        {
+                            if (elementType.GetCustomAttributes(typeof(SerializeReference), true) == null)
+                            for (int i = 0;  i < newLength - currentLength; ++i)
+                                list.Add(GetValue(type.GetGenericArguments()[0])); // make list longer if needed
+                        }
                         doneSomething = true;
                     }
 

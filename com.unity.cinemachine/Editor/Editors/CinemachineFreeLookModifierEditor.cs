@@ -17,7 +17,7 @@ namespace Unity.Cinemachine
         {
             var ux = new VisualElement();
 
-            ux.Add(new HelpBox("This component is optional and can be removed if you don't need it.  "
+            var instructionsMsg = ux.AddChild(new HelpBox("This component is optional and can be removed if you don't need it.  "
                 + "The modifiers you add will override settings for the top and bottom portions "
                 + "of the camera's vertical orbit.",
                 HelpBoxMessageType.Info));
@@ -33,7 +33,7 @@ namespace Unity.Cinemachine
             ux.Add(new Label(controllersProperty.displayName) { tooltip = controllersProperty.tooltip });
             var list = ux.AddChild(new ListView()
             {
-                reorderable = true,
+                reorderable = false,
                 showAddRemoveFooter = true,
                 showBorder = true,
                 showBoundCollectionSize = false,
@@ -73,7 +73,15 @@ namespace Unity.Cinemachine
             button.AddManipulator(manipulator);
             button.clickable = null;
 
-            ux.TrackAnyUserActivity(() => invalidSrcMsg.SetVisible(Target != null && !Target.HasValueSource()));
+            ux.TrackAnyUserActivity(() => 
+            {
+                if (Target == null)
+                    return;
+                var hasModifiableSource = Target.HasValueSource();
+                var hasModifiers = Target.Modifiers.Count > 0;
+                invalidSrcMsg.SetVisible(!hasModifiableSource);
+                instructionsMsg.SetVisible(hasModifiableSource && !hasModifiers);
+            });
 
             return ux;
         }

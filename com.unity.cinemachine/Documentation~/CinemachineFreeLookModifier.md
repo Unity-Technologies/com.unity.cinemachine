@@ -4,7 +4,7 @@ This component is intended to be added to a CinemachineCamera set up as a [FreeL
 
 It allows you to vary some settings (for instance lens, noise, damping, composition, or camera distance) depending on whether the camera is at the top, middle, or bottom of its defined orbit. By default, the camera settings remain constant over the entire orbit. With the FreeLook  Modifier, you can change that.
 
-The behavior holds a list of setting modifiers, and you can add any of the available ones. You can also create your own modifiers which will automatically get added to the list.
+The behavior holds a list of setting modifiers, and you can add any of the available ones. You can also create your own modifiers which will automatically get added to the selection list.
 
 ![Free Look Modifier Inspector](images/FreeLookModifierInspector.png)
 
@@ -14,3 +14,8 @@ As an example, if the CinemachineCamera has a lens FOV of 60, and you add a lens
 
 ![Free Look Modifier Inspector Lens](images/FreeLookModifierInspectorLens.png)
 
+> [!TIP] 
+> When the FreeLook Modifier is modifying the Composition, the Game View guides will show the dynamic result of the modified composition.  In this situation, the Game View guides will not be draggable on-screen.  The inspector will have to be used to set the top, center, and bottom values.
+
+> [!TIP] 
+> SaveDuringPlay will track changes to properties of the existing items in the Modifiers list.  However, if you add or remove modifiers while in play mode, those changes will not be tracked by SaveDuringPlay.

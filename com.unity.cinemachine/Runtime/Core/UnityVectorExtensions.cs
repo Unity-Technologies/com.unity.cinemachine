@@ -382,7 +382,7 @@ namespace Unity.Cinemachine
         /// <param name="lookAtDir">The world-space target direction in which we want to look</param>
         /// <param name="worldUp">Which way is up.  Must have a length of 1.</param>
         /// <returns>Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
-        /// about local right.</returns>
+        /// about local right.  Angles are in degrees.</returns>
         public static Vector2 GetCameraRotationToTarget(
             this Quaternion orient, Vector3 lookAtDir, Vector3 worldUp)
         {
@@ -421,7 +421,7 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <param name="orient">The quaternion to which to apply the rotation.</param>
         /// <param name="rot">Vector2.y is rotation about worldUp, and Vector2.x is second rotation,
-        /// about local right.</param>
+        /// about local right.  Angles are in degrees.</param>
         /// <param name="worldUp">Which way is up</param>
         /// <returns>Result rotation after the input is applied to the input quaternion</returns>
         public static Quaternion ApplyCameraRotation(
