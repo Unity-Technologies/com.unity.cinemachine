@@ -87,7 +87,7 @@ namespace Unity.Cinemachine
             /// </summary>
             public virtual Type CachedComponentType => null;
 
-            /// <summary>Return true if cached vcam component is present or not required</summary>
+            /// <summary>Return true if cached vcam component is present or if no cached component is required</summary>
             public virtual bool HasRequiredComponent => true;
 
             /// <summary>Called from OnEnable and from the inspector.  Refresh any performance-sensitive stuff.</summary>
@@ -573,6 +573,17 @@ namespace Unity.Cinemachine
         }
 
         /// <summary>
+        /// The amount of easing to apply towards the center value.  Zero easing will 
+        /// blend linearly through the center value, while an easing of 1 will smooth 
+        /// the result as it passes over the center value.
+        /// </summary>
+        [Tooltip("The amount of easing to apply towards the center value.  Zero easing will "
+            + "blend linearly through the center value, while an easing of 1 will smooth "
+            + "the result as it passes over the center value.")]
+        [Range(0, 1)]
+        public float Easing;
+
+        /// <summary>
         /// Collection of modifiers that will be applied to the camera every frame.
         /// These will modify settings as a function of the FreeLook's Vertical axis value.
         /// </summary>
@@ -581,7 +592,8 @@ namespace Unity.Cinemachine
 
         IModifierValueSource m_ValueSource;
         float m_CurrentValue;
-        static AnimationCurve s_EasingCurve;
+        AnimationCurve m_EasingCurve;
+        float m_CachedEasingValue;
 
         void OnValidate()
         {
@@ -626,21 +638,18 @@ namespace Unity.Cinemachine
             if (m_ValueSource != null && vcam == ComponentOwner)
             {
                 // Apply easing
-                if (s_EasingCurve == null)
+                if (m_EasingCurve == null || m_CachedEasingValue != Easing)
                 {
-                    s_EasingCurve = AnimationCurve.Linear(0f, 0f, 1, 1f);
-    #if false // nah, it doesn't look so great
-    // GML todo: find a nice way to amke a smooth curve.  Maybe a bezier?
-                    // Ease out, hard in
-                    var keys = s_EasingCurve.keys;
-                    keys[0].outTangent = 0;
-                    keys[1].inTangent = 1.4f;
-                    s_EasingCurve.keys = keys;
-    #endif
+                    m_EasingCurve ??= AnimationCurve.Linear(0f, 0f, 1, 1f);
+                    var keys = m_EasingCurve.keys;
+                    keys[0].outTangent = (1 - Easing);
+                    keys[1].inTangent = 1f + 2f * Easing;
+                    m_EasingCurve.keys = keys;
+                    m_CachedEasingValue = Easing;
                 }
                 var v = m_ValueSource.NormalizedModifierValue;
                 var sign = Mathf.Sign(v);
-                m_CurrentValue = sign * s_EasingCurve.Evaluate(sign * v);
+                m_CurrentValue = sign * m_EasingCurve.Evaluate(Mathf.Abs(v));
                 for (int i = 0; i < Modifiers.Count; ++i)
                     Modifiers[i]?.BeforePipeline(vcam, ref curState, deltaTime, m_CurrentValue);
             }
