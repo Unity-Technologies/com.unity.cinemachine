@@ -124,6 +124,7 @@ namespace Unity.Cinemachine
             HorizontalAxis.Validate();
             VerticalAxis.Validate();
             RadialAxis.Validate();
+            RadialAxis.Range.x = Mathf.Max(RadialAxis.Range.x, Epsilon);
 
             HorizontalAxis.Restrictions &= ~(InputAxis.RestrictionFlags.NoRecentering | InputAxis.RestrictionFlags.RangeIsDriven);
         }
@@ -177,7 +178,8 @@ namespace Unity.Cinemachine
         /// <summary>Inspector checks this and displays warning if no handler</summary>
         bool IInputAxisResetSource.HasResetHandler => m_ResetHandler != null;
 
-        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue => GetCameraPoint().w;
+        float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
+            => GetCameraPoint().w / Mathf.Max(Epsilon, RadialAxis.Value);
 
         Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
         {
