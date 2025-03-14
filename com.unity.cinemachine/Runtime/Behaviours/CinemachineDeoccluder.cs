@@ -468,7 +468,14 @@ namespace Unity.Cinemachine
                                 var newOffset = initialCamPos + displacement - resolutionTargetPoint;
                                 var newOffsetMag = newOffset.magnitude;
                                 var newOffsetDir = newOffset / newOffsetMag;
+
+                                // Avoid introducing spurious damping when the camera changed position relative to the target.
+                                // We calculate the previous offset from target in two ways, and take the one that's closest
+                                // to the current desired offset.
                                 var prevOffsetMag = extra.PreviousCameraOffset.magnitude;
+                                var prevOffsetMag2 = (initialCamPos - resolutionTargetPoint).magnitude - Mathf.Sqrt(prevDispMag);
+                                if (Mathf.Abs(newOffsetMag - prevOffsetMag2) < Mathf.Abs(newOffsetMag - prevOffsetMag))
+                                    prevOffsetMag = prevOffsetMag2;
 
                                 newOffsetMag = prevOffsetMag + Damper.Damp(newOffsetMag - prevOffsetMag, dampTime, deltaTime);
                                 newCamPos = resolutionTargetPoint + newOffsetDir * newOffsetMag;
