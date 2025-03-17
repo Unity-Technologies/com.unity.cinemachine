@@ -151,7 +151,8 @@ namespace Unity.Cinemachine
         class VcamExtraState : VcamExtraStateBase
         {
             public float PreviousTerrainDisplacement;
-            public float PreviousObstacleDisplacement;
+            public float PreviousDistanceFromTarget;
+            public Vector3 PreviouDecollisionDisplacement;
             public Vector3 PreviousCorrectedCameraPosition;
 
             float m_SmoothedDistance;
@@ -349,31 +350,39 @@ namespace Unity.Cinemachine
             Vector3 displacement, Vector3 lookAtPoint,
             Vector3 oldCamPos, VcamExtraState extra, float deltaTime)
         {
-            var dir = oldCamPos + displacement - lookAtPoint;
-            var distance = float.MaxValue;
+            var newOffset = oldCamPos + displacement - lookAtPoint;
+            var newOffsetMag = float.MaxValue;
             if (deltaTime >= 0)
             {
-                distance = dir.magnitude;
-                if (distance > CameraRadius)
+                newOffsetMag = newOffset.magnitude;
+                if (newOffsetMag > CameraRadius)
                 {
                     // Apply smoothing
-                    dir /= distance;
+                    var newOffsetDir = newOffset / newOffsetMag;
                     if (Decollision.SmoothingTime > Epsilon)
                     {
-                        distance = extra.UpdateDistanceSmoothing(distance, Decollision.SmoothingTime, !displacement.AlmostZero());
-                        displacement = (lookAtPoint + dir * distance) - oldCamPos;
+                        newOffsetMag = extra.UpdateDistanceSmoothing(newOffsetMag, Decollision.SmoothingTime, !displacement.AlmostZero());
+                        displacement = (lookAtPoint + newOffsetDir * newOffsetMag) - oldCamPos;
                     }
 
                     // Apply damping
-                    if (Decollision.Damping > Epsilon && distance > extra.PreviousObstacleDisplacement)
+                    if (Decollision.Damping > Epsilon && newOffsetMag > extra.PreviousDistanceFromTarget)
                     {
-                        distance = extra.PreviousObstacleDisplacement
-                            + Damper.Damp(distance - extra.PreviousObstacleDisplacement, Decollision.Damping, deltaTime);
-                        displacement = (lookAtPoint + dir * distance) - oldCamPos;
+                        // Avoid introducing spurious damping when the camera changed position relative to the target.
+                        // We calculate the previous offset from target in two ways, and take the one that's closest
+                        // to the current desired offset.
+                        var prevOffsetMag = extra.PreviousDistanceFromTarget;
+                        var prevOffsetMag2 = (oldCamPos - lookAtPoint).magnitude - extra.PreviouDecollisionDisplacement.magnitude;
+                        if (Mathf.Abs(newOffsetMag - prevOffsetMag2) < Mathf.Abs(newOffsetMag - prevOffsetMag))
+                            prevOffsetMag = prevOffsetMag2;
+
+                        newOffsetMag = prevOffsetMag + Damper.Damp(newOffsetMag - prevOffsetMag, Decollision.Damping, deltaTime);
+                        displacement = (lookAtPoint + newOffsetDir * newOffsetMag) - oldCamPos;
                     }
                 }
             }
-            extra.PreviousObstacleDisplacement = distance;
+            extra.PreviousDistanceFromTarget = newOffsetMag;
+            extra.PreviouDecollisionDisplacement = displacement;
             return displacement;
         }
     }
