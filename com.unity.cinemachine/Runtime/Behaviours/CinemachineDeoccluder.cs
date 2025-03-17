@@ -459,7 +459,7 @@ namespace Unity.Cinemachine
                         {
                             dampTime = dispMag > prevDispMag ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
 
-                            // To ease the transition between damped and undamped regions, we damp the damp time
+                            // To ease the transition between damped and undamped regions, we damp the damp time!
                             if (dispMag < Epsilon && dampTime < extra.PreviousDampTime)
                                 dampTime = extra.PreviousDampTime + Damper.Damp(dampTime - extra.PreviousDampTime, dampTime, deltaTime);
 
@@ -468,7 +468,14 @@ namespace Unity.Cinemachine
                                 var newOffset = initialCamPos + displacement - resolutionTargetPoint;
                                 var newOffsetMag = newOffset.magnitude;
                                 var newOffsetDir = newOffset / newOffsetMag;
+
+                                // Avoid introducing spurious damping when the camera changed position relative to the target.
+                                // We calculate the previous offset from target in two ways, and take the one that's closest
+                                // to the current desired offset.
                                 var prevOffsetMag = extra.PreviousCameraOffset.magnitude;
+                                var prevOffsetMag2 = (initialCamPos - resolutionTargetPoint).magnitude - Mathf.Sqrt(prevDispMag);
+                                if (Mathf.Abs(newOffsetMag - prevOffsetMag2) < Mathf.Abs(newOffsetMag - prevOffsetMag))
+                                    prevOffsetMag = prevOffsetMag2;
 
                                 newOffsetMag = prevOffsetMag + Damper.Damp(newOffsetMag - prevOffsetMag, dampTime, deltaTime);
                                 newCamPos = resolutionTargetPoint + newOffsetDir * newOffsetMag;
@@ -477,6 +484,9 @@ namespace Unity.Cinemachine
                             else
                             {
                                 var prevDisp = resolutionTargetPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
+                                if (prevDisp.sqrMagnitude > prevDispMag)
+                                    prevDisp = extra.PreviousDisplacement;
+
                                 displacement = prevDisp + Damper.Damp(displacement - prevDisp, dampTime, deltaTime);
                             }
                         }
