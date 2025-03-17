@@ -459,7 +459,7 @@ namespace Unity.Cinemachine
                         {
                             dampTime = dispMag > prevDispMag ? AvoidObstacles.DampingWhenOccluded : AvoidObstacles.Damping;
 
-                            // To ease the transition between damped and undamped regions, we damp the damp time
+                            // To ease the transition between damped and undamped regions, we damp the damp time!
                             if (dispMag < Epsilon && dampTime < extra.PreviousDampTime)
                                 dampTime = extra.PreviousDampTime + Damper.Damp(dampTime - extra.PreviousDampTime, dampTime, deltaTime);
 
@@ -484,6 +484,9 @@ namespace Unity.Cinemachine
                             else
                             {
                                 var prevDisp = resolutionTargetPoint + dampingBypass * extra.PreviousCameraOffset - initialCamPos;
+                                if (prevDisp.sqrMagnitude > prevDispMag)
+                                    prevDisp = extra.PreviousDisplacement;
+
                                 displacement = prevDisp + Damper.Damp(displacement - prevDisp, dampTime, deltaTime);
                             }
                         }
