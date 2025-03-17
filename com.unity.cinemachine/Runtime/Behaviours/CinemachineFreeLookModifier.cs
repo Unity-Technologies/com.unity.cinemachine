@@ -577,8 +577,8 @@ namespace Unity.Cinemachine
         /// blend linearly through the center value, while an easing of 1 will smooth 
         /// the result as it passes over the center value.
         /// </summary>
-        [Tooltip("The amount of easing to apply towards the center value.  Zero easing will "
-            + "blend linearly through the center value, while an easing of 1 will smooth "
+        [Tooltip("The amount of easing to apply towards the center value. Zero easing "
+            + "blends linearly through the center value, while an easing of 1 smooths "
             + "the result as it passes over the center value.")]
         [Range(0, 1)]
         public float Easing;
