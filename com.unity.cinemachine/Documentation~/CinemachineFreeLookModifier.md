@@ -22,7 +22,8 @@ As an example, if the CinemachineCamera has a lens FOV of 60, and you add a lens
 
 ## Properties:
 
-| **Property:** | **Function:** |
-|:---|:---|
-| __Easing__ | The amount of easing to apply towards the center value.  Zero easing will blend linearly through the center value, while an easing of 1 will smooth the result as it passes over the center value. |
-| __Modifiers__ | The list of modifiers which will modify camera settings as a function of the FreeLook's Vertical axis value. |
+| Property | Function |
+| :--- | :--- |
+| **Easing** | The amount of easing to apply towards the center value. Zero easing blends linearly through the center value, while an easing of 1 smooths the result as it passes over the center value. |
+| **Modifiers** | The list of modifiers which modify camera settings as a function of the FreeLook's Vertical axis value. |
+
