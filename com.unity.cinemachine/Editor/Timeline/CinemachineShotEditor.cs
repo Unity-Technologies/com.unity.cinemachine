@@ -138,7 +138,6 @@ namespace Unity.Cinemachine.Editor
                 value = CinemachineTimelinePrefs.UseScrubbingCache.Value,
                 style = { flexGrow = 0, marginRight = 5 }
             });
-            row.Right.Add(new Label { text = "(experimental)", style = { flexGrow = 1, alignSelf = Align.Center } });
             var clearCacheButton = row.Right.AddChild(new Button
             {
                 text = "Clear",
@@ -146,10 +145,14 @@ namespace Unity.Cinemachine.Editor
             });
             clearCacheButton.RegisterCallback<ClickEvent>((evt) => TargetPositionCache.ClearCache());
             clearCacheButton.SetEnabled(CinemachineTimelinePrefs.UseScrubbingCache.Value);
-            cacheToggle.RegisterValueChangedCallback((evt) =>
+            cacheToggle.RegisterValueChangedCallback((evt) => CinemachineTimelinePrefs.UseScrubbingCache.Value = evt.newValue);
+            InspectorUtility.ContinuousUpdate(m_ParentElement, () => 
             {
-                CinemachineTimelinePrefs.UseScrubbingCache.Value = evt.newValue;
-                clearCacheButton.SetEnabled(evt.newValue);
+                cacheToggle.SetEnabled(!Application.isPlaying);
+                clearCacheButton.SetEnabled(
+                    CinemachineTimelinePrefs.UseScrubbingCache.Value 
+                    && !TargetPositionCache.IsEmpty 
+                    && !Application.isPlaying);
             });
 
             m_ParentElement.AddSpace();
@@ -258,11 +261,7 @@ namespace Unity.Cinemachine.Editor
             else
                 CinemachineTimelinePrefs.UseScrubbingCache.Value = EditorGUI.Toggle(
                     r, CinemachineTimelinePrefs.s_ScrubbingCacheLabel, CinemachineTimelinePrefs.UseScrubbingCache.Value);
-            r.x += r.width; r.width = rect.width - r.width;
-            var buttonWidth = GUI.skin.button.CalcSize(m_ClearText).x;
-            r.width -= buttonWidth;
-            EditorGUI.LabelField(r, "(experimental)");
-            r.x += r.width; r.width =buttonWidth;
+            r.x += r.width + 6; r.width = GUI.skin.button.CalcSize(m_ClearText).x;
             GUI.enabled &= !TargetPositionCache.IsEmpty;
             if (GUI.Button(r, m_ClearText))
                 TargetPositionCache.ClearCache();

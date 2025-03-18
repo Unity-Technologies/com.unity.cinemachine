@@ -31,7 +31,7 @@ namespace Unity.Cinemachine.Editor
             "For preview scrubbing, caches target positions and pre-simulates each frame to "
                 + "approximate damping and noise playback.  Target position cache is built when timeline is "
                 + "played forward, and used when timeline is scrubbed within the indicated zone. "
-                + "This is a global setting,.");
+                + "This is a global setting.");
 
         static CinemachineTimelinePrefs() => CinemachineSettings.AdditionalCategories += DrawTimelineSettings;
 
