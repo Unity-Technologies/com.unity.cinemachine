@@ -240,7 +240,7 @@ namespace Unity.Cinemachine
                         var p0 = m_Cache.DirectionFromScreen(m_CompositionLastFrame.ScreenPosition);
                         var p1 = m_Cache.DirectionFromScreen(Composition.ScreenPosition);
                         var q = Quaternion.identity.ApplyCameraRotation(m_ScreenOffsetPrevFrame, Vector3.up);
-                        q = UnityVectorExtensions.SafeFromToRotation(p0, p1, Vector3.up) * q;
+                        q = q * UnityVectorExtensions.SafeFromToRotation(p0, p1, Vector3.up);
                         m_ScreenOffsetPrevFrame = Quaternion.identity.GetCameraRotationToTarget(q * Vector3.forward, Vector3.up);
                     }
                     rigOrientation = Quaternion.LookRotation(dir, curState.ReferenceUp);
@@ -263,7 +263,7 @@ namespace Unity.Cinemachine
             m_LookAtPrevFrame = TrackedPoint;
             m_CameraOrientationPrevFrame = rigOrientation.normalized;
             m_ScreenOffsetPrevFrame = m_CameraOrientationPrevFrame.GetCameraRotationToTarget(
-                m_LookAtPrevFrame - curState.GetCorrectedPosition(), curState.ReferenceUp);
+                m_LookAtPrevFrame - m_CameraPosPrevFrame, curState.ReferenceUp);
             m_CompositionLastFrame = Composition;
 
             curState.RawOrientation = m_CameraOrientationPrevFrame;
