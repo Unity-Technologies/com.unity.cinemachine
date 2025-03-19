@@ -18,10 +18,10 @@ Several of the samples listed above make use of Cinemachine's [Simple Player Con
 
 ## Tutorials
 
-[A "Using Cinemachine" series of video tutorials](https://www.youtube.com/playlist?list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) is available online in Unity's official YouTube channel. Discover various Cinemachine use cases and watch the immediate effects resulting from the corresponding project setup.
-
 > [!NOTE]
-> These videos have been made with a previous version of Cinemachine. You might notice a few changes in the interface and the naming of some elements, but all the explained concepts and shown functionality still apply to the latest Cinemachine version.
+> This section links to videos that were made with a previous version of Cinemachine. You might notice a few changes in the interface and the naming of some elements, but all the explained concepts and shown functionality still apply to the latest Cinemachine version.
+
+[A "Using Cinemachine" series of video tutorials](https://www.youtube.com/playlist?list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) is available online in Unity's official YouTube channel. Discover various Cinemachine use cases and watch the immediate effects resulting from the corresponding project setup.
 
 | Video | Description |
 | :--- | :--- |
