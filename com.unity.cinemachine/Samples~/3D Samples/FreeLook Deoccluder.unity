@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -208,13 +207,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 140191132}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.15086463, y: -1.1945524e-22, z: 1.8230227e-23, w: 0.9885544}
   m_LocalPosition: {x: 0, y: 2.25, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &140191136
 MonoBehaviour:
@@ -305,7 +304,7 @@ PrefabInstance:
       value: "This scene shows a Freelook camera with a Deoccluder to handle occlusion
         by walls.\r\n\r\nTransparent objects are ignored by Cinemachine Deoccluder,
         because the Transparent Layers attribute of the Deoccluder is set to the
-        layer on which the transparents objects are. \r\n\r\nUse WASD to move around,
+        layer on which the transparent objects are. \r\n\r\nUse WASD to move around,
         Spacebar to jump, Shift to sprint.  Mouse moves the camera. If using Input
         package, right mouse button to jump and middle mouse button to sprint."
       objectReference: {fileID: 0}
@@ -436,7 +435,6 @@ GameObject:
   - component: {fileID: 1727080744}
   - component: {fileID: 1727080743}
   - component: {fileID: 1727080747}
-  - component: {fileID: 1727080748}
   - component: {fileID: 1727080741}
   m_Layer: 0
   m_Name: FreeLook Camera
@@ -459,6 +457,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
+  IgnoreTimeScale: 0
   m_ControllerManager:
     Controllers:
     - Name: Look Orbit X
@@ -514,13 +513,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -531,6 +523,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &1727080744
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -543,6 +542,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 5
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -610,7 +610,7 @@ MonoBehaviour:
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20230301
+  m_StreamingVersion: 20241001
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 543450653499076494}
@@ -643,13 +643,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1727080740}
+  serializedVersion: 2
   m_LocalRotation: {x: 0.15086463, y: -1.1945524e-22, z: 1.8230227e-23, w: 0.9885544}
   m_LocalPosition: {x: 0, y: 2.25, z: -4}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
-  m_RootOrder: 6
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1727080747
 MonoBehaviour:
@@ -676,6 +676,9 @@ MonoBehaviour:
     DistanceLimit: 0
     MinimumOcclusionTime: 0
     CameraRadius: 0.1
+    UseFollowTarget:
+      Enabled: 0
+      YOffset: 0
     Strategy: 0
     MaximumEffort: 4
     SmoothingTime: 0
@@ -687,22 +690,6 @@ MonoBehaviour:
     NearLimit: 5
     FarLimit: 30
     MaxQualityBoost: 0.2
---- !u!114 &1727080748
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1727080740}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a076c17fe76165e4f8ed21498b877bf9, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  Modifiers: []
-  references:
-    version: 2
-    RefIds: []
 --- !u!4 &543450653499076494 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4293402553517372633, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
@@ -899,3 +886,14 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 8378e2b869340464a8ff1531d24726e8, type: 3}
+--- !u!1660057539 &9223372036854775807
+SceneRoots:
+  m_ObjectHideFlags: 0
+  m_Roots:
+  - {fileID: 993682861312921315}
+  - {fileID: 290231337}
+  - {fileID: 140191135}
+  - {fileID: 7632911616239414954}
+  - {fileID: 306417144}
+  - {fileID: 5995860983734692292}
+  - {fileID: 1727080746}

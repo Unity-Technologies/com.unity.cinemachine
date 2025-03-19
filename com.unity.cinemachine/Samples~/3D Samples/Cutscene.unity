@@ -38,7 +38,6 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 0}
-  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -303,7 +302,7 @@ MonoBehaviour:
   PivotOffset: {x: 0, y: 0, z: 0}
   AmplitudeGain: 2
   FrequencyGain: 0.76
-  mNoiseOffsets: {x: 674.19385, y: 613.2903, z: 623.62976}
+  m_NoiseOffsets: {x: 674.19385, y: 613.2903, z: 623.62976}
 --- !u!1 &167160416
 GameObject:
   m_ObjectHideFlags: 0
@@ -591,7 +590,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: HelpText
-      value: "This is a denonstration of a cutscene that blends in from the game
+      value: "This is a demonstration of a cutscene that blends in from the game
         camera, plays through, and then blends back out.\r\n\r\nWhen the player enters
         the trigger zone around the chest, the cutscene timeline is started, thanks
         to the CinemachineTriggerAction behaviour on the trigger zone.  The cutscene
@@ -2365,6 +2364,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ScanRecursively: 1
   SuppressInputWhileBlending: 1
+  IgnoreTimeScale: 0
   m_ControllerManager:
     Controllers:
     - Name: Look Orbit X
@@ -2436,13 +2436,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f38bda98361e1de48a4ca2bd86ea3c17, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  TargetOffset: {x: 0, y: 1, z: 0}
-  Lookahead:
-    Enabled: 0
-    Time: 0
-    Smoothing: 0
-    IgnoreY: 0
-  Damping: {x: 0.5, y: 0.5}
   Composition:
     ScreenPosition: {x: 0, y: 0}
     DeadZone:
@@ -2453,6 +2446,13 @@ MonoBehaviour:
       Size: {x: 0.8, y: 0.8}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
+  TargetOffset: {x: 0, y: 1, z: 0}
+  Damping: {x: 0.5, y: 0.5}
+  Lookahead:
+    Enabled: 0
+    Time: 0
+    Smoothing: 0
+    IgnoreY: 0
 --- !u!114 &1721836170
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2465,6 +2465,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3b5d7c088409d9a40b7b09aa707777f8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  TargetOffset: {x: 0, y: 0, z: 0}
   TrackerSettings:
     BindingMode: 4
     PositionDamping: {x: 1, y: 1, z: 1}
@@ -2532,7 +2533,7 @@ MonoBehaviour:
     m_Value: 0
   OutputChannel: 1
   StandbyUpdate: 2
-  m_StreamingVersion: 20230301
+  m_StreamingVersion: 20241001
   m_LegacyPriority: 10
   Target:
     TrackingTarget: {fileID: 140267361}
@@ -2589,7 +2590,7 @@ MonoBehaviour:
   PivotOffset: {x: 0, y: 0, z: 0}
   AmplitudeGain: 1
   FrequencyGain: 0.6
-  mNoiseOffsets: {x: -845.64465, y: -524.9656, z: -417.93594}
+  m_NoiseOffsets: {x: -845.64465, y: -524.9656, z: -417.93594}
 --- !u!114 &1721836174
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2615,6 +2616,9 @@ MonoBehaviour:
     DistanceLimit: 0
     MinimumOcclusionTime: 0
     CameraRadius: 0.1
+    UseFollowTarget:
+      Enabled: 0
+      YOffset: 0
     Strategy: 0
     MaximumEffort: 4
     SmoothingTime: 0

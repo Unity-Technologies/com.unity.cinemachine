@@ -14,6 +14,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Regression fix: Confiner2D was not always confining when a camera was newly activated.
 - The RotationComposer no longer damps in response to composition changes from the FreeLookModifier.
 - The game-view composer guides dynamically reflect the current composition when a FreeLookModifier is changing it.
+- Fixed sample asset selection at import depending on current render pipeline and input configuration.  You need to re-import the samples to fix any existing issues.
 
 ### Changed
 - Cinemachine Shot Editor longer provides UX to create cameras when editing a prefab.

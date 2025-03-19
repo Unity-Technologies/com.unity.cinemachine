@@ -724,10 +724,15 @@ PrefabInstance:
     - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: HelpText
       value: "This scene shows a split screen local multiplayer game.\n\nPlayer 1
-        controls the car with WASD.\nPlayer 2 controls the car with the mouse.\n\nEach
-        camera has a CinemachineBrain with a different mask channel. Player 1 is
-        on  channel 1 and player 2 on channel 2. The Viewport property of the Camera
-        component is changed to place each Camera on the game view.\r"
+        controls the red car with WASD.\nPlayer 2 controls the blue car with the
+        mouse.\n\nEach camera has a CinemachineBrain assigned a different channel.
+        Player 1 is on  channel 1 and player 2 on channel 2. The Viewport property
+        of the Camera component is set to position each camera's output within the
+        game view.\r"
+      objectReference: {fileID: 0}
+    - target: {fileID: 6668015293666917239, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
+      propertyPath: VisibleAtStart
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 9138370430051789472, guid: d7425ed2047e64d8ea6ff79f20bd46f6, type: 3}
       propertyPath: m_Name
