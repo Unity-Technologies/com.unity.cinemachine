@@ -29,8 +29,11 @@ namespace Unity.Cinemachine
                         typeof(CinemachineFreeLookModifier.IModifierValueSource)),
                     HelpBoxMessageType.Warning));
 
-            var controllersProperty = serializedObject.FindProperty(() => Target.Modifiers);
-            ux.Add(new Label(controllersProperty.displayName) { tooltip = controllersProperty.tooltip });
+            ux.Add(new PropertyField(serializedObject.FindProperty(nameof(Target.Easing))));
+
+            var controllersProperty = serializedObject.FindProperty(nameof(Target.Modifiers));
+            ux.Add(new Label(controllersProperty.displayName) 
+                { tooltip = controllersProperty.tooltip , style = { marginLeft = 3, marginTop = 6 }});
             var list = ux.AddChild(new ListView()
             {
                 reorderable = false,
@@ -38,7 +41,8 @@ namespace Unity.Cinemachine
                 showBorder = true,
                 showBoundCollectionSize = false,
                 showFoldoutHeader = false,
-                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight
+                virtualizationMethod = CollectionVirtualizationMethod.DynamicHeight,
+                style = { marginLeft = 3 }
             });
             list.BindProperty(controllersProperty);
 

@@ -20,6 +20,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - When a FreeLookModifier is enabled for composition, the game-view composer guides are not draggable.
  
 ### Added
+- Added Easing setting to FreeLookModifier, to smooth the transition between top and bottom FreeLook hemispheres.
 
 
 ## [3.1.3] - 2025-02-01

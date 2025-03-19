@@ -19,3 +19,11 @@ As an example, if the CinemachineCamera has a lens FOV of 60, and you add a lens
 
 > [!NOTE] 
 > [Save During Play](CinemachineSavingDuringPlay.md) tracks changes to properties of the existing items in the Modifiers list. However, it doesn't track any addition or removal of modifiers while in Play mode.
+
+## Properties:
+
+| Property | Function |
+| :--- | :--- |
+| **Easing** | The amount of easing to apply towards the center value. Zero easing blends linearly through the center value, while an easing of 1 smooths the result as it passes over the center value. |
+| **Modifiers** | The list of modifiers which modify camera settings as a function of the FreeLook's Vertical axis value. |
+
