@@ -17,8 +17,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed sample asset selection at import depending on current render pipeline and input configuration.  You need to re-import the samples to fix any existing issues.
 
 ### Changed
-- Cinemachine Shot Editor longer provides UX to create cameras when editing a prefab.
-- When a FreeLookModifier is enabled for composition, the game-view composer guides are not draggable.
+- Cinemachine Shot Editor no longer displays improper UX to create cameras when editing a prefab.
+- When a FreeLookModifier is enabled for composition, the game-view composer guides are no longer draggable.
  
 ### Added
 - Added Easing setting to FreeLookModifier, to smooth the transition between top and bottom FreeLook hemispheres.
