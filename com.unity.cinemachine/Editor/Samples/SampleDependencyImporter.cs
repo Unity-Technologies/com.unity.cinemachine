@@ -20,7 +20,6 @@ namespace Unity.Cinemachine.Editor
     class SampleDependencyImporter : IPackageManagerExtension
     {
         const string k_CinemachinePackageName = "com.unity.cinemachine";
-        const string k_SharedAssetsFolder = "SharedAssets";
 
         PackageInfo m_PackageInfo;
         IEnumerable<Sample> m_Samples;
