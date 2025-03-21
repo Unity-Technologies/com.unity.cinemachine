@@ -4,6 +4,8 @@ This page describes the main new features and changes in Cinemachine 3.
 
 ## Major API changes
 
+The Cinemachine 3 API has been changed in depth to comply with Unity standards and align with the rest of the Engine. 
+
 Some components have been replaced by new components, others have been renamed. Field names have changed. Namespaces have changed.
 
 > [!NOTE]
@@ -73,7 +75,11 @@ Most methods and properties that used to be accessed via the `CinemachineCore.In
 
 There are some exceptions, notably `ActiveBrainCount` and `GetActiveBrain()` which are now static methods in `CinemachineBrain`.
 
-## Cleaner Object Structure, No Hidden GameObjects
+## Other architecture and integration changes
+
+Beyond API changes, Cinemachine 3 includes other architecture and integration changes that improves its alignment with the rest of the Unity Editor.
+
+### Cleaner Object Structure, No Hidden GameObjects
 
 Cinemachine 2.x implemented the Cinemachine pipeline on a hidden GameObject child of the Virtual Camera named "cm".
 
@@ -82,40 +88,67 @@ This has been removed in Cinemachine 3.x, and Cinemachine pipeline components (s
 > [!NOTE]
 > If you [upgrade from Cinemachine 2.x](CinemachineUpgradeFrom2.md), you will see the "cm" child objects of your legacy Cinemachine Virtual Cameras in the hierarchy, because Cinemachine 3.x unhides them. The upgrade instructions include all the information to get rid of them.
 
-## New Input Handling
+### New Input Handling
 
 User input has been decoupled from the Cinemachine Components: they no longer directly read user input, but expect to be driven by an external component.
 
 [CinemachineInputAxisController](CinemachineInputAxisController.md) is provided to do this job, but you could also choose to implement your own input controller by inheriting InputAxisControllerBase.
 
-## New Events Architecture
+### New Events Architecture
 
 While Cinemachine 2.x has events in CinemachineVirtualCamera and CinemachineBrain, Cinemachine 3.x only fires global events via CinemachineCore.  Scripts can add listeners to those events and take action based on them. Listeners will receive events for all cameras and all Brains.  
 
 Camera-specific and Brain-specific events are now supported via two new behaviours: [Cinemachine Brain Events](CinemachineBrainEvents.md) and [Cinemachine Camera Events](CinemachineCameraEvents.md).  These monitor the global events and fire more specialized ones related to the objects to which they are attached.
 
-## New Spline Implementation
+### New Spline Implementation
 
-Cinemachine's paths are now implemented using Unity's native Splines, which provide equivalent functionality.
+Cinemachine's paths are now implemented using [Unity's native Splines](https://docs.unity3d.com/Packages/com.unity.splines@latest), which provide equivalent functionality.
 
 > [!NOTE]
 > If you [upgrade from Cinemachine 2.x](CinemachineUpgradeFrom2.md), the Cinemachine Upgrader will automatically convert your Cinemachine paths to Splines. The Cinemachine path implementations still exist, but are now deprecated.
 
-## Cinemachine Channels instead of Unity Layers
+### Cinemachine Channels instead of Unity Layers
 
 In Cinemachine 2.x, the Cinemachine Brain would only process Cinemachine Cameras that were assigned to layers included in the associated Camera's culling mask. This mechanism was useful in situations such as split-screen, to cause specific CinemachineCameras to be assigned to specific Brains. 
 
-In Cinemachine 3.x, this has been replaced by **Cinemachine Channels**. These are dedicated layers that only Cinemachine uses, so that Unity layers don't get needlessly squandered. Cinemachine Cameras are assigned to a Cinemachine Channel, and the CinemachineBrain has a channel mask.  Normally, the "Default" channel is used, and only needs to be changed in specific situations where channel separation is a requirement.
+In Cinemachine 3.x, this has been replaced by **Cinemachine Channels**. These are dedicated layers that only Cinemachine uses, so that Unity layers don't get needlessly squandered. [Cinemachine Cameras](CinemachineCamera.md) are assigned to a Cinemachine Channel, and the [CinemachineBrain](CinemachineBrain.md) has a channel mask.  Normally, the "Default" channel is used, and only needs to be changed in specific situations where channel separation is a requirement.
 
 ![Cinemachine Channels Camera](images/CinemachineChannels-camera.png)
 
 ![Cinemachine Channels Brain](images/CinemachineChannels-brain.png)
 
-## Lens Mode Override
+### Lens Mode Override
 
-The Cinemachine Brain now has a property to control whether Cinemachine Cameras can use Lens Mode Override (e.g. changing between physical and perspective and ortho cameras) and to specify a default mode.
+The [Cinemachine Brain](CinemachineBrain.md) now has a property to control whether Cinemachine Cameras can use Lens Mode Override (e.g. changing between physical and perspective and ortho cameras) and to specify a default mode.
 
 ![Default Lens Mode](images/DefaultLensMode.png)
 
 > [!NOTE]
 > If you [upgrade from Cinemachine 2.x](CinemachineUpgradeFrom2.md) and your project is using Virtual Cameras with a Lens Mode Override, then this will stop working until you enable Lens Mode Override and assign a default lens mode in the CinemachineBrain.
+
+## Various UX improvements
+
+Cinemachine 3 brings many user experience improvements for setup and customization through the Cinemachine UI.
+
+### Separate components for procedural settings
+
+Cinemachine Camera [procedural settings](CinemachineCamera.md#set-procedural-components-and-add-extension) are now available in the form of standard Unity components, which dramatically simplifies the Cinemachine Camera setup process in the Inspector. Many settings are opt-in so that you don't have to see them if you don't need them.
+
+### Tracking Target simplification
+
+There is now a single [Tracking Target](CinemachineCamera.md#targets) by default in a Cinemachine Camera. This simplifies your setup when the target to look at is the same as the one to follow. You can still configure a distinct Look At Target, but only when you need it.
+
+### Overhauled FreeLook camera
+
+The [FreeLook camera](FreeLookCameras.md) has been completely overhauled, replaced by a basic Cinemachine Camera with standardized procedural components. It does more, and fewer settings are required. It also now supports radial axis scaling out of the box, via the new [Orbital Follow component](CinemachineOrbitalFollow.md).
+
+### More opportunities for customization
+
+* [ClearShot cameras](CinemachineClearShot.md) can now receive a custom [Shot Quality Evaluator](CinemachineShotQualityEvaluator.md).
+* [Spline Dolly](CinemachineSplineDolly.md) and [Spline Cart](CinemachineSplineCart.md) can now receive custom AutoDolly implementations.
+* [FreeLook cameras](FreeLookCameras.md) can receive [custom modifiers](CinemachineFreeLookModifier.md) for vertical camera movement.
+* It's now easier to write custom [Input Axis Controllers](CinemachineInputAxisController.md).
+
+## Complete overhaul of sample scenes
+
+All of the [sample scenes](samples-tutorials.md) in Cinemachine 3 have been redone from scratch to improve your learning experience and align with the new Cinemachine architecture.
