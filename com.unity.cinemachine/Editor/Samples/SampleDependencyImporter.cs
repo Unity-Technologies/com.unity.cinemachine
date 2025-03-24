@@ -343,6 +343,7 @@ namespace Unity.Cinemachine.Editor
                 }
             }
 
+#if CINEMACHINE_URP || CINEMACHINE_HDRP
             // Convert builtin material to URP or HDRP
             static bool ConvertBultinMaterials(string folder)
             {
@@ -368,6 +369,7 @@ namespace Unity.Cinemachine.Editor
                 }
                 return didSomething;
             }
+#endif
 
             static bool ReplacePrefabs(string srcFolder, string dstFolder)
             {
