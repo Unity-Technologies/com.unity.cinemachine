@@ -135,6 +135,13 @@ namespace Unity.Cinemachine
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
 
         /// <summary>
+        /// The current frame
+        /// By default this is Time.frameCount.  If you are using ManualUpdate with a custom update frame, 
+        /// then this value will reflect the custom framed passed to ManualUpdate().
+        /// </summary>
+        public static int CurrentUpdateFrame { get; internal set; }
+
+        /// <summary>
         /// Delegate for overriding a blend that is about to be applied to a transition.
         /// A handler can either return the default blend, or a new blend definition
         /// specific to current conditions.

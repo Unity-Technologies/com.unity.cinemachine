@@ -216,9 +216,9 @@ namespace Unity.Cinemachine
         public bool Update(float deltaTime)
         {
             // Update only once per frame
-            if (Time.frameCount == m_LastUpdateFrame)
+            if (CinemachineCore.CurrentUpdateFrame == m_LastUpdateFrame)
                 return false;
-            m_LastUpdateFrame = Time.frameCount;
+            m_LastUpdateFrame = CinemachineCore.CurrentUpdateFrame;
 
             // Cheating: we want the render frame time, not the fixed frame time
             if (deltaTime > 0 && m_LastUpdateTime != 0)

@@ -792,9 +792,9 @@ namespace Unity.Cinemachine
                 return 0; // deleted
 
             // Update the axis only once per frame
-            if (m_LastHeadingUpdateFrame != Time.frameCount)
+            if (m_LastHeadingUpdateFrame != CinemachineCore.CurrentUpdateFrame)
             {
-                m_LastHeadingUpdateFrame = Time.frameCount;
+                m_LastHeadingUpdateFrame = CinemachineCore.CurrentUpdateFrame;
                 var oldValue = m_XAxis.Value;
                 m_CachedXAxisHeading = orbital.UpdateHeading(
                     PreviousStateIsValid ? deltaTime : -1, up,
