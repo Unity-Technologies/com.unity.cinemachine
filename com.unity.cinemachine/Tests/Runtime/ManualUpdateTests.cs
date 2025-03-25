@@ -38,7 +38,7 @@ namespace Unity.Cinemachine.Tests
             m_TestCounter.UpdateCount = 0;
             for (int i = 0; i < 5; ++i)
             {
-                Assert.AreEqual(m_TestCounter.UpdateCount, i);
+                Assert.AreEqual(i, m_TestCounter.UpdateCount, "Single call to ManualUpdate per frame, update count does not match");
                 yield return UpdateCinemachine(i);
             }
 
@@ -46,7 +46,7 @@ namespace Unity.Cinemachine.Tests
             m_TestCounter.UpdateCount = 0;
             for (int i = 0; i < 5; ++i)
             {
-                Assert.AreEqual(m_TestCounter.UpdateCount, i);
+                Assert.AreEqual(i, m_TestCounter.UpdateCount, "Multiple calls to ManualUpdate per frame, update count does not match");
                 m_Brain.ManualUpdate(i, CinemachineCore.UniformDeltaTimeOverride); // spurious call to ManualUpdate
                 yield return UpdateCinemachine(i);
             }
