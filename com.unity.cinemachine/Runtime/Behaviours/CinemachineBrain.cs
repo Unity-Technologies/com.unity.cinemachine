@@ -579,8 +579,7 @@ namespace Unity.Cinemachine
 
         void DoNonFixedUpdate(int updateFrame)
         {
-            m_LastFrameUpdated = CinemachineCore.CurrentUpdateFrame;
-            CinemachineCore.CurrentUpdateFrame = updateFrame;
+            m_LastFrameUpdated = CinemachineCore.CurrentUpdateFrame = updateFrame;
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (Application.isPlaying && (UpdateMethod == UpdateMethods.FixedUpdate || Time.inFixedTimeStep))
