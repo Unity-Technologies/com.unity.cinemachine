@@ -16,7 +16,7 @@ namespace Unity.Cinemachine.Tests
         SplineContainer m_SplineContainer;
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             base.SetUp();
 

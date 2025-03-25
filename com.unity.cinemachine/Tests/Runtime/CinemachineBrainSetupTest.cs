@@ -14,7 +14,7 @@ namespace Unity.Cinemachine.Tests
         GameObject m_FollowObject;
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             base.SetUp();
             CreateGameObject("Brain", typeof(CinemachineBrain));

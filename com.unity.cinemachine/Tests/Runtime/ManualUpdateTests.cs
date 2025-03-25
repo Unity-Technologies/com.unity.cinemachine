@@ -1,11 +1,12 @@
 using System.Collections;
 using NUnit.Framework;
+using UnityEngine;
 using UnityEngine.TestTools;
 
 namespace Unity.Cinemachine.Tests
 {
     [TestFixture]
-    public class ManualUpdateTests : CinemachineRuntimeTimeInvariantFixtureBase
+    public class ManualUpdateTests : CinemachineRuntimeFixtureBase
     {
         CinemachineVirtualCameraBase m_vcam;
         UpdateCounterForTests m_TestCounter;
@@ -23,6 +24,7 @@ namespace Unity.Cinemachine.Tests
         public override void SetUp()
         {
             base.SetUp();
+            m_Brain.UpdateMethod = CinemachineBrain.UpdateMethods.ManualUpdate;
             m_vcam = CreateGameObject("vcam", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_TestCounter = m_vcam.gameObject.AddComponent<UpdateCounterForTests>();
         }
