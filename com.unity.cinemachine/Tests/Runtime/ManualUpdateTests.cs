@@ -47,7 +47,7 @@ namespace Unity.Cinemachine.Tests
             for (int i = 0; i < 5; ++i)
             {
                 Assert.AreEqual(m_TestCounter.UpdateCount, i);
-                yield return UpdateCinemachine(i);
+                m_Brain.ManualUpdate(i, CinemachineCore.UniformDeltaTimeOverride); // spurious call to ManualUpdate
                 yield return UpdateCinemachine(i);
             }
         }
