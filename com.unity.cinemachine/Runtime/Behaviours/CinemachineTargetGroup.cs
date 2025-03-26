@@ -208,7 +208,7 @@ namespace Unity.Cinemachine
         {
             get
             {
-                if (m_LastUpdateFrame != Time.frameCount)
+                if (m_LastUpdateFrame != CinemachineCore.CurrentUpdateFrame)
                     DoUpdate();
                 return m_BoundingBox;
             }
@@ -221,7 +221,7 @@ namespace Unity.Cinemachine
         {
             get
             {
-                if (m_LastUpdateFrame != Time.frameCount)
+                if (m_LastUpdateFrame != CinemachineCore.CurrentUpdateFrame)
                     DoUpdate();
                 return m_BoundingSphere;
             }
@@ -236,7 +236,7 @@ namespace Unity.Cinemachine
         {
             get
             {
-                if (m_LastUpdateFrame != Time.frameCount)
+                if (m_LastUpdateFrame != CinemachineCore.CurrentUpdateFrame)
                     DoUpdate();
                 return m_ValidMembers.Count == 0;
             }
@@ -283,7 +283,7 @@ namespace Unity.Cinemachine
         /// <returns>The weighted bounding sphere</returns>
         public BoundingSphere GetWeightedBoundsForMember(int index)
         {
-            if (m_LastUpdateFrame != Time.frameCount)
+            if (m_LastUpdateFrame != CinemachineCore.CurrentUpdateFrame)
                 DoUpdate();
             if (!IndexIsValid(index) || !m_MemberValidity[index])
                 return Sphere;
@@ -299,7 +299,7 @@ namespace Unity.Cinemachine
         /// <returns>The axis-aligned bounding box of the group, in the desired frame of reference</returns>
         public Bounds GetViewSpaceBoundingBox(Matrix4x4 observer, bool includeBehind)
         {
-            if (m_LastUpdateFrame != Time.frameCount)
+            if (m_LastUpdateFrame != CinemachineCore.CurrentUpdateFrame)
                 DoUpdate();
             var inverseView = observer;
             if (!Matrix4x4.Inverse3DAffine(observer, ref inverseView))
@@ -347,7 +347,7 @@ namespace Unity.Cinemachine
         /// </summary>
         public void DoUpdate()
         {
-            m_LastUpdateFrame = Time.frameCount;
+            m_LastUpdateFrame = CinemachineCore.CurrentUpdateFrame;
 
             UpdateMemberValidity();
             m_AveragePos = CalculateAveragePosition();
@@ -511,7 +511,7 @@ namespace Unity.Cinemachine
         public void GetViewSpaceAngularBounds(
             Matrix4x4 observer, out Vector2 minAngles, out Vector2 maxAngles, out Vector2 zRange)
         {
-            if (m_LastUpdateFrame != Time.frameCount)
+            if (m_LastUpdateFrame != CinemachineCore.CurrentUpdateFrame)
                 DoUpdate();
             var world2local = observer;
             if (!Matrix4x4.Inverse3DAffine(observer, ref world2local))

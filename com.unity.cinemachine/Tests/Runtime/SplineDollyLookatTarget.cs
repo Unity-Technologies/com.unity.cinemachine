@@ -18,7 +18,7 @@ namespace Unity.Cinemachine.Tests
         Vector3 m_SecondLookAtPoint = new Vector3(-10, 0, -10);
 
         [SetUp]
-        public void Setup()
+        public override void SetUp()
         {
             base.SetUp();
 

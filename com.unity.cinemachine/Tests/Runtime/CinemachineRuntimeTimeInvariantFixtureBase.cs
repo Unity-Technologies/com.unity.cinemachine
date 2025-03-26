@@ -30,7 +30,7 @@ namespace Unity.Cinemachine.Tests
         }
 
         /// <summary>Triggers manual update, increments cinemachine time, and waits one frame</summary>
-        protected IEnumerator UpdateCinemachine()
+        virtual protected IEnumerator UpdateCinemachine()
         {
             m_Brain.ManualUpdate();
             CinemachineCore.CurrentTimeOverride += CinemachineCore.UniformDeltaTimeOverride;

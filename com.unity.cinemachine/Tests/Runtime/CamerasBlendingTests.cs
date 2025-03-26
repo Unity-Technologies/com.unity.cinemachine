@@ -21,13 +21,8 @@ namespace Unity.Cinemachine.Tests
             m_Brain.DefaultBlend =
                 new CinemachineBlendDefinition(CinemachineBlendDefinition.Styles.Linear, k_BlendingTime);
 
-#if CINEMACHINE_V3_OR_HIGHER
             m_Source = CreateGameObject("A", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
             m_Target = CreateGameObject("B", typeof(CinemachineCamera)).GetComponent<CinemachineCamera>();
-#else
-            m_Source = CreateGameObject("A", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-            m_Target = CreateGameObject("B", typeof(CinemachineVirtualCamera)).GetComponent<CinemachineVirtualCamera>();
-#endif
             m_Source.Priority.Value = 10;
             m_Target.Priority.Value = 15;
             m_Source.enabled = true;

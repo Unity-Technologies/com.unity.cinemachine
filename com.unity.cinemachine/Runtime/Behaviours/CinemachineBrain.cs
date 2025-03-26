@@ -241,20 +241,22 @@ namespace Unity.Cinemachine
 
         void OnSceneLoaded(Scene scene, LoadSceneMode mode)
         {
-            if (Time.frameCount == m_LastFrameUpdated && m_BlendManager.IsInitialized)
-                ManualUpdate();
+            if (Time.frameCount == m_LastFrameUpdated 
+                    && m_BlendManager.IsInitialized && UpdateMethod != UpdateMethods.ManualUpdate)
+                DoNonFixedUpdate(Time.frameCount);
         }
 
         void OnSceneUnloaded(Scene scene)
         {
-            if (Time.frameCount == m_LastFrameUpdated && m_BlendManager.IsInitialized)
-                ManualUpdate();
+            if (Time.frameCount == m_LastFrameUpdated 
+                    && m_BlendManager.IsInitialized && UpdateMethod != UpdateMethods.ManualUpdate)
+                DoNonFixedUpdate(Time.frameCount);
         }
 
         void LateUpdate()
         {
             if (UpdateMethod != UpdateMethods.ManualUpdate)
-                ManualUpdate();
+                DoNonFixedUpdate(Time.frameCount);
         }
 
         // Instead of FixedUpdate() we have this, to ensure that it happens
@@ -517,20 +519,67 @@ namespace Unity.Cinemachine
 
         /// <summary>
         /// Updates CinemachineCameras and positions the main camera when UpdateMode is set to ManualUpdate.
-        /// This method should only be called externally in ManualUpdate mode. For other modes, updates occur 
+        /// This method should only be called in ManualUpdate mode. For other modes, updates occur 
+        /// automatically and this method should not be called explicitly.
+        /// </summary>
+        /// <param name="currentFrame">The current update frmae.  This is a substiture for Time.frameCount.  
+        /// If you're controlling your own player loop and timestep, this parameter indicates the current frame.  
+        /// Each call should increwase this number by 1.</param>
+        /// <param name="deltaTime">The game time that elapsed since the last call to this method.  A value of -1 will 
+        /// cancel previous frame state, effectively cancelling damping and making the CInemachineCameras snap to position.</param>
+        /// <remarks>
+        /// Important usage notes:
+        /// <list type="bullet">
+        /// <item>Never call this method from FixedUpdate.</item>
+        /// <item>This version of the method allows you to explicitly control the update frame count and the deltaTime.</item>
+        /// <item>This method must be called exactly once per update frame - more frequent calls 
+        /// will not update the cameras, and less frequent calls may cause jerky camera movement.</item>
+        /// </list>
+        /// </remarks>
+        public void ManualUpdate(int currentFrame, float deltaTime)
+        {
+#if UNITY_EDITOR
+            if (UpdateMethod != UpdateMethods.ManualUpdate)
+                Debug.LogError("CinemachineBrain.ManualUpdate was called but CinemachineBrain is not in ManualUpdate mode");
+            if (Time.inFixedTimeStep)
+                Debug.LogError("CinemachineBrain.ManualUpdate was called from FixedUpdate");
+#endif
+            var prev = CinemachineCore.UniformDeltaTimeOverride;
+            CinemachineCore.UniformDeltaTimeOverride = deltaTime;
+            DoNonFixedUpdate(currentFrame);
+            CinemachineCore.UniformDeltaTimeOverride = prev;
+        }
+
+        /// <summary>
+        /// Updates CinemachineCameras and positions the main camera when UpdateMode is set to ManualUpdate.
+        /// This method should only be called in ManualUpdate mode. For other modes, updates occur 
         /// automatically and this method should not be called explicitly.
         /// </summary>
         /// <remarks>
         /// Important usage notes:
         /// <list type="bullet">
-        /// <item>Only call this method from Update or LateUpdate, never from FixedUpdate.</item>
+        /// <item>Never call this method from FixedUpdate.</item>
         /// <item>This method must be called exactly once per render frame - more frequent calls 
         /// will not update the cameras, and less frequent calls may cause jerky camera movement.</item>
+        /// <item>This version of the method will automatically track the update frame count and the current delta time.  
+        /// If you want to explicitylt control deltaTime and update frame count, use the version of this method that 
+        /// allows you to specify those values.</item>
         /// </list>
         /// </remarks>
         public void ManualUpdate()
         {
-            m_LastFrameUpdated = Time.frameCount;
+#if UNITY_EDITOR
+            if (UpdateMethod != UpdateMethods.ManualUpdate)
+                Debug.LogError("CinemachineBrain.ManualUpdate was called but CinemachineBrain is not in ManualUpdate mode");
+            if (Time.inFixedTimeStep)
+                Debug.LogError("CinemachineBrain.ManualUpdate was called from FixedUpdate");
+#endif
+            DoNonFixedUpdate(Time.frameCount);
+        }
+
+        void DoNonFixedUpdate(int updateFrame)
+        {
+            m_LastFrameUpdated = CinemachineCore.CurrentUpdateFrame = updateFrame;
 
             float deltaTime = GetEffectiveDeltaTime(false);
             if (Application.isPlaying && (UpdateMethod == UpdateMethods.FixedUpdate || Time.inFixedTimeStep))

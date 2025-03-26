@@ -176,14 +176,14 @@ namespace Unity.Cinemachine
                 status = new UpdateStatus
                 {
                     lastUpdateMode = UpdateTracker.UpdateClock.Late,
-                    lastUpdateFrame = Time.frameCount + 2, // so that frameDelta ends up negative
+                    lastUpdateFrame = CinemachineCore.CurrentUpdateFrame + 2, // so that frameDelta ends up negative
                     lastUpdateFixedFrame = s_FixedFrameCount + 2
                 };
                 s_UpdateStatus.Add(vcam, status);
             }
 
             int frameDelta = (updateClock == UpdateTracker.UpdateClock.Late)
-                ? Time.frameCount - status.lastUpdateFrame
+                ? CinemachineCore.CurrentUpdateFrame - status.lastUpdateFrame
                 : s_FixedFrameCount - status.lastUpdateFixedFrame;
 
             if (deltaTime >= 0)
@@ -194,9 +194,9 @@ namespace Unity.Cinemachine
                     deltaTime *= frameDelta; // try to catch up if multiple frames
             }
 
-//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + Time.frameCount + "/" + status.lastUpdateFixedFrame + ", " + s_CurrentUpdateFilter + ", deltaTime = " + deltaTime);
+//Debug.Log((vcam.ParentCamera == null ? "" : vcam.ParentCamera.Name + ".") + vcam.Name + ": frame " + CinemachineCore.CurrentUpdateFrame + "/" + status.lastUpdateFixedFrame + ", " + s_CurrentUpdateFilter + ", deltaTime = " + deltaTime);
             vcam.InternalUpdateCameraState(worldUp, deltaTime);
-            status.lastUpdateFrame = Time.frameCount;
+            status.lastUpdateFrame = CinemachineCore.CurrentUpdateFrame;
             status.lastUpdateFixedFrame = s_FixedFrameCount;
             status.lastUpdateMode = updateClock;
         }
