@@ -222,7 +222,7 @@ namespace Cinemachine.PostFX
         {
             // Debug.Log("Camera cut event");
             PostProcessLayer postFX = GetPPLayer(brain);
-            if (postFX != null)
+            if (postFX != null && postFX.isActiveAndEnabled)
                 postFX.ResetHistory();
         }
 
