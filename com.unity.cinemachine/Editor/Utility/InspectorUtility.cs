@@ -375,6 +375,7 @@ namespace Unity.Cinemachine.Editor
                 contextMenu.activators.Clear();
                 contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
                 button.AddManipulator(contextMenu);
+                button.clickable = null;
             }
             return button;
         }
@@ -396,6 +397,7 @@ namespace Unity.Cinemachine.Editor
                 contextMenu.activators.Clear();
                 contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
                 button.AddManipulator(contextMenu);
+                button.clickable = null;
             }
             return button;
         }
@@ -616,6 +618,7 @@ namespace Unity.Cinemachine.Editor
                 contextMenu.activators.Clear();
                 contextMenu.activators.Add(new ManipulatorActivationFilter { button = MouseButton.LeftMouse });
                 button.AddManipulator(contextMenu);
+                button.clickable = null;
             }
             return box;
         }
