@@ -63,8 +63,6 @@ namespace Unity.Cinemachine
                 float polygonSizeX = m_FloatToInt.FloatToInt(polygonBounds.width / aspectRatio);
                 float polygonSizeY = m_FloatToInt.FloatToInt(polygonBounds.height);
                 m_SqrPolygonDiagonal = polygonSizeX * polygonSizeX + polygonSizeY * polygonSizeY;
-
-                Debug.Log(m_FloatToInt.FloatToInt(1));
             }
 
             public bool IsValid() => m_Solution != null;
