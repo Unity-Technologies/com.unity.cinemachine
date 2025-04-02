@@ -24,6 +24,10 @@ To add a Post Process profile to a CinemachineCamera
 
 5. In the [Inspector](https://docs.unity3d.com/Manual/UsingTheInspector.html), choose __Add Extension > CinemachinePostProcessing__, then configre the Profile asset to have the effects you want when this CinemachineCamera is live.
 
+
+> [!NOTE]
+> In some cases, particularly when blending to and from empty profiles, it's possible to get a sudden change or pop in the effects.  If this happens, the best solution is to avoid blending to and from empty profiles: add effects with default settings.  If this is not practical, then you can add `CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS` to your project's scripting defines.  However, this will have the side effect of making postprocessing blends more transparent in their center, possibly revealing global effects behind them.
+
 ## Properties:
 
 | **Property:** || **Function:** |
