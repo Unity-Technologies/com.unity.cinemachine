@@ -23,7 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Added
 - Added Easing setting to FreeLookModifier, to smooth the transition between top and bottom FreeLook hemispheres.
 - Added an overload for `CinemachineBrain.ManualUpdate` which takes a custom frame count and deltaTime, allowing more customized control over the game loop.
-- Added CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS scripting define to tune the PostProcessing blend behaviour.
+- Added `CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS` scripting define to tune the PostProcessing blend behaviour.
 
 
 ## [3.1.3] - 2025-02-01
