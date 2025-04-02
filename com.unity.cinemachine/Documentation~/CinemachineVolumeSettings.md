@@ -12,7 +12,7 @@ To add a Volume Settings profile to a Virtual Camera
 
 
 > [!NOTE]
-> In some cases, particularly when blending to and from empty profiles, it's possible to get a sudden change or pop in the effects.  If this happens, the best solution is to avoid blending to and from empty profiles: add effects with default settings.  If this is not practical, then you can add `CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS` to your project's scripting defines.  However, this will have the side effect of making postprocessing blends more transparent in their center, possibly revealing global effects behind them.
+> In some cases, particularly when blending to and from empty profiles, you might get a sudden change or pop in the effects.  If this happens, the best solution is to avoid blending to and from empty profiles by adding effects with default settings.  If this is not practical, then you can add `CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS` to your project's scripting defines.  However, this has the side effect of making postprocessing blends more transparent in their center, possibly revealing global effects behind them.
 
 ## Properties:
 
