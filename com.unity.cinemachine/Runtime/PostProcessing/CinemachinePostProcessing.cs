@@ -258,8 +258,8 @@ namespace Cinemachine.PostFX
                     v.weight = b.m_Weight;
                     ++numPPblendables;
                 }
-#if false // set this to true to force first weight to 1
-                // If more than one volume, then set the frst one's weight to 1
+#if !CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS
+                // If more than one volume, then set the first one's weight to 1 so that it's opaque
                 if (numPPblendables > 1)
                     firstVolume.weight = 1;
 #endif
