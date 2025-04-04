@@ -12,12 +12,12 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Deoccluder and Decollider were introducing spurious damping when the FreeLook orbit size changed.
 - Mac only: Some dropdowns and popups in Cinemachine inspectors did not work consistently.
 - Regression fix: Confiner2D was not always confining when a camera was newly activated.
-- The RotationComposer no longer damps in response to composition changes from the FreeLookModifier.
-- The game-view composer guides dynamically reflect the current composition when a FreeLookModifier is changing it.
+- RotationComposer and PositionComposer no longer damp in response to composition changes from the FreeLookModifier.
 - Fixed sample asset selection at import depending on current render pipeline and input configuration.  You need to re-import the samples to fix any existing issues.
 
 ### Changed
-- Cinemachine Shot Editor no longer displays improper UX to create cameras when editing a prefab.
+- Cinemachine Shot Editor for Timeline no longer displays improper UX to create cameras when editing a prefab.
+- The game-view composer guides dynamically reflect the current composition when a FreeLookModifier is changing it.
 - When a FreeLookModifier is enabled for composition, the game-view composer guides are no longer draggable.
  
 ### Added
