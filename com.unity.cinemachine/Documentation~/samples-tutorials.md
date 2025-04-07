@@ -22,20 +22,20 @@ Once you import the 3D Samples set, the following scenes are available in the `A
 
 | Sample scene | Use cases and key features |
 | :--- | :--- |
-| **Brain Update Modes** | <ul> <li>Set up the Cinemachine Brain and the animated objects in the camera composition to get a synchronized render of the whole.</li> </ul> |
-| **Clear Shot** | <ul> <li>Set up a group of fixed and moving cameras that follow the same player from different perspectives.</li> <li>Get the camera automatically switch to the best available shot when the current camera looses sight of the player.</li> </ul> |
-| **Custom Blends** | <ul> <li>Set up a custom camera blending algorithm.</li> <li>Map the custom algorithm to a Cinemachine Brain event.</li> </ul> |
+| **Brain Update Modes** | <ul> <li>Prevent animated characters from jittering in the camera view.</li> <li>Understand the effects of the Cinemachine Brain Update Modes according to the way you move the framed characters.</li> </ul> |
+| **Clear Shot** | <ul> <li>Set up a group of fixed and moving cameras that target the same player from different perspectives.</li> <li>Automatically select the best available shot based on occlusion (when the current camera looses sight of the player).</li> </ul> |
+| **Custom Blends** | <ul> <li>Author a custom camera blending algorithm.</li> <li>Map the custom algorithm to a Cinemachine Brain event.</li> </ul> |
 | **Cutscene** | <ul> <li>Set up a cutscene with camera blends and asset animations in Timeline.</li> <li>Trigger a cutscene that blends in from the game camera, plays through, and then blends back out to the game camera.</li> </ul> |
-| **Fly around** | <ul> <li>Set up a fly-around camera with basic height and speed controls. |
+| **Fly around** | <ul> <li>Set up a first-person fly around camera with basic height and speed controls. |
 | **FreeLook Deoccluder** | <ul> <li>Set up a free look camera that handles occlusion by walls to keep the player in view.</li> <li>Set up the scene and the camera to consider certain objects as transparent and ignore them in the occlusion evaluation.</li> </ul> |
-| **FreeLook on Spherical Surface** | <ul> <li>Set up a free look camera to follow a player that walks on the surface of a sphere.</li> <li>Set up the camera to follow the character either lazily or actively.</li> </ul> |
+| **FreeLook on Spherical Surface** | <ul> <li>Set up a free look camera that automatically re-orients to keep the player upright according to its local verticality.</li> <li>Set up the camera to follow the character either lazily or actively.</li> </ul> |
 | **Impulse Wave** | <ul> <li>Set up the scene and the camera to make them react to impulse waves.</li> <li>Invoke an impulse from a fixed epicenter.</li> <li>Trigger an impulse when the player jumps.</li> </ul> |
 | **Lock-on Target** | <ul> <li>Set up a simple third-person free look camera to look at the player and rotate around it with the mouse.</li> <li>Set up a camera that looks at the player and locks on a boss character when the player enters a trigger zone.</li> </ul>  |
 | **Mixing Camera** | <ul> <li>Set up a camera group that continuously blends multiple cameras to reflect the car speed.</li> <li>Set up a fixed camera that activates for a cut-in when the car enters a two-ramp stunt zone, to frame the car jump from the side.</li> </ul> |
-| **Running Race** | <ul> <li>Set up a group of cameras that each follow a different player.</li> <li>Get the cameras automatically switch to always have the leader of the race centered on screen.</li> <li>Set up an on-demand camera that frames all runners while looking at the sun.</li> <li>Emulate players that move along predefined paths.</li> </ul>  |
+| **Running Race** | <ul> <li>Set up a clear shot group of cameras that each follow a different player in a race.</li> <li>Customize the clear shot quality assessment to always look at the leader of the race.</li> <li>Set up an on-demand camera that frames all runners while looking at the sun.</li> <li>Emulate players that move along predefined paths.</li> </ul>  |
 | **Split Screen Car** | <ul> <li>Display two racing cars in a split screen configuration.</li> </ul> |
-| **Third Person With Aim Mode** | <ul> <li>Set up a simple free look camera that follows the player as it moves, jumps, and sprints.</li> <li>Add noise to the camera to emulate a handheld effect.</li> <li>Set up an on-demand camera that allows the player to aim and fire projectiles precisely with a crosshair despite the handheld effect.</li> </ul> |
-| **Third Person With Roadie Run** | <ul> <li>Set up a simple free look camera that follows the player as it moves, jumps, aims, and fires projectiles with a crosshair.</li> <li>Set up a camera recoil effect when the player fires projectiles.</li> <li>Set up a special roadie run camera that automatically activates when the player sprints, with no crosshair and more noise.</li> </ul> |
+| **Third Person With Aim Mode** | <ul> <li>Set up a camera that follows the player as it moves, jumps, and sprints.</li> <li>Set up a special camera that moves and aims according to the player aiming controller, with a dynamic crosshair.</li> <li>Add noise to a camera to emulate a handheld effect and make aiming ignore this effect to keep accuracy when the player fires projectiles.</li> </ul> |
+| **Third Person With Roadie Run** | <ul> <li>Set up a camera that follows the player as it moves, jumps, aims, and fires projectiles, with a dynamic crosshair.</li> <li>Set up a camera recoil effect when the player fires projectiles.</li> <li>Set up a special roadie run camera that autoomatically activates when the player sprints, with increased noise and no crosshair.</li> </ul> |
 
 ### Input System Samples
 
