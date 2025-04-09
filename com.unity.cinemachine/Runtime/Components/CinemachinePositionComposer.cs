@@ -82,17 +82,16 @@ namespace Unity.Cinemachine
         public LookaheadSettings Lookahead;
 
         /// <summary>Internal API for inspector</summary>
-        internal ScreenComposerSettings GetEffectiveComposition => m_CompositionLastFrame;
+        internal ScreenComposerSettings GetEffectiveComposition => m_PreviousComposition;
 
         const float kMinimumCameraDistance = 0.01f;
 
         /// <summary>State information for damping</summary>
+        internal PositionPredictor m_Predictor = new (); // internal for tests
         Vector3 m_PreviousCameraPosition = Vector3.zero;
-        internal PositionPredictor m_Predictor = new PositionPredictor(); // internal for tests
-        Quaternion m_PrevRotation;
-        ScreenComposerSettings m_CompositionLastFrame;
+        Quaternion m_PreviousRotation;
+        ScreenComposerSettings m_PreviousComposition;
         float m_PreviousDesiredDistance;
-
         bool m_InheritingPosition;
 
         void Reset()
@@ -172,7 +171,7 @@ namespace Unity.Cinemachine
         {
             base.ForceCameraPosition(pos, rot);
             m_PreviousCameraPosition = pos;
-            m_PrevRotation = rot;
+            m_PreviousRotation = rot;
         }
 
         /// <summary>
@@ -195,7 +194,7 @@ namespace Unity.Cinemachine
                 && !CinemachineCore.IsLiveInBlend(VirtualCamera))
             {
                 m_PreviousCameraPosition = fromCam.State.RawPosition;
-                m_PrevRotation = fromCam.State.RawOrientation;
+                m_PreviousRotation = fromCam.State.RawOrientation;
                 m_InheritingPosition = true;
                 return true;
             }
@@ -243,9 +242,9 @@ namespace Unity.Cinemachine
             if (!previousStateIsValid)
             {
                 m_PreviousCameraPosition = curState.RawPosition;
-                m_PrevRotation = curState.RawOrientation;
+                m_PreviousRotation = curState.RawOrientation;
                 m_PreviousDesiredDistance = CameraDistance;
-                m_CompositionLastFrame = Composition;
+                m_PreviousComposition = Composition;
                 if (!m_InheritingPosition && CenterOnActivate)
                 {
                     m_PreviousCameraPosition = FollowTargetPosition
@@ -277,7 +276,7 @@ namespace Unity.Cinemachine
             var localToWorld = curState.RawOrientation;
             if (previousStateIsValid)
             {
-                var q = localToWorld * Quaternion.Inverse(m_PrevRotation);
+                var q = localToWorld * Quaternion.Inverse(m_PreviousRotation);
                 var dir = q * (m_PreviousCameraPosition - TrackedPoint);
                 m_PreviousCameraPosition = TrackedPoint + dir;
 
@@ -286,7 +285,7 @@ namespace Unity.Cinemachine
                 if (Mathf.Abs(distanceChange) > Epsilon)
                     m_PreviousCameraPosition += dir.normalized * distanceChange;
             }
-            m_PrevRotation = localToWorld;
+            m_PreviousRotation = localToWorld;
 
             // Work in camera-local space
             var camPosWorld = m_PreviousCameraPosition;
@@ -321,9 +320,9 @@ namespace Unity.Cinemachine
             else
             {
                 // Don't damp change to desired screen position
-                if (Composition.ScreenPosition != m_CompositionLastFrame.ScreenPosition)
+                if (Composition.ScreenPosition != m_PreviousComposition.ScreenPosition)
                 {
-                    var delta = Composition.ScreenPosition - m_CompositionLastFrame.ScreenPosition;
+                    var delta = Composition.ScreenPosition - m_PreviousComposition.ScreenPosition;
                     var deltaPos = new Vector3(-delta.x * screenSize * lens.Aspect * 2, delta.y * screenSize * 2, 0);
                     targetPos += deltaPos;
                     camPosWorld += localToWorld * deltaPos;
@@ -345,7 +344,7 @@ namespace Unity.Cinemachine
             }
             curState.RawPosition = camPosWorld + localToWorld * cameraOffset;
             m_PreviousCameraPosition = curState.RawPosition;
-            m_CompositionLastFrame = Composition;
+            m_PreviousComposition = Composition;
             m_PreviousDesiredDistance = CameraDistance;
 
             m_InheritingPosition = false;
