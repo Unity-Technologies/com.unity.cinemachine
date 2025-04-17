@@ -200,7 +200,8 @@ namespace Unity.Cinemachine.TargetTracking
             if (!prevStateValid)
             {
                 PreviousTargetPosition = component.FollowTargetPosition;
-                PreviousReferenceOrientation = GetReferenceOrientation(component, bindingMode, up);
+                var state = component.VcamState;
+                PreviousReferenceOrientation = GetReferenceOrientation(component, bindingMode, up, ref state);
             }
         }
 
@@ -208,12 +209,13 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="component">The component caller</param>
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
         /// <param name="worldUp">Current effective world up</param>
+        /// <param name="cameraState">Calling camera's state - will not be modified</param>
         /// <returns>The rotation of the Follow target, as understood by the Transposer.
         /// This is not necessarily the same thing as the actual target rotation</returns>
         public Quaternion GetReferenceOrientation(
             CinemachineComponentBase component,
             BindingMode bindingMode,
-            Vector3 worldUp)
+            Vector3 worldUp, ref CameraState cameraState)
         {
             if (bindingMode == BindingMode.WorldSpace)
                 return Quaternion.identity;
@@ -237,7 +239,7 @@ namespace Unity.Cinemachine.TargetTracking
                         return targetOrientation;
                     case BindingMode.LazyFollow:
                     {
-                        Vector3 fwd = (component.FollowTargetPosition - component.VcamState.RawPosition).ProjectOntoPlane(worldUp);
+                        Vector3 fwd = (component.FollowTargetPosition - cameraState.RawPosition).ProjectOntoPlane(worldUp);
                         if (fwd.AlmostZero())
                             break;
                         return Quaternion.LookRotation(fwd, worldUp);
@@ -256,15 +258,16 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="up">Current camera up</param>
         /// <param name="desiredCameraOffset">Where we want to put the camera relative to the follow target</param>
         /// <param name="settings">Tracker settings</param>
+        /// <param name="cameraState">Calling camera's state</param>
         /// <param name="outTargetPosition">Resulting camera position</param>
         /// <param name="outTargetOrient">Damped target orientation</param>
         public void TrackTarget(
             CinemachineComponentBase component,
             float deltaTime, Vector3 up, Vector3 desiredCameraOffset,
-            in TrackerSettings settings,
+            in TrackerSettings settings, ref CameraState cameraState,
             out Vector3 outTargetPosition, out Quaternion outTargetOrient)
         {
-            var targetOrientation = GetReferenceOrientation(component, settings.BindingMode, up);
+            var targetOrientation = GetReferenceOrientation(component, settings.BindingMode, up, ref cameraState);
             var dampedOrientation = targetOrientation;
             bool prevStateValid = deltaTime >= 0 && component.VirtualCamera.PreviousStateIsValid;
             if (prevStateValid)
@@ -383,17 +386,21 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
         /// <param name="pos">World-space position to take</param>
         /// <param name="rot">World-space orientation to take</param>
-        /// <param name="cameraOffsetLocalSpace">Camera offset from target in local space (relative to ReferenceOrientation)</param>
-        public void ForceCameraPosition(
+        /// <param name="newState">Calling camera's new state</param>
+        public void OnForceCameraPosition(
             CinemachineComponentBase component,
             BindingMode bindingMode,
-            Vector3 pos, Quaternion rot,
-            Vector3 cameraOffsetLocalSpace)
+            ref CameraState newState)
         {
-            // Infer target pos from camera
-            var targetRot = bindingMode == BindingMode.LazyFollow
-                ? rot : GetReferenceOrientation(component, bindingMode, component.VirtualCamera.State.ReferenceUp);
-            PreviousTargetPosition = pos - targetRot * cameraOffsetLocalSpace;
+            // Get target position relative to camera, in camera-local space
+            var state = component.VcamState; // old state
+            var offset = Quaternion.Inverse(state.GetFinalOrientation()) * (PreviousTargetPosition - state.GetFinalPosition());
+
+            // Apply it to the new state
+            offset = newState.GetFinalOrientation() * offset;
+            PreviousTargetPosition = newState.GetFinalPosition() + offset;
+            PreviousReferenceOrientation = GetReferenceOrientation(component, bindingMode, newState.ReferenceUp, ref newState);
+            m_PreviousOffset = -offset;
         }
     }
 }

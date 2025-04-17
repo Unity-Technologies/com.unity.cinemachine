@@ -157,6 +157,8 @@ namespace Unity.Cinemachine
             base.ForceCameraPosition(pos, rot);
             m_CameraPosPrevFrame = pos;
             m_CameraOrientationPrevFrame = rot;
+            var state = VcamState;
+            m_Predictor.ApplyRotationDelta(Quaternion.Inverse(state.GetFinalOrientation()) * rot);
         }
 
         /// <summary>

@@ -138,14 +138,14 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             PreviousStateIsValid = false;
-            transform.ConservativeSetPositionAndRotation(pos, rot);
-            m_State.RawPosition = pos;
-            m_State.RawOrientation = rot;
 
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
                 if (m_Pipeline[i] != null)
                     m_Pipeline[i].ForceCameraPosition(pos, rot);
+
+            m_State.RawPosition = pos;
+            m_State.RawOrientation = rot;
 
             base.ForceCameraPosition(pos, rot);
         }
