@@ -35,6 +35,8 @@ The Cinemachine Cameras (formerly named _Virtual Cameras_) are GameObjects that 
 When a Cinemachine Cameras takes control of the Unity Camera, it dynamically overrides its properties and behavior, which affects:
 * Where the Unity Camera is positioned in the Scene.
 * What the Unity Camera aims at.
+* The Unity Camera's lesns settings (field of view, clipping planes, etc).
+* The Unity Camera's post-processing profiles (if used).
 * How the Unity Camera behaves through time.
 
 ### Cinemachine Camera GameObjects
