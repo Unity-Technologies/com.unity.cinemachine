@@ -36,7 +36,7 @@ namespace Unity.Cinemachine
         /// <param name="type">The type or interface to look for</param>
         /// <param name="predicate">Additional conditions to test</param>
         /// <returns>A list of types found that inherit from the type and satisfy the predicate.</returns>
-        public static IEnumerable<Type> GetTypesDerivedFrom(Type type, Predicate<Type> predicate)
+        public static List<Type> GetTypesDerivedFrom(Type type, Predicate<Type> predicate)
         {
             var list = new List<Type>();
             if (predicate(type))

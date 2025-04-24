@@ -48,7 +48,7 @@ namespace Unity.Cinemachine.Editor
                 HelpBoxMessageType.Warning, "Add Brain", () => CinemachineMenu.GetOrCreateBrain()));
 
             var navelGazeMessage = ux.AddChild(new HelpBox(
-                "The camera is trying to look at itself.",
+                "The camera is trying to look at itself.  Please check your targets and settings.",
                 HelpBoxMessageType.Warning));
 
             var row = ux.AddChild(new InspectorUtility.LabeledRow("Status"));
@@ -400,6 +400,8 @@ namespace Unity.Cinemachine.Editor
                 s_ExtensionNames.Add("(select)");
                 var allExtensions = ReflectionHelpers.GetTypesDerivedFrom(typeof(CinemachineExtension),
                     (t) => !t.IsAbstract && t.GetCustomAttribute<ObsoleteAttribute>() == null);
+                allExtensions.Sort((a, b) => string.Compare(a.Name, b.Name, StringComparison.Ordinal));
+
                 var iter2 = allExtensions.GetEnumerator();
                 while (iter2.MoveNext())
                 {
