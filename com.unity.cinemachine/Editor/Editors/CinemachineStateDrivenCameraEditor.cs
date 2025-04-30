@@ -41,6 +41,8 @@ namespace Unity.Cinemachine.Editor
             });
             var noTargetHelp = ux.AddChild(new HelpBox("An Animated Target is required.", HelpBoxMessageType.Warning));
 
+            UpdateTargetStates();
+
             ux.TrackAnyUserActivity(() =>
             {
                 if (Target == null)
@@ -188,8 +190,8 @@ namespace Unity.Cinemachine.Editor
             var ac = GetControllerFromAnimator(Target.AnimatedTarget);
             var collector = new StateCollector();
             collector.CollectStates(ac, Target.LayerIndex);
-            m_TargetStates = collector.States;
-            m_TargetStateNames = collector.StateNames;
+            m_TargetStates.Clear(); m_TargetStates.AddRange(collector.States);
+            m_TargetStateNames.Clear(); m_TargetStateNames.AddRange(collector.StateNames);
             m_StateIndexLookup = collector.StateIndexLookup;
 
             m_LayerNames.Clear();
