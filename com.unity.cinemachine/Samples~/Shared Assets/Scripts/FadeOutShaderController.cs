@@ -4,11 +4,11 @@ using UnityEngine;
 namespace Unity.Cinemachine.Samples
 {
     /// <summary>
-    /// An example add-on module for Cinemachine Virtual Camera for controlling
+    /// An example add-on module for Cinemachine Camera for controlling
     /// the FadeOut shader included in our example package.
     /// </summary>
     [ExecuteAlways]
-    public class CinemachineFadeOutShaderController : CinemachineExtension
+    public class FadeOutShaderController : CinemachineExtension
     {
         /// <summary>Radius of the look at target.</summary>
         [Tooltip("Radius of the look at target.")]

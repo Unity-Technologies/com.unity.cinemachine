@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - RotationComposer and PositionComposer no longer damp in response to composition changes from the FreeLookModifier.
 - Fixed sample asset selection at import depending on current render pipeline and input configuration.  You need to re-import the samples to fix any existing issues.
 - Confiner2D was behaving inconsistently for large sized bounding boxes due to precision issues.
+- StateDrivenCamera inspector was not populating the states in the instruction list correctly.
 
 ### Changed
 - Cinemachine Shot Editor for Timeline no longer displays improper UX to create cameras when editing a prefab.
