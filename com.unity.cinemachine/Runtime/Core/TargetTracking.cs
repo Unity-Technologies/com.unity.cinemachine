@@ -221,7 +221,7 @@ namespace Unity.Cinemachine.TargetTracking
                 return Quaternion.identity;
             if (component.FollowTarget != null)
             {
-                Quaternion targetOrientation = component.FollowTarget.rotation;
+                Quaternion targetOrientation = component.FollowTargetRotation;
                 switch (bindingMode)
                 {
                     case BindingMode.LockToTargetOnAssign:

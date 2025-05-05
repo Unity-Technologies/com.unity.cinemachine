@@ -170,6 +170,7 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
+            m_Predictor.ApplyRotationDelta(rot * Quaternion.Inverse(m_PreviousRotation));
             m_PreviousCameraPosition = pos;
             m_PreviousRotation = rot;
         }

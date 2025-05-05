@@ -258,8 +258,7 @@ namespace Unity.Cinemachine
             if (FollowTarget != null)
             {
                 var state = VcamState;
-                m_PreviousOffset = Quaternion.Normalize(
-                    rot * Quaternion.Inverse(state.GetFinalOrientation())) * m_PreviousOffset;
+                m_PreviousOffset = (rot * Quaternion.Inverse(state.GetFinalOrientation())) * m_PreviousOffset;
 
                 state.RawPosition = pos;
                 state.RawOrientation = rot;
