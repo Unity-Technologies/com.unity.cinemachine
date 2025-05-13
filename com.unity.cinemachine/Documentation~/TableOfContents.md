@@ -16,6 +16,7 @@
   * [Use convenient tools and shortcuts](ui-ref.md)
     * [Pre-built cameras](ui-ref-pre-built-cameras.md)
     * [Scene Handles](handles.md)
+    * [Preview and author a Cinemachine Camera in first person](preview-and-author-in-first-person.md)
     * [Saving in Play Mode](CinemachineSavingDuringPlay.md)
 * [3D tracking scenarios](3d-tracking-scenarios.md)
   * [Follow and frame a character](setup-follow-camera.md)

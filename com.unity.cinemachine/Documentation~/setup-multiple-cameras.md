@@ -46,3 +46,7 @@ Here are potential tasks you might want to do now:
 
 * [Create a Cinemachine Camera with procedural behavior: example for a camera that follows a character](setup-procedural-behavior.md).
 * [Manage a choreographed sequence of Cinemachine Camera shots with Timeline](setup-timeline.md).
+
+## Additional resources
+
+* [Preview and author a Cinemachine Camera in first person](preview-and-author-in-first-person.md)
