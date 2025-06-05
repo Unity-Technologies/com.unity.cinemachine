@@ -30,14 +30,12 @@ By default, an Impulse Listener reacts to every Impulse Source in range, but you
 
 ## Properties:
 
-| Property | | Function |
-| :--- | :--- | :--- |
-| **Apply After**     ||  Obstacles with this tag will be ignored. It is recommended to set this field to the target's tag. |
-| **Channel Mask**    || Specifies the Impulse channels to react to. For details, see [Filtering with channels](CinemachineImpulseFiltering.md#ChannelFiltering). |
-| **Gain**            || This is how much the received impulse signal will be magnified by for the purposes of reacting. It’s a simple multiplier applied to the incoming signal. The default value is 1. |
-| **Use 2D Distance** || Enable this setting to ignore the z axis when calculating camera distance from the Impulse Source. Use this property for 2D games. |
-| **Use Camera Space** || Interprets the impulse signal in camera space as opposed to world space.  So if the impulse Y axis is vibrating, then the listener will move up and down on its local Y axis. |
-| **Signal Combination Mode** || Controls how the Impulse Listener will combine multiple impulses active at the current point in space. |
-|| <i>Additive</i> | All the active signals will be added together, like sound waves.  This is the default. |
-|| <i>Use Largest</i> | Only the signal with the largest amplitude will be considered; any others will be ignored. |
-| **Reaction Settings** || Lets you set a secondary noise that gets triggered by the impulse signal. Choose the noise setting and tune it with the amplitude and frequency gain. Duration sets the fade-out time for the secondary noise. Time is approximate. This will scale automatically with stronger impulses. |
+| Property | Function |
+| :--- | :--- |
+| **Apply After** | Obstacles with this tag will be ignored. It is recommended to set this field to the target's tag. |
+| **Channel Mask** | Specifies the Impulse channels to react to. For details, see [Filtering with channels](CinemachineImpulseFiltering.md#ChannelFiltering). |
+| **Gain** | This is how much the received impulse signal will be magnified by for the purposes of reacting. It’s a simple multiplier applied to the incoming signal. The default value is 1.|
+| **Use 2D Distance** | Enable this setting to ignore the z axis when calculating camera distance from the Impulse Source. Use this property for 2D games. |
+| **Use Camera Space** | Interprets the impulse signal in camera space as opposed to world space.  So if the impulse Y axis is vibrating, then the listener will move up and down on its local Y axis. 
+| **Signal Combination Mode** | Controls how the Impulse Listener combines multiple impulses active at the current point in space. The options are: <ul> <li>**Additive**: Combines all the active signals together, like sound waves. This is the default.</li> <li>**Use Largest**: Considers only the signal with the largest amplitude; ignores any others.</li> </ul> |
+| **Reaction Settings** | Lets you set a secondary noise that gets triggered by the impulse signal. Choose the noise setting and tune it with the amplitude and frequency gain. Duration sets the fade-out time for the secondary noise. Time is approximate. This will scale automatically with stronger impulses.<br /><br />The listener combines the original impulse signal and the reaction and applies it to the object it’s on. This could be a camera, a vcam, or any other object. Custom listeners can easily be authored to apply the signal in nonstandard ways (for example, convert Z motion to FOV). |

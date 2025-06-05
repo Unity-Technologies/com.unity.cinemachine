@@ -55,27 +55,27 @@ namespace Unity.Cinemachine
         public bool UseCameraSpace;
 
         /// <summary>
-        /// Choices for how the listener will treat multiple overlapping impulse signals.
+        /// Choices for how the listener treats multiple overlapping impulse signals.
         /// </summary>
         public enum SignalCombinationModes 
         {
             /// <summary>
-            /// All active signals will be added together, similar 
+            /// Combines all the active signals together, similar 
             /// to how sound waves combine in air.
             /// </summary>
             Additive,
             /// <summary>
-            /// Only the signal with the largest amplitude will be considered.  
-            /// Other signals will be ignored.
+            /// Considers only the signal with the largest amplitude.  
+            /// Other signals are ignored.
             /// </summary>
             UseLargest
         }
-        [Tooltip("Controls how the Impulse Listener will combine multiple impulses active at "
-            + "the current point in space.\n\n"
-            + "<b>Additive</b>: All the active signals will be added together, like sound waves.  "
+        [Tooltip("Controls how the Impulse Listener combines multiple impulses active at the "
+            + "current point in space.\n\n"
+            + "<b>Additive</b>: Combines all the active signals together, like sound waves.  "
             + "This is the default.\n\n"
-            + "<b>Use Largest</b>: Only the signal with the largest amplitude will be considered; any "
-            + "others will be ignored.")]
+            + "<b>Use Largest</b>: Considers only the signal with the largest amplitude; ignores "
+            + "any others.")]
         public SignalCombinationModes SignalCombinationMode = SignalCombinationModes.Additive;
 
         /// <summary>

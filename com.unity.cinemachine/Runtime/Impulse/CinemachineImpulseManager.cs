@@ -339,13 +339,13 @@ namespace Unity.Cinemachine
         List<ImpulseEvent> m_ActiveEvents;
 
         /// <summary>Get the signal perceived by a listener at a given location.  The effects from all 
-        /// contributing siganlas are added together.</summary>
-        /// <param name="listenerLocation">Where the listener is, in world coords</param>
-        /// <param name="distance2D">True if distance calculation should ignore Z</param>
-        /// <param name="channelMask">Only Impulse signals on channels in this mask will be considered</param>
-        /// <param name="pos">The combined position impulse signal resulting from all signals active on the specified channels</param>
-        /// <param name="rot">The combined rotation impulse signal resulting from all signals active on the specified channels</param>
-        /// <returns>true if non-trivial signal is returned</returns>
+        /// contributing signals are combined together.</summary>
+        /// <param name="listenerLocation">Where the listener is, in world coords.</param>
+        /// <param name="distance2D">True if distance calculation should ignore Z.</param>
+        /// <param name="channelMask">Only Impulse signals on channels in this mask will be considered.</param>
+        /// <param name="pos">The combined position impulse signal resulting from all signals active on the specified channels.</param>
+        /// <param name="rot">The combined rotation impulse signal resulting from all signals active on the specified channels.</param>
+        /// <returns>true if non-trivial signal is returned.</returns>
         public bool GetImpulseAt(
             Vector3 listenerLocation, bool distance2D, int channelMask,
             out Vector3 pos, out Quaternion rot)
@@ -386,12 +386,12 @@ namespace Unity.Cinemachine
 
         /// <summary>Get the signal perceived by a listener at a given location.  
         /// Only the signal with the greatest amplitude is considered, all others are ignored.</summary>
-        /// <param name="listenerLocation">Where the listener is, in world coords</param>
-        /// <param name="distance2D">True if distance calculation should ignore Z</param>
-        /// <param name="channelMask">Only Impulse signals on channels in this mask will be considered</param>
-        /// <param name="pos">The combined position impulse signal resulting from all signals active on the specified channels</param>
-        /// <param name="rot">The combined rotation impulse signal resulting from all signals active on the specified channels</param>
-        /// <returns>true if non-trivial signal is returned</returns>
+        /// <param name="listenerLocation">Where the listener is, in world coords.</param>
+        /// <param name="distance2D">True if distance calculation should ignore Z.</param>
+        /// <param name="channelMask">Only Impulse signals on channels in this mask are considered.</param>
+        /// <param name="pos">The combined position impulse signal resulting from all signals active on the specified channels.</param>
+        /// <param name="rot">The combined rotation impulse signal resulting from all signals active on the specified channels.</param>
+        /// <returns>true if non-trivial signal is returned.</returns>
         public bool GetStrongestImpulseAt(
             Vector3 listenerLocation, bool distance2D, int channelMask,
             out Vector3 pos, out Quaternion rot)
