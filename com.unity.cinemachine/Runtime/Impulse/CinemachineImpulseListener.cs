@@ -55,6 +55,30 @@ namespace Unity.Cinemachine
         public bool UseCameraSpace;
 
         /// <summary>
+        /// Choices for how the listener will treat multiple overlapping impulse signals.
+        /// </summary>
+        public enum SignalCombinationModes 
+        {
+            /// <summary>
+            /// All active signals will be added together, similar 
+            /// to how sound waves combine in air.
+            /// </summary>
+            Additive,
+            /// <summary>
+            /// Only the signal with the largest amplitude will be considered.  
+            /// Other signals will be ignored.
+            /// </summary>
+            UseLargest
+        }
+        [Tooltip("Controls how the Impulse Listener will combine multiple impulses active at "
+            + "the current point in space.\n\n"
+            + "<b>Additive</b>: All the active signals will be added together, like sound waves.  "
+            + "This is the default.\n\n"
+            + "<b>Use Largest</b>: Only the signal with the largest amplitude will be considered; any "
+            + "others will be ignored.")]
+        public SignalCombinationModes SignalCombinationMode = SignalCombinationModes.Additive;
+
+        /// <summary>
         /// This controls the secondary reaction of the listener to the incoming impulse.
         /// The impulse might be for example a sharp shock, and the secondary reaction could
         /// be a vibration whose amplitude and duration is controlled by the size of the
@@ -186,6 +210,7 @@ namespace Unity.Cinemachine
             Gain = 1;
             Use2DDistance = false;
             UseCameraSpace = true;
+            SignalCombinationMode = SignalCombinationModes.Additive;
             ReactionSettings = new ImpulseReaction
             {
                 AmplitudeGain = 1,
@@ -205,9 +230,25 @@ namespace Unity.Cinemachine
         {
             if (stage == ApplyAfter && deltaTime >= 0)
             {
-                bool haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
-                    state.GetFinalPosition(), Use2DDistance, ChannelMask,
-                    out var impulsePos, out var impulseRot);
+                bool haveImpulse = false;
+                var impulsePos = Vector3.zero;
+                var impulseRot = Quaternion.identity;
+
+                if (SignalCombinationMode == SignalCombinationModes.Additive)
+                {
+                    // Get all impulses on the specified channels, and combine them
+                    haveImpulse = CinemachineImpulseManager.Instance.GetImpulseAt(
+                        state.GetFinalPosition(), Use2DDistance, ChannelMask,
+                        out impulsePos, out impulseRot);
+                }
+                else
+                {
+                    // Get the largest impulse on the specified channels
+                    haveImpulse = CinemachineImpulseManager.Instance.GetStrongestImpulseAt(
+                        state.GetFinalPosition(), Use2DDistance, ChannelMask,
+                        out impulsePos, out impulseRot);
+                }
+
                 bool haveReaction = ReactionSettings.GetReaction(
                     deltaTime, impulsePos, out var reactionPos, out var reactionRot);
 
