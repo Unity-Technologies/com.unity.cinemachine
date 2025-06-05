@@ -71,9 +71,13 @@ namespace Unity.Cinemachine.Editor
                 HelpBoxMessageType.Info));
 
             EmbeddedEditorContext context = new ();
-            OnAssetChanged(property, context);
             ux.TrackPropertyValue(property, (p) => OnAssetChanged(p, context));
-            embeddedInspectorParent.RegisterCallback<DetachFromPanelEvent>((e) => DestroyEditor(context));
+
+            embeddedInspectorParent.RegisterCallback<AttachToPanelEvent>((e) => 
+            {
+                OnAssetChanged(property, context);
+                embeddedInspectorParent.RegisterCallback<DetachFromPanelEvent>((e) => DestroyEditor(context));
+            });
 
             return ux;
 
@@ -101,8 +105,7 @@ namespace Unity.Cinemachine.Editor
                         eContext.Inspector = embeddedInspectorParent.AddChild(new InspectorElement(eContext.Editor));
                 }
                 unassignedUx?.SetVisible(target == null);
-                if (assignedUx != null)
-                    assignedUx.SetVisible(target != null);
+                assignedUx?.SetVisible(target != null);
             }
 
             // Local function
@@ -112,6 +115,8 @@ namespace Unity.Cinemachine.Editor
                 {
                     Object.DestroyImmediate(eContext.Editor);
                     eContext.Editor = null;
+                    eContext.Inspector?.RemoveFromHierarchy();
+                    eContext.Inspector = null;
                 }
             }
         }

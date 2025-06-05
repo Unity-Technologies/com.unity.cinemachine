@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Confiner2D was behaving inconsistently for large sized bounding boxes due to precision issues.
 - StateDrivenCamera inspector was not populating the states in the instruction list correctly.
 - Fixed a number of issues causing ForceCameraPosition to not behave as expected.
+- Maximizing an inspector which contained custom blends would generate console errors and cause the inspector to be unresponsive.
 
 ### Changed
 - Cinemachine Shot Editor for Timeline no longer displays improper UX to create cameras when editing a prefab.

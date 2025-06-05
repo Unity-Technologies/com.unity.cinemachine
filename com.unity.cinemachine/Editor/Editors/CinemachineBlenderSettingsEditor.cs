@@ -86,12 +86,12 @@ namespace Unity.Cinemachine.Editor
                     var container = new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }};
                     var textField = container.AddChild(new TextField { bindingPath = bindingPath, isDelayed = true, style = { flexGrow = 1, flexBasis = 20 }});
 
-                    var warning = container.AddChild(InspectorUtility.MiniHelpIcon($"No in-scene camera matches this name"));
+                    var warning = container.AddChild(InspectorUtility.MiniHelpIcon($"No candidate camera matches this name"));
                     textField.RegisterValueChangedCallback((evt) => OnCameraUpdated());
                     onCamerasUpdated += OnCameraUpdated;
                     void OnCameraUpdated()
                     {
-                        warning.tooltip = $"No in-scene camera matches \"{textField.value}\"";
+                        warning.tooltip = $"No candidate camera matches \"{textField.value}\"";
                         warning.SetVisible(availableCameras.FindIndex(x => x == textField.value) < 0);
                     };
 
