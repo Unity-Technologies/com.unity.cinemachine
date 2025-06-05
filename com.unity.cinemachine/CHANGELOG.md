@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed sample asset selection at import depending on current render pipeline and input configuration.  You need to re-import the samples to fix any existing issues.
 - Confiner2D was behaving inconsistently for large sized bounding boxes due to precision issues.
 - StateDrivenCamera inspector was not populating the states in the instruction list correctly.
+- Fixed a number of issues causing ForceCameraPosition to not behave as expected.
 
 ### Changed
 - Cinemachine Shot Editor for Timeline no longer displays improper UX to create cameras when editing a prefab.
