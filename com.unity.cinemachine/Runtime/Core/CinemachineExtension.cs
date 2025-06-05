@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -124,11 +125,20 @@ namespace Unity.Cinemachine
             CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta) {}
 
         /// <summary>
-        /// Force the virtual camera to assume a given position and orientation
+        /// Force the virtual camera to assume a given position and orientation.  This API is obsolete.
+        /// Implement ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot) instead.
         /// </summary>
         /// <param name="pos">World-space position to take</param>
         /// <param name="rot">World-space orientation to take</param>
         public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) {}
+
+        /// <summary>
+        /// Force the virtual camera to assume a given position and orientation.
+        /// </summary>
+        /// <param name="vcam">Virtual camera being warped warp</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
+        public virtual void ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot) {}
 
         /// <summary>Notification that this virtual camera is going live.
         /// Base class implementation must be called by any overridden method.</summary>

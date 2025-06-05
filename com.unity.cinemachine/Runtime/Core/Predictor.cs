@@ -32,6 +32,17 @@ namespace Unity.Cinemachine
         /// <param name="positionDelta">The position change of the target object</param>
         public void ApplyTransformDelta(Vector3 positionDelta) => m_Pos += positionDelta;
 
+        /// <summary>
+        /// Apply a delta to the target's rotation, which will be applied to
+        /// the internal target velocity.  Use this then the target's rotation gets warped.
+        /// </summary>
+        /// <param name="rotationDelta">The rotation change of the target object</param>
+        public void ApplyRotationDelta(Quaternion rotationDelta)
+        {
+            m_Velocity = rotationDelta * m_Velocity;
+            m_SmoothDampVelocity = rotationDelta * m_SmoothDampVelocity;
+        }
+
         /// <summary>Reset the lookahead data, clear all the buffers.</summary>
         public void Reset()
         {

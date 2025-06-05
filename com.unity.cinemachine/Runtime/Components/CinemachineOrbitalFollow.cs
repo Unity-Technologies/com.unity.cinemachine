@@ -254,39 +254,46 @@ namespace Unity.Cinemachine
         /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
-            m_TargetTracker.ForceCameraPosition(this, TrackerSettings.BindingMode, pos, rot, GetCameraPoint());
             m_ResetHandler?.Invoke(); // cancel re-centering
             if (FollowTarget != null)
             {
+                var state = VcamState;
+                m_PreviousOffset = (rot * Quaternion.Inverse(state.GetFinalOrientation())) * m_PreviousOffset;
+
+                state.RawPosition = pos;
+                state.RawOrientation = rot;
+                state.PositionCorrection = Vector3.zero;
+                state.OrientationCorrection = Quaternion.identity;
+
                 var dir = pos - FollowTarget.TransformPoint(TargetOffset);
                 var distance = dir.magnitude;
                 if (distance > 0.001f)
                 {
                     dir /= distance;
                     if (OrbitStyle == OrbitStyles.ThreeRing)
-                        InferAxesFromPosition_ThreeRing(dir, distance);
+                        InferAxesFromPosition_ThreeRing(dir, distance, ref state);
                     else
-                        InferAxesFromPosition_Sphere(dir, distance);
+                        InferAxesFromPosition_Sphere(dir, distance, ref state);
                 }
+                m_TargetTracker.OnForceCameraPosition(this, TrackerSettings.BindingMode, ref state);
             }
         }
 
-        void InferAxesFromPosition_Sphere(Vector3 dir, float distance)
+        void InferAxesFromPosition_Sphere(Vector3 dir, float distance, ref CameraState state)
         {
-            var up = VirtualCamera.State.ReferenceUp;
-            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+            var up = state.ReferenceUp;
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up, ref state);
             var localDir = Quaternion.Inverse(orient) * dir;
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
-            VerticalAxis.Value = VerticalAxis.ClampValue(TrackerSettings.BindingMode == BindingMode.LazyFollow
-                ? 0 : UnityVectorExtensions.NormalizeAngle(r.x));
+            VerticalAxis.Value = VerticalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.x));
             HorizontalAxis.Value = HorizontalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.y));
             RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
         }
 
-        void InferAxesFromPosition_ThreeRing(Vector3 dir, float distance)
+        void InferAxesFromPosition_ThreeRing(Vector3 dir, float distance, ref CameraState state)
         {
-            var up = VirtualCamera.State.ReferenceUp;
-            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up);
+            var up = state.ReferenceUp;
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up, ref state);
             HorizontalAxis.Value = GetHorizontalAxis();
             VerticalAxis.Value = GetVerticalAxisClosestValue(out var splinePoint);
             RadialAxis.Value = RadialAxis.ClampValue(distance / splinePoint.magnitude);
@@ -418,7 +425,7 @@ namespace Unity.Cinemachine
                 HorizontalAxis.SetValueAndLastValue(0);
 
             m_TargetTracker.TrackTarget(
-                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
+                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera

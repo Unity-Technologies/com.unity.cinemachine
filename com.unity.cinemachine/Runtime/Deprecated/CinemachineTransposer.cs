@@ -151,7 +151,7 @@ namespace Unity.Cinemachine
             {
                 Vector3 offset = EffectiveOffset;
                 m_TargetTracker.TrackTarget(
-                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings,
+                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
                     out Vector3 pos, out Quaternion orient);
                 offset = orient * offset;
 
@@ -187,12 +187,18 @@ namespace Unity.Cinemachine
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
             base.ForceCameraPosition(pos, rot);
-            m_TargetTracker.ForceCameraPosition(this, m_BindingMode, pos, rot, EffectiveOffset);
+            var state = VcamState;
+            state.RawPosition = pos;
+            state.RawOrientation = rot;
+            state.PositionCorrection = Vector3.zero;
+            state.OrientationCorrection = Quaternion.identity;
+            m_TargetTracker.OnForceCameraPosition(this, m_BindingMode, ref state);
         }
 
         internal Quaternion GetReferenceOrientation(Vector3 up)
         {
-            return m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up);
+            var state = VcamState;
+            return m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up, ref state);
         }
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
@@ -202,8 +208,9 @@ namespace Unity.Cinemachine
         {
             if (!IsValid)
                 return Vector3.zero;
+            var state = VcamState;
             return FollowTargetPosition + m_TargetTracker.GetReferenceOrientation(
-                this, m_BindingMode, worldUp) * EffectiveOffset;
+                this, m_BindingMode, worldUp, ref state) * EffectiveOffset;
         }
 
         // Helper to upgrade to CM3
