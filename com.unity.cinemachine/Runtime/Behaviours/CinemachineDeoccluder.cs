@@ -363,6 +363,13 @@ namespace Unity.Cinemachine
             extra.PreviousCameraPosition += positionDelta;
         }
 
+        /// <inheritdoc />
+        public override void ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot) 
+        {
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            extra.PreviousCameraPosition = pos;
+        }
+        
         /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>

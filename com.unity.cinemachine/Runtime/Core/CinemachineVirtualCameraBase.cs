@@ -652,11 +652,9 @@ namespace Unity.Cinemachine
         void OnTargetObjectWarped(CinemachineVirtualCameraBase vcam, Transform target, Vector3 positionDelta)
         {
             // inform the extensions
-            if (Extensions != null)
-            {
-                for (int i = 0; i < Extensions.Count; ++i)
-                    Extensions[i].OnTargetObjectWarped(vcam, target, positionDelta);
-            }
+            var count = Extensions?.Count;
+            for (int i = 0; i < count; ++i)
+                Extensions[i].OnTargetObjectWarped(vcam, target, positionDelta);
             if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
                 vcamParent.OnTargetObjectWarped(vcam, target, positionDelta);
         }
@@ -666,14 +664,19 @@ namespace Unity.Cinemachine
         /// </summary>
         /// <param name="pos">World-space position to take</param>
         /// <param name="rot">World-space orientation to take</param>
-        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot)
+        public virtual void ForceCameraPosition(Vector3 pos, Quaternion rot) => ForceCameraPosition(this, pos, rot);
+
+        void ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot)
         {
             // inform the extensions
             var count = Extensions?.Count;
             for (int i = 0; i < count; ++i)
-                Extensions[i].ForceCameraPosition(pos, rot);
-
-            transform.ConservativeSetPositionAndRotation(pos, rot);
+            {
+                Extensions[i].ForceCameraPosition(vcam, pos, rot);
+                Extensions[i].ForceCameraPosition(pos, rot); // call the obsolete API in order to not break old client code
+            }
+            if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
+                vcamParent.ForceCameraPosition(vcam, pos, rot);
         }
 
         /// <summary>

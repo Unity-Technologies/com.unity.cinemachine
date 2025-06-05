@@ -176,6 +176,18 @@ namespace Unity.Cinemachine
         };
 
         /// <summary>
+        /// Force the virtual camera to assume a given position and orientation
+        /// </summary>
+        /// <param name="vcam">Virtual camera being warped warp</param>
+        /// <param name="pos">World-space position to take</param>
+        /// <param name="rot">World-space orientation to take</param>
+        public override void ForceCameraPosition(CinemachineVirtualCameraBase vcam, Vector3 pos, Quaternion rot) 
+        {
+            var extra = GetExtraState<VcamExtraState>(vcam);
+            extra.PreviousCorrectedCameraPosition = pos;
+        }
+
+        /// <summary>
         /// Callback to do the collision resolution and shot evaluation
         /// </summary>
         /// <param name="vcam">The virtual camera being processed</param>
