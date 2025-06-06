@@ -70,6 +70,10 @@ namespace Unity.Cinemachine
             /// </summary>
             UseLargest
         }
+
+        /// <summary>
+        /// Specifies how the Impulse Listener combines multiple impulses active at the current point in space.
+        /// </summary>
         [Tooltip("Controls how the Impulse Listener combines multiple impulses active at the "
             + "current point in space.\n\n"
             + "<b>Additive</b>: Combines all the active signals together, like sound waves.  "
