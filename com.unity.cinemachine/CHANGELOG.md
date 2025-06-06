@@ -5,13 +5,12 @@ The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
 
-## [2.10.4] - 2025-12-31
-
-### Unreleased
+## [2.10.4] - 2025-06-10
 
 - Bugfix: FramingTransposer with a dead zone would sometimes drift.
 - Cinemachine Shot Editor no longer displays UX to create cameras when editing a prefab.
 - Added CINEMACHINE_TRANSPARENT_POST_PROCESSING_BLENDS scripting define to tune the PostProcessing blend behaviour.
+
 
 ## [2.10.3] - 2024-11-05
 - Regression fix: Small changes to camera position and rotation were being filtered out.

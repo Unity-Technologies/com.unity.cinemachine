@@ -22,16 +22,9 @@ public class CinemachineSettings
 
     public readonly string ProjectsDir = "Projects";
 
-    public readonly string[] ProjectNames = new[] { "HDRP", "HDRP2019.4", "Standalone", "URP" };
+    public readonly string[] ProjectNames = new[] { "HDRP", "Standalone", "URP" };
 
-    public bool ProjectAndEditorAreCompatible(string project, string editorVersion)
-    {
-        if (editorVersion == "2019.4" && project == "HDRP")
-            return false;
-        if (editorVersion != "2019.4" && project == "HDRP2019.4")
-            return false;
-        return true;
-    }
+    public bool ProjectAndEditorAreCompatible(string project, string editorVersion) => true;
 
     ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
 
