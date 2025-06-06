@@ -26,33 +26,33 @@ publish_cinemachine:
       browsable: onNonSuccess
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2019_4_-_macos
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_macos
     specific_options:
       UTR:
-        location: results/UTR/validate-cinemachine-2019.4-macos
+        location: results/UTR/validate-cinemachine-2020.3-macos
         unzip: true
       pvp-results:
-        location: results/pvp/validate-cinemachine-2019.4-macos
+        location: results/pvp/validate-cinemachine-2020.3-macos
         unzip: true
       packages:
         ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2019_4_-_ubuntu
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_ubuntu
     specific_options:
       UTR:
-        location: results/UTR/validate-cinemachine-2019.4-ubuntu
+        location: results/UTR/validate-cinemachine-2020.3-ubuntu
         unzip: true
       pvp-results:
-        location: results/pvp/validate-cinemachine-2019.4-ubuntu
+        location: results/pvp/validate-cinemachine-2020.3-ubuntu
         unzip: true
       packages:
         ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2019_4_-_windows
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_windows
     specific_options:
       UTR:
-        location: results/UTR/validate-cinemachine-2019.4-windows
+        location: results/UTR/validate-cinemachine-2020.3-windows
         unzip: true
       pvp-results:
-        location: results/pvp/validate-cinemachine-2019.4-windows
+        location: results/pvp/validate-cinemachine-2020.3-windows
         unzip: true
       packages:
         ignore_artifact: true
@@ -268,33 +268,33 @@ publish_dry_run_cinemachine:
       browsable: onNonSuccess
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2019_4_-_macos
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_macos
     specific_options:
       UTR:
-        location: results/UTR/validate-cinemachine-2019.4-macos
+        location: results/UTR/validate-cinemachine-2020.3-macos
         unzip: true
       pvp-results:
-        location: results/pvp/validate-cinemachine-2019.4-macos
+        location: results/pvp/validate-cinemachine-2020.3-macos
         unzip: true
       packages:
         ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2019_4_-_ubuntu
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_ubuntu
     specific_options:
       UTR:
-        location: results/UTR/validate-cinemachine-2019.4-ubuntu
+        location: results/UTR/validate-cinemachine-2020.3-ubuntu
         unzip: true
       pvp-results:
-        location: results/pvp/validate-cinemachine-2019.4-ubuntu
+        location: results/pvp/validate-cinemachine-2020.3-ubuntu
         unzip: true
       packages:
         ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2019_4_-_windows
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_windows
     specific_options:
       UTR:
-        location: results/UTR/validate-cinemachine-2019.4-windows
+        location: results/UTR/validate-cinemachine-2020.3-windows
         unzip: true
       pvp-results:
-        location: results/pvp/validate-cinemachine-2019.4-windows
+        location: results/pvp/validate-cinemachine-2020.3-windows
         unzip: true
       packages:
         ignore_artifact: true
