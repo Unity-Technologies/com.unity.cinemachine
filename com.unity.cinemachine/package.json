@@ -2,7 +2,7 @@
     "name": "com.unity.cinemachine",
     "displayName": "Cinemachine",
     "version": "2.10.4",
-    "unity": "2020.3",
+    "unity": "2022.3",
     "description": "Smart camera tools for passionate creators. \n\n--- ATTENTION ---\nUpgrading a project from Cinemachine 2.x to Cinemachine 3.x is not automatic and not trivial.\nDon't do it unless you're willing to put in the required effort.\n\n> For more details, refer to the upgrade guide:\nhttps://docs.unity3d.com/Packages/com.unity.cinemachine@3.1/manual/CinemachineUpgradeFrom2.html\n--------------------\n\n\n",
     "keywords": [ "camera", "follow", "rig", "fps", "cinematography", "aim", "orbit", "cutscene", "cinematic", "collision", "freelook", "cinemachine", "compose", "composition", "dolly", "track", "clearshot", "noise", "framing", "handheld", "lens", "impulse" ],
     "category": "cinematography",

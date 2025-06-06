@@ -5,12 +5,6 @@ all_trigger:
   name: All Trigger
   dependencies:
   - path: .yamato/code-coverage.yml#code_coverage_-_ubuntu_-_trunk
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2020_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2020_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2020_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2021_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2021_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2021_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows
@@ -26,12 +20,6 @@ all_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2020_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2020_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2020_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2021_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2021_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2021_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_windows
@@ -47,12 +35,6 @@ all_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2020_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2020_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2020_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2021_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2021_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2021_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_windows
@@ -68,12 +50,6 @@ all_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_3_-_windows
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_macos
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_ubuntu
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_windows
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_macos
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_ubuntu
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_windows
@@ -96,12 +72,6 @@ all_trigger:
 nightly_trigger:
   name: Nightly Trigger
   dependencies:
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2020_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2020_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2020_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2021_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2021_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2021_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows
@@ -117,12 +87,6 @@ nightly_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_hdrp_-_6000_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2020_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2020_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2020_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2021_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2021_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2021_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_2022_3_-_windows
@@ -138,12 +102,6 @@ nightly_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_standalone_-_6000_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2020_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2020_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2020_3_-_windows
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2021_3_-_macos
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2021_3_-_ubuntu
-  - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2021_3_-_windows
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_2022_3_-_windows
@@ -159,12 +117,6 @@ nightly_trigger:
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_3_-_macos
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu
   - path: .yamato/project-test.yml#test_project_-_cinemachine_-_urp_-_6000_3_-_windows
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_macos
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_ubuntu
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_windows
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_macos
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_ubuntu
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_ubuntu
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_windows
@@ -185,8 +137,6 @@ nightly_trigger:
 package_ci:
   name: Package CI
   dependencies:
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2020_3_-_windows
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2021_3_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_windows
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_macos
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_ubuntu
