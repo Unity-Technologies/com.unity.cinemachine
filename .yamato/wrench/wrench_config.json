@@ -1,6 +1,5 @@
 {
-  "project_path": "Tools\\CineMachine-Recipes",
-  "schema_version": 0.6,
+  "schema_version": 0.7,
   "packages": {
     "com.unity.cinemachine": {
       "directory": "com.unity.cinemachine/",
@@ -32,6 +31,7 @@
   },
   "publishing_job": ".yamato/wrench/promotion-jobs.yml#publish_cinemachine",
   "branch_pattern": "ReleaseSlash",
-  "wrench_version": "0.10.26.0",
-  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json"
+  "wrench_version": "0.10.50.0",
+  "pvp_exemption_path": ".yamato/wrench/pvp-exemptions.json",
+  "cs_project_path": "Tools/Cinemachine-Recipes/Cinemachine.Cookbook.csproj"
 }
