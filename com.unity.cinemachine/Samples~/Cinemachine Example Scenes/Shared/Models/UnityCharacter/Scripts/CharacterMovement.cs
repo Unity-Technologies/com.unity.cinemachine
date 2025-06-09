@@ -2,106 +2,84 @@
 
 namespace Cinemachine.Examples
 {
-
-[AddComponentMenu("")] // Don't display in add component menu
-public class CharacterMovement : MonoBehaviour
-{
-    public bool useCharacterForward = false;
-    public bool lockToCameraForward = false;
-    public float turnSpeed = 10f;
-    public KeyCode sprintJoystick = KeyCode.JoystickButton2;
-    public KeyCode sprintKeyboard = KeyCode.Space;
-
-    private float turnSpeedMultiplier;
-    private float speed = 0f;
-    private float direction = 0f;
-    private bool isSprinting = false;
-    private Animator anim;
-    private Vector3 targetDirection;
-    private Vector2 input;
-    private Quaternion freeRotation;
-    private Camera mainCamera;
-    private float velocity;
-
-	// Use this for initialization
-	void Start ()
-	{
-	    anim = GetComponent<Animator>();
-	    mainCamera = Camera.main;
-	}
-
-	// Update is called once per frame
-	void FixedUpdate ()
-	{
-#if ENABLE_LEGACY_INPUT_MANAGER
-	    input.x = Input.GetAxis("Horizontal");
-	    input.y = Input.GetAxis("Vertical");
-
-		// set speed to both vertical and horizontal inputs
-        if (useCharacterForward)
-            speed = Mathf.Abs(input.x) + input.y;
-        else
-            speed = Mathf.Abs(input.x) + Mathf.Abs(input.y);
-
-        speed = Mathf.Clamp(speed, 0f, 1f);
-        speed = Mathf.SmoothDamp(anim.GetFloat("Speed"), speed, ref velocity, 0.1f);
-        anim.SetFloat("Speed", speed);
-
-	    if (input.y < 0f && useCharacterForward)
-            direction = input.y;
-	    else
-            direction = 0f;
-
-        anim.SetFloat("Direction", direction);
-
-        // set sprinting
-	    isSprinting = ((Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero && direction >= 0f);
-        anim.SetBool("isSprinting", isSprinting);
-
-        // Update target direction relative to the camera view (or not if the Keep Direction option is checked)
-        UpdateTargetDirection();
-        if (input != Vector2.zero && targetDirection.magnitude > 0.1f)
-        {
-            Vector3 lookDirection = targetDirection.normalized;
-            freeRotation = Quaternion.LookRotation(lookDirection, transform.up);
-            var diferenceRotation = freeRotation.eulerAngles.y - transform.eulerAngles.y;
-            var eulerY = transform.eulerAngles.y;
-
-            if (diferenceRotation < 0 || diferenceRotation > 0) eulerY = freeRotation.eulerAngles.y;
-            var euler = new Vector3(0, eulerY, 0);
-
-            transform.rotation = Quaternion.Slerp(transform.rotation, Quaternion.Euler(euler), turnSpeed * turnSpeedMultiplier * Time.deltaTime);
-        }
-#else
-        InputSystemHelper.EnableBackendsWarningMessage();
-#endif
-	}
-
-    public virtual void UpdateTargetDirection()
+    [AddComponentMenu("")] // Don't display in add component menu
+    public class CharacterMovement : MonoBehaviour
     {
-        if (!useCharacterForward)
-        {
-            turnSpeedMultiplier = 1f;
-            var forward = mainCamera.transform.TransformDirection(Vector3.forward);
-            forward.y = 0;
+        public bool useCharacterForward = false;
+        public KeyCode sprintJoystick = KeyCode.JoystickButton2;
+        public KeyCode sprintKeyboard = KeyCode.Space;
 
-            //get the right-facing direction of the referenceTransform
-            var right = mainCamera.transform.TransformDirection(Vector3.right);
+        private float speed = 0f;
+        private float direction = 0f;
+        private bool isSprinting = false;
+        private Rigidbody rb;
+        private Animator anim;
+        private Vector2 input;
+        private Camera mainCamera;
+        private float velocity;
 
-            // determine the direction the player will face based on input and the referenceTransform's right and forward directions
-            targetDirection = input.x * right + input.y * forward;
+	    void Start()
+	    {
+	        anim = GetComponent<Animator>();
+            anim.updateMode = AnimatorUpdateMode.AnimatePhysics;
+            anim.applyRootMotion = true;
+            mainCamera = Camera.main;
+            rb = GetComponent<Rigidbody>();
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+            rb.constraints &= ~RigidbodyConstraints.FreezeRotationY;
         }
-        else
-        {
-            turnSpeedMultiplier = 0.2f;
-            var forward = transform.TransformDirection(Vector3.forward);
-            forward.y = 0;
 
-            //get the right-facing direction of the referenceTransform
-            var right = transform.TransformDirection(Vector3.right);
-            targetDirection = input.x * right + Mathf.Abs(input.y) * forward;
+	    void Update()
+	    {
+    #if ENABLE_LEGACY_INPUT_MANAGER
+	        input.x = Input.GetAxis("Horizontal");
+	        input.y = Input.GetAxis("Vertical");
+
+		    // set speed to both vertical and horizontal inputs
+            if (useCharacterForward)
+                speed = Mathf.Abs(input.x) + input.y;
+            else
+                speed = Mathf.Abs(input.x) + Mathf.Abs(input.y);
+
+            speed = Mathf.Clamp(speed, 0f, 1f);
+            speed = Mathf.SmoothDamp(anim.GetFloat("Speed"), speed, ref velocity, 0.1f);
+
+	        if (input.y < 0f && useCharacterForward)
+                direction = input.y;
+	        else
+                direction = 0f;
+
+	        isSprinting = (Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero && direction >= 0f;
+    #else
+            InputSystemHelper.EnableBackendsWarningMessage();
+    #endif
+        }
+
+	    // Interact with Rigidbody only in FixedUpdate
+	    void FixedUpdate()
+	    {
+            anim.SetFloat("Speed", speed);
+            anim.SetFloat("Direction", direction);
+            anim.SetBool("isSprinting", isSprinting);
+
+            // Update target direction relative to the camera view or player forward
+            var tr = useCharacterForward ? transform : mainCamera.transform;
+            var right = tr.right;
+            var forward = tr.forward;
+            forward.y = 0;
+            var targetDir = input.x * right + (useCharacterForward ? Mathf.Abs(input.y) : input.y) * forward;
+
+            if (input == Vector2.zero || targetDir.magnitude < 0.1f)
+                rb.angularVelocity = Vector3.zero;
+            else
+            {
+                targetDir = targetDir.normalized;
+                var currentDir = rb.rotation * Vector3.forward;
+
+                // Rigidbody.MoveRotation breaks interpolation for non-kinematic rigidbodies, so don't use it
+                var angle = Vector3.SignedAngle(currentDir, targetDir, Vector3.up) * Mathf.Deg2Rad / Time.fixedDeltaTime;
+                rb.angularVelocity = Vector3.up * angle;
+            }
         }
     }
-}
-
 }

@@ -12,6 +12,13 @@ namespace Cinemachine.Examples
         public bool on;
 
         float m_Direction = 1;
+        Rigidbody rb;
+
+        private void Start()
+        {
+            rb = GetComponent<Rigidbody>();
+            rb.interpolation = RigidbodyInterpolation.Interpolate;
+        }
 
         void FixedUpdate()
         {
@@ -26,7 +33,7 @@ namespace Cinemachine.Examples
             }
 
             var dir = new Vector3(0, m_Direction * speed * Time.fixedDeltaTime, 0);
-            transform.position += dir;
+            rb.MovePosition(rb.position += dir);
         }
     }
 }
