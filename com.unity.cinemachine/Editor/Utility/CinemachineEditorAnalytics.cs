@@ -32,12 +32,14 @@ namespace Cinemachine.Editor
                 vcam_created = name,
             };
 
+#pragma warning disable 618 // obsolete
             // Register our event
             EditorAnalytics.RegisterEventWithLimit("cm_create_vcam", 
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
 
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("cm_create_vcam", data);
+#pragma warning restore 618
         }
 
         struct CreateEventData
@@ -81,12 +83,14 @@ namespace Cinemachine.Editor
                 time_elapsed = Time.realtimeSinceStartup - startTime,
             };
 
+#pragma warning disable 618 // obsolete
             // Register our event
             EditorAnalytics.RegisterEventWithLimit("cm_vcams_on_play", 
                 k_MaxEventsPerHour, k_MaxNumberOfElements, k_VendorKey);
             
             // Send the data to the database
             EditorAnalytics.SendEventWithLimit("cm_vcams_on_play", projectData);
+#pragma warning restore 618
         }
 
         static void CollectData(CinemachineVirtualCameraBase vcamBase, string id, ref List<VcamData> vcamDatas)
