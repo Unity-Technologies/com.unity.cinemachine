@@ -27,7 +27,12 @@ namespace Cinemachine.Examples
         void OnEnable()
         {
             anim = GetComponent<Animator>();
+#if UNITY_6000_0_OR_NEWER
+            anim.updateMode = AnimatorUpdateMode.Fixed;
+            anim.animatePhysics = true;
+#else
             anim.updateMode = AnimatorUpdateMode.AnimatePhysics;
+#endif
             anim.applyRootMotion = true;
             rb = GetComponent<Rigidbody>();
             rb.interpolation = RigidbodyInterpolation.Interpolate;

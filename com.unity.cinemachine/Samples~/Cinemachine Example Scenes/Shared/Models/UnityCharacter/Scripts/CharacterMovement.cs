@@ -18,10 +18,15 @@ namespace Cinemachine.Examples
         private Camera mainCamera;
         private float velocity;
 
-	    void Start()
-	    {
-	        anim = GetComponent<Animator>();
+        void Start()
+        {
+            anim = GetComponent<Animator>();
+#if UNITY_6000_0_OR_NEWER
+            anim.updateMode = AnimatorUpdateMode.Fixed;
+            anim.animatePhysics = true;
+#else
             anim.updateMode = AnimatorUpdateMode.AnimatePhysics;
+#endif
             anim.applyRootMotion = true;
             mainCamera = Camera.main;
             rb = GetComponent<Rigidbody>();
@@ -29,13 +34,13 @@ namespace Cinemachine.Examples
             rb.constraints &= ~RigidbodyConstraints.FreezeRotationY;
         }
 
-	    void Update()
-	    {
+        void Update()
+        {
     #if ENABLE_LEGACY_INPUT_MANAGER
-	        input.x = Input.GetAxis("Horizontal");
-	        input.y = Input.GetAxis("Vertical");
+            input.x = Input.GetAxis("Horizontal");
+            input.y = Input.GetAxis("Vertical");
 
-		    // set speed to both vertical and horizontal inputs
+            // set speed to both vertical and horizontal inputs
             if (useCharacterForward)
                 speed = Mathf.Abs(input.x) + input.y;
             else
@@ -44,20 +49,20 @@ namespace Cinemachine.Examples
             speed = Mathf.Clamp(speed, 0f, 1f);
             speed = Mathf.SmoothDamp(anim.GetFloat("Speed"), speed, ref velocity, 0.1f);
 
-	        if (input.y < 0f && useCharacterForward)
+            if (input.y < 0f && useCharacterForward)
                 direction = input.y;
-	        else
+            else
                 direction = 0f;
 
-	        isSprinting = (Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero && direction >= 0f;
+            isSprinting = (Input.GetKey(sprintJoystick) || Input.GetKey(sprintKeyboard)) && input != Vector2.zero && direction >= 0f;
     #else
             InputSystemHelper.EnableBackendsWarningMessage();
     #endif
         }
 
-	    // Interact with Rigidbody only in FixedUpdate
-	    void FixedUpdate()
-	    {
+        // Interact with Rigidbody only in FixedUpdate
+        void FixedUpdate()
+        {
             anim.SetFloat("Speed", speed);
             anim.SetFloat("Direction", direction);
             anim.SetBool("isSprinting", isSprinting);
