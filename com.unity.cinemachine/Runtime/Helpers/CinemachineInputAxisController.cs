@@ -94,8 +94,8 @@ namespace Unity.Cinemachine
         public sealed class Reader : IInputAxisReader
         {
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-            /// <summary>Action for the Input package (if used).</summary>
-            [Tooltip("Action for the Input package (if used).")]
+            /// <summary>Action mapping for the Input package (if used).</summary>
+            [Tooltip("Action mapping for the Input package.")]
             public InputActionReference InputAction;
 
             /// <summary>The input value is multiplied by this amount prior to processing.

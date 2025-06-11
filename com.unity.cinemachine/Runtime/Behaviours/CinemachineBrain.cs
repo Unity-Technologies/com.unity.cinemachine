@@ -522,11 +522,11 @@ namespace Unity.Cinemachine
         /// This method should only be called in ManualUpdate mode. For other modes, updates occur 
         /// automatically and this method should not be called explicitly.
         /// </summary>
-        /// <param name="currentFrame">The current update frmae.  This is a substiture for Time.frameCount.  
+        /// <param name="currentFrame">The current update frmae.  This is a substitute for Time.frameCount.  
         /// If you're controlling your own player loop and timestep, this parameter indicates the current frame.  
-        /// Each call should increwase this number by 1.</param>
+        /// Each call should increase this number by 1.</param>
         /// <param name="deltaTime">The game time that elapsed since the last call to this method.  A value of -1 will 
-        /// cancel previous frame state, effectively cancelling damping and making the CInemachineCameras snap to position.</param>
+        /// cancel previous frame state, effectively canceling damping and making the CinemachineCameras snap to position.</param>
         /// <remarks>
         /// Important usage notes:
         /// <list type="bullet">
@@ -562,7 +562,7 @@ namespace Unity.Cinemachine
         /// <item>This method must be called exactly once per render frame - more frequent calls 
         /// will not update the cameras, and less frequent calls may cause jerky camera movement.</item>
         /// <item>This version of the method will automatically track the update frame count and the current delta time.  
-        /// If you want to explicitylt control deltaTime and update frame count, use the version of this method that 
+        /// If you want to explicity control deltaTime and update frame count, use the overload of this method that 
         /// allows you to specify those values.</item>
         /// </list>
         /// </remarks>
