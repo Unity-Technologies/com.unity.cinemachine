@@ -21,6 +21,7 @@ public class CodeCoverage :RecipeBase
     private const string PackageName = "com.unity.cinemachine";
     private static readonly Platform Platform = settings.Wrench.Packages[PackageName].EditorPlatforms[SystemType.Ubuntu];
     private const string EditorVersion = "trunk";
+    private const string YamatoSourceDir = "${YAMATO_SOURCE_DIR}";
 
 
     public IEnumerable<Dependency> AsDependencies()
@@ -35,10 +36,7 @@ public class CodeCoverage :RecipeBase
                 .WithPlatform(Platform)
                 .WithCommands( c => c
                     .Add("npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm")
-                    .Add("upm-ci package test -u trunk --package-path com.unity.cinemachine --type package-tests --enable-code-coverage --code-coverage-options \"generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine*\" --extra-utr-arg=--coverage-results-path=${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults")
-                    .Add("curl -Os https://uploader.codecov.io/latest/linux/codecov")
-                    .Add("chmod a+x ./codecov")
-                    .Add("./codecov -v -t \"${CODECOV_TOKEN}\" -B \"${GIT_BRANCH}\" -T \"${GIT_TAG}\" -P \"${YAMATO_PR_ID}\" -f \"upm-ci~/test-results/CoverageResults/**/*.xml\"")
+                    .Add($"upm-ci package test -u trunk --package-path com.unity.cinemachine --type package-tests --enable-code-coverage --code-coverage-options \"generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine*\" --extra-utr-arg=\"--coverage-results-path={YamatoSourceDir}/upm-ci~/test-results/CoverageResults --coverage-upload-options=\\\"reportsDir:upm-ci~/test-results;name:{Platform.System}_{EditorVersion};flags:{Platform.System}_{EditorVersion}\\\"\"")
                     )
                 .WithUpmCiArtifacts()
                 .WithDescription($"Generate codecov data for {settings.Wrench.Packages[PackageName].DisplayName} on {Platform.System}")
