@@ -60,7 +60,7 @@ namespace Unity.Cinemachine.Editor
             {
                 if (Target == null)
                     return; // object deleted
-                if (!Application.isPlaying)
+                if (!Application.isPlaying && (Target.isActiveAndEnabled || Target.IsLive))
                 {
                     var brain = CinemachineCore.FindPotentialTargetBrain(Target);
                     Target.InternalUpdateCameraState(brain == null ? Vector3.up : brain.DefaultWorldUp, -1);
