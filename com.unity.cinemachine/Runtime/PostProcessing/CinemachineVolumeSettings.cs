@@ -182,8 +182,7 @@ namespace Unity.Cinemachine
                     {
                         if (extra.ProfileCopy == null)
                             extra.CreateProfileCopy(Profile);
-                        profile = extra.ProfileCopy;
-                        if (profile.TryGet(out DepthOfField dof))
+                        if (extra.ProfileCopy.TryGet(out DepthOfField dof))
                         {
                             float focusDistance = FocusOffset;
                             if (FocusTracking == FocusTrackingMode.LookAtTarget)
@@ -203,8 +202,14 @@ namespace Unity.Cinemachine
                             CalculatedFocusDistance = focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
                             state.Lens.PhysicalProperties.FocusDistance = focusDistance;
-                            profile.isDirty = true;
+                            if (profile.TryGet(out DepthOfField srcDof))
+                            {
+                                dof.aperture.value = srcDof.aperture.value;
+                                dof.focalLength.value = srcDof.focalLength.value;
+                            }
+                            extra.ProfileCopy.isDirty = true;
                         }
+                        profile = extra.ProfileCopy;
                     }
                     // Apply the post-processing
                     state.AddCustomBlendable(new CameraState.CustomBlendableItems.Item { Custom = profile, Weight = Weight });
