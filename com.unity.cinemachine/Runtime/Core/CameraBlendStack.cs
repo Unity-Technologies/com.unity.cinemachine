@@ -71,6 +71,9 @@ namespace Unity.Cinemachine
             ICinemachineCamera m_SnapshotSource;
             float m_SnapshotBlendWeight;
 
+            // If reversing a blend-in-progress, this will indicate how much of the blend was skipped
+            public float MidBlendNormalizedStartPoint;
+
             public StackFrame() : base(new ()) {}
             public bool Active => Source.IsValid;
 
@@ -234,7 +237,7 @@ namespace Unity.Cinemachine
             if (activeCamera != outgoingCamera)
             {
                 bool backingOutOfBlend = false;
-                float backingOutPercentCompleted = 0;
+                float normalizedBlendPosition = 0;
                 float duration = 0;
 
                 // Do we need to create a game-play blend?
@@ -248,7 +251,8 @@ namespace Unity.Cinemachine
                         // Are we backing out of a blend-in-progress?
                         backingOutOfBlend = frame.Source.CamA == activeCamera && frame.Source.CamB == outgoingCamera;
                         if (backingOutOfBlend && frame.Blend.Duration > kEpsilon)
-                            backingOutPercentCompleted = frame.Blend.TimeInBlend / frame.Blend.Duration;
+                            normalizedBlendPosition = frame.MidBlendNormalizedStartPoint 
+                                + (1 - frame.MidBlendNormalizedStartPoint) * frame.Blend.TimeInBlend / frame.Blend.Duration;
 
                         frame.Source.CamA = outgoingCamera;
                         frame.Source.BlendCurve = blendDef.BlendCurve;
@@ -282,8 +286,7 @@ namespace Unity.Cinemachine
                         snapshot = true;
 
                     // Avoid nesting too deeply
-                    var nbs = frame.Blend.CamA as NestedBlendSource;
-                    if (!snapshot && nbs != null && nbs.Blend.CamA is NestedBlendSource nbs2)
+                    if (!snapshot && frame.Blend.CamA is NestedBlendSource nbs && nbs.Blend.CamA is NestedBlendSource nbs2)
                         nbs2.Blend.CamA = new SnapshotBlendSource(nbs2.Blend.CamA);
 
                     // Special case: if backing out of a blend-in-progress
@@ -292,15 +295,8 @@ namespace Unity.Cinemachine
                     if (backingOutOfBlend)
                     {
                         snapshot = true; // always use a snapshot for this to prevent pops
-                        var adjustedDuration = frame.Blend.TimeInBlend;
-                        if (nbs != null)
-                            adjustedDuration += nbs.Blend.Duration - nbs.Blend.TimeInBlend;
-                        else if (frame.Blend.CamA is SnapshotBlendSource sbs)
-                            adjustedDuration += sbs.RemainingTimeInBlend;
-
-                        // In the event that the blend times in the different directions are different,
-                        // don't make the blend longer than it would otherwise have been
-                        duration = Mathf.Min(duration * backingOutPercentCompleted, adjustedDuration);
+                        duration = duration * normalizedBlendPosition; // skip first part of blend
+                        normalizedBlendPosition = 1 - normalizedBlendPosition;
                     }
 
                     // Chain to existing blend
@@ -313,13 +309,14 @@ namespace Unity.Cinemachine
                         camA = new NestedBlendSource(blendCopy);
                     }
                 }
-                // For the event, we use the raw outgoing camera, not the blend source
+                // For the event, we use the raw outgoing camera, not the actual blend source
                 frame.Blend.CamA = outgoingCamera;
                 frame.Blend.CamB = activeCamera;
                 frame.Blend.BlendCurve = frame.Source.BlendCurve;
                 frame.Blend.Duration = duration;
                 frame.Blend.TimeInBlend = 0;
                 frame.Blend.CustomBlender = frame.Source.CustomBlender;
+                frame.MidBlendNormalizedStartPoint = normalizedBlendPosition;
 
                 // Allow the client to modify the blend
                 if (duration > 0)

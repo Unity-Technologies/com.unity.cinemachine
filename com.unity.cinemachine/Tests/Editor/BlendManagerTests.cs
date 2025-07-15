@@ -12,11 +12,21 @@ namespace Unity.Cinemachine.Tests.Editor
             public FakeCamera(string name) => m_Name = name;
             public string Name => m_Name;
             public string Description => string.Empty;
-            public CameraState State => CameraState.Default;
+            public CameraState State 
+            {
+                get 
+                {
+                    var state = CameraState.Default;
+                    state.RawPosition = Position;
+                    return state;
+                }
+            }
             public bool IsValid => true;
             public ICinemachineMixer ParentCamera => null;
             public void UpdateCameraState(Vector3 worldUp, float deltaTime) {}
             public void OnCameraActivated(ICinemachineCamera.ActivationEventParams evt) {}
+
+            public Vector3 Position;
         }
 
         class FakeMixer : FakeCamera, ICinemachineMixer
@@ -61,7 +71,7 @@ namespace Unity.Cinemachine.Tests.Editor
         void Reset(float blendTime)
         {
             m_BlendManager.LookupBlendDelegate = (outgoing, incoming)
-                => new (CinemachineBlendDefinition.Styles.EaseInOut, blendTime); // constant blend time
+                => new (CinemachineBlendDefinition.Styles.Linear, blendTime); // linear blend, constant blend time
             m_BlendManager.OnEnable();
             ProcessFrame(null, 0.1f);
             ResetCounters();
@@ -223,6 +233,51 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.AreEqual(1, m_BlendCreatedCount);
             Assert.AreEqual(1, m_BlendFinishedCount);
             Assert.That(m_BlendManager.IsBlending, Is.False);
+        }
+
+        [Test]
+        public void TestBlendReversal()
+        {
+            Reset(1); // constant blend time of 1
+            m_Cam1.Position = new Vector3(0, 0, 0);
+            m_Cam2.Position = new Vector3(1, 0, 0);
+
+            // Start with cam1
+            ProcessFrame(m_Cam1, 0.1f);
+            Assert.That(m_BlendManager.IsBlending, Is.False);
+
+            // Activate cam2
+            ProcessFrame(m_Cam2, 0.5f);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+            Assert.AreEqual(0.5f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
+
+            // Reverse the blend to cam1
+            ProcessFrame(m_Cam1, 0.2f);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+            Assert.AreEqual(0.3f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
+
+            // Reverse the blend again to cam2
+            ProcessFrame(m_Cam2, 0.1f);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+            Assert.AreEqual(0.4f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
+
+            ProcessFrame(m_Cam2, 0.4f);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+            Assert.AreEqual(0.8f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
+
+            // Reverse the blend again to cam1
+            ProcessFrame(m_Cam1, 0.1f);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+            Assert.AreEqual(0.7f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
+
+            // And finish the blend on cam2
+            ProcessFrame(m_Cam2, 0.1f);
+            Assert.That(m_BlendManager.IsBlending, Is.True);
+            Assert.AreEqual(0.8f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
+
+            ProcessFrame(m_Cam2, 0.201f);
+            Assert.That(m_BlendManager.IsBlending, Is.False);
+            Assert.AreEqual(1.0f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
         }
     }
 }
