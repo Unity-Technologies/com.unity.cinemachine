@@ -121,6 +121,19 @@ namespace Unity.Cinemachine
         [FoldoutWithEnabledButton]
         public OversizeWindowSettings OversizeWindow;
 
+        /// <summary>See whether the virtual camera has been moved by the confiner</summary>
+        /// <param name="vcam">The virtual camera in question.  This might be different from the
+        /// virtual camera that owns the confiner, in the event that the camera has children</param>
+        /// <returns>True if the virtual camera has been repositioned</returns>
+        public bool CameraWasDisplaced(CinemachineVirtualCameraBase vcam) => GetCameraDisplacementDistance(vcam) > 0;
+
+        /// <summary>See how far virtual camera has been moved by the confiner</summary>
+        /// <param name="vcam">The virtual camera in question.  This might be different from the
+        /// virtual camera that owns the confiner, in the event that the camera has children</param>
+        /// <returns>True if the virtual camera has been repositioned</returns>
+        public float GetCameraDisplacementDistance(CinemachineVirtualCameraBase vcam)
+            => GetExtraState<VcamExtraState>(vcam).PreviousDisplacement.magnitude;
+            
         class VcamExtraState : VcamExtraStateBase
         {
             public ConfinerOven.BakedSolution BakedSolution;
