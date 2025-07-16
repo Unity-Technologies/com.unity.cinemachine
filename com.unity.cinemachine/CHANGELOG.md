@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Unreleased
 
 ### Bugfixes
+- CinemachineVolumeSettings: changes to Focal Length and Aperture settings were not being applied while auto-focus was enabled.
 - InheritPosition was not inheriting the camera position in all cases.
 
 ### Added
