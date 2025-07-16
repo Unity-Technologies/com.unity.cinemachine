@@ -137,8 +137,6 @@ namespace Unity.Cinemachine
         /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
-            PreviousStateIsValid = false;
-
             UpdatePipelineCache();
             for (int i = 0; i < m_Pipeline.Length; ++i)
                 if (m_Pipeline[i] != null)
