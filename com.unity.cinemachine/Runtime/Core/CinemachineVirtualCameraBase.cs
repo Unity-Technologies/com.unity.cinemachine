@@ -677,6 +677,7 @@ namespace Unity.Cinemachine
             }
             if (ParentCamera is CinemachineVirtualCameraBase vcamParent)
                 vcamParent.ForceCameraPosition(vcam, pos, rot);
+            PreviousStateIsValid = true;
         }
 
         /// <summary>
