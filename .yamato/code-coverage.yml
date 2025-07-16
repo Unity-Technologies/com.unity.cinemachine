@@ -9,7 +9,7 @@ code_coverage_-_ubuntu_-_trunk:
     flavor: b1.large
   commands:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
-  - command: upm-ci package test -u trunk --package-path com.unity.cinemachine --type package-tests --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:-*Tests*;" --extra-utr-arg="--coverage-results-path=${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults --coverage-upload-options=\"reportsDir:upm-ci~/test-results;name:Ubuntu_trunk;flags:Ubuntu_trunk\""
+  - command: upm-ci package test -u trunk --package-path com.unity.cinemachine --type package-tests --enable-code-coverage --code-coverage-options "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor" --extra-utr-arg="--coverage-results-path=${YAMATO_SOURCE_DIR}/upm-ci~/test-results/CoverageResults --coverage-upload-options=\"reportsDir:upm-ci~/test-results;name:Ubuntu_trunk;flags:Ubuntu_trunk\""
   artifacts:
     packages:
       paths:
