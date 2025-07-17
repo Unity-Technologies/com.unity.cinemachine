@@ -195,8 +195,47 @@ namespace Unity.Cinemachine
                 c.Driver.ProcessInput(ref m_Axes[i].DrivenAxis(), c.InputValue, deltaTime);
             }
         }
-    }
 
+        int GetControllerIndex(string axisName)
+        {
+            for (int i = 0; i < Controllers.Count; ++i)
+            {
+                var c = Controllers[i];
+                if (c.Name == axisName)
+                    return i;
+            }
+            return -1;
+        }
+
+        /// <summary>
+        /// Get the controller for a given axis name.  The axis name is the name displayed 
+        /// for the axis foldout on the inspector.
+        /// </summary>
+        /// <param name="axisName">The name of the axis, as it appears in the inspector.</param>
+        /// <returns>The first Controller object with the matching axis name, or null if not found.</returns>
+        public InputAxisControllerBase<T>.Controller GetController(string axisName)
+        {
+            int i = GetControllerIndex(axisName);
+            return i < 0 ? null : Controllers[i];
+        }
+
+        /// <summary>
+        /// Triggers recentering for a given axis, and also cancels any input currently in progrress for that axis.
+        /// </summary>
+        /// <param name="axisName">The name of the axis, as it appears in the inspector.</param>
+        /// <returns>True if the axis was found and recentering triggered, false otherwise</returns>
+        public bool TriggerRecentering(string axisName)
+        {
+            int i = GetControllerIndex(axisName);
+            if (i >= 0)
+            {
+                var c = Controllers[i];
+                c.Driver.CancelCurrentInput(ref m_Axes[i].DrivenAxis());
+                m_Axes[i].DrivenAxis().TriggerRecentering();
+            }
+            return i >= 0;
+        }
+    }
 
     /// <summary>
     /// This is a base class for a behaviour that is used to drive IInputAxisOwner behaviours,
@@ -331,6 +370,22 @@ namespace Unity.Cinemachine
 
             m_ControllerManager.UpdateControllers(this, deltaTime);
         }
+        
+        /// <summary>
+        /// Get the controller for a given axis name.  The axis name is the name displayed 
+        /// for the axis foldout on the inspector.
+        /// </summary>
+        /// <param name="axisName">The name of the axis, as it appears in the inspector.</param>
+        /// <returns>The first Controller object with the matching axis name, or null if not found.</returns>
+        public Controller GetController(string axisName) => m_ControllerManager.GetController(axisName);
+
+        /// <summary>
+        /// Triggers recentering for a given axis, and also cancels any input currently in progress for that axis.
+        /// This ensures that the recentering begins immediately.
+        /// </summary>
+        /// <param name="axisName">The name of the axis, as it appears in the inspector.</param>
+        /// <returns>True if the axis was found and recentering triggered, false otherwise</returns>
+        public bool TriggerRecentering(string axisName) => m_ControllerManager.TriggerRecentering(axisName);
     }
 }
 
