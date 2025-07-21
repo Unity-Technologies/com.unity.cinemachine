@@ -202,11 +202,13 @@ namespace Unity.Cinemachine
                             CalculatedFocusDistance = focusDistance = Mathf.Max(0, focusDistance);
                             dof.focusDistance.value = focusDistance;
                             state.Lens.PhysicalProperties.FocusDistance = focusDistance;
+#if CINEMACHINE_URP
                             if (profile.TryGet(out DepthOfField srcDof))
                             {
                                 dof.aperture.value = srcDof.aperture.value;
                                 dof.focalLength.value = srcDof.focalLength.value;
                             }
+#endif
                             extra.ProfileCopy.isDirty = true;
                         }
                         profile = extra.ProfileCopy;

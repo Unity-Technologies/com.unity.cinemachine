@@ -22,7 +22,7 @@ all_preview_apv_jobs:
   - path: .yamato/wrench/preview-a-p-v.yml#preview_apv_-_6000_3_-_windows
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 2022.3 manifest (MacOS).
 preview_apv_-_2022_3_-_macos:
@@ -39,7 +39,7 @@ preview_apv_-_2022_3_-_macos:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=2022.3 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -73,10 +73,10 @@ preview_apv_-_2022_3_-_macos:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 2022.3 manifest (Ubuntu).
 preview_apv_-_2022_3_-_ubuntu:
@@ -93,7 +93,7 @@ preview_apv_-_2022_3_-_ubuntu:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=2022.3 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -127,10 +127,10 @@ preview_apv_-_2022_3_-_ubuntu:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 2022.3 manifest (Windows).
 preview_apv_-_2022_3_-_windows:
@@ -148,7 +148,7 @@ preview_apv_-_2022_3_-_windows:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=2022.3 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -182,10 +182,10 @@ preview_apv_-_2022_3_-_windows:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (MacOS).
 preview_apv_-_6000_0_-_macos:
@@ -202,7 +202,7 @@ preview_apv_-_6000_0_-_macos:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.0 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -236,10 +236,10 @@ preview_apv_-_6000_0_-_macos:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (Ubuntu).
 preview_apv_-_6000_0_-_ubuntu:
@@ -256,7 +256,7 @@ preview_apv_-_6000_0_-_ubuntu:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.0 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -290,10 +290,10 @@ preview_apv_-_6000_0_-_ubuntu:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.0 manifest (Windows).
 preview_apv_-_6000_0_-_windows:
@@ -311,7 +311,7 @@ preview_apv_-_6000_0_-_windows:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.0 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -345,10 +345,10 @@ preview_apv_-_6000_0_-_windows:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.1 manifest (MacOS).
 preview_apv_-_6000_1_-_macos:
@@ -365,7 +365,7 @@ preview_apv_-_6000_1_-_macos:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.1/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.1/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.1 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -399,10 +399,10 @@ preview_apv_-_6000_1_-_macos:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.1 manifest (Ubuntu).
 preview_apv_-_6000_1_-_ubuntu:
@@ -419,7 +419,7 @@ preview_apv_-_6000_1_-_ubuntu:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.1/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.1/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.1 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -453,10 +453,10 @@ preview_apv_-_6000_1_-_ubuntu:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.1 manifest (Windows).
 preview_apv_-_6000_1_-_windows:
@@ -474,7 +474,7 @@ preview_apv_-_6000_1_-_windows:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.1/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.1/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.1 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -508,10 +508,10 @@ preview_apv_-_6000_1_-_windows:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.2 manifest (MacOS).
 preview_apv_-_6000_2_-_macos:
@@ -528,7 +528,7 @@ preview_apv_-_6000_2_-_macos:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.2/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.2/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.2 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -562,10 +562,10 @@ preview_apv_-_6000_2_-_macos:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.2 manifest (Ubuntu).
 preview_apv_-_6000_2_-_ubuntu:
@@ -582,7 +582,7 @@ preview_apv_-_6000_2_-_ubuntu:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.2/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.2/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.2 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -616,10 +616,10 @@ preview_apv_-_6000_2_-_ubuntu:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.2 manifest (Windows).
 preview_apv_-_6000_2_-_windows:
@@ -637,7 +637,7 @@ preview_apv_-_6000_2_-_windows:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u 6000.2/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.2/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.2 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -671,10 +671,10 @@ preview_apv_-_6000_2_-_windows:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.3 manifest (MacOS).
 preview_apv_-_6000_3_-_macos:
@@ -691,7 +691,7 @@ preview_apv_-_6000_3_-_macos:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.3 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -725,10 +725,10 @@ preview_apv_-_6000_3_-_macos:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.3 manifest (Ubuntu).
 preview_apv_-_6000_3_-_ubuntu:
@@ -745,7 +745,7 @@ preview_apv_-_6000_3_-_ubuntu:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.3 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -779,10 +779,10 @@ preview_apv_-_6000_3_-_ubuntu:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
 # Functional tests for dependents found in the latest 6000.3 manifest (Windows).
 preview_apv_-_6000_3_-_windows:
@@ -800,7 +800,7 @@ preview_apv_-_6000_3_-_windows:
   - command: npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm
     timeout: 20
     retries: 10
-  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: python PythonScripts/preview_apv.py --wrench-config=.yamato/wrench/wrench_config.json --editor-version=6000.3 --testsuite=editor,playmode --artifacts-path=PreviewApvArtifacts~
@@ -834,8 +834,8 @@ preview_apv_-_6000_3_-_windows:
   dependencies:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 0.12.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 0.12.2.0
 
