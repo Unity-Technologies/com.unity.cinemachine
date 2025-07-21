@@ -404,6 +404,7 @@ namespace Unity.Cinemachine
         /// Cancel any current input, resetting the speed to zero.  This will eliminate any 
         /// residual acceleration or deceleration of the input value.
         /// </summary>
+        /// <param name="axis">The axis in question</param>
         public void CancelCurrentInput(ref InputAxis axis)
         {
             m_CurrentSpeed = 0;
