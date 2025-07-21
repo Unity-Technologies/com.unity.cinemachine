@@ -303,8 +303,9 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary>Trigger re-centering immediately, regardless of whether re-centering
-        /// is enabled or the wait time has elapsed.</summary>
+        /// <summary>Trigger recentering immediately, regardless of whether recentering
+        /// is enabled or the wait time has elapsed.  Note that Recentering will be automatically canceled
+        /// if any change to the input value is detected.</summary>
         public void TriggerRecentering() => m_RecenteringState.m_ForceRecenter = true;
 
         /// <summary>Cancel any current re-centering in progress, and reset the wait time</summary>
@@ -397,6 +398,17 @@ namespace Unity.Cinemachine
         {
             m_CurrentSpeed = 0;
             axis.Reset();
+        }
+
+        /// <summary>
+        /// Cancel any current input, resetting the speed to zero.  This will eliminate any 
+        /// residual acceleration or deceleration of the input value.
+        /// </summary>
+        /// <param name="axis">The axis in question</param>
+        public void CancelCurrentInput(ref InputAxis axis)
+        {
+            m_CurrentSpeed = 0;
+            axis.SetValueAndLastValue(axis.Value);
         }
     }
 }

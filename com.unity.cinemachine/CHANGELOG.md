@@ -14,6 +14,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.
+- Added `InputAxisControllerBase.GetController()` method, to conveniently fetch an Input Controller having a specific name.
+- Added `InputAxisControllerBase.TriggerRecentering()` to trigger recentering of an axis having a specific name.
 
 
 ## [3.1.4] - 2025-06-10
