@@ -4,6 +4,7 @@ using RecipeEngine.Api.Jobs;
 using RecipeEngine.Api.Recipes;
 using RecipeEngine.Modules.Wrench.Models;
 using Unity.Yamato.JobDefinition;
+using CancelLeftoverJobs = RecipeEngine.Api.Triggers.CancelLeftoverJobs;
 using Dependency = RecipeEngine.Api.Dependencies.Dependency;
 
 namespace Cinemachine.Cookbook.Recipes;
@@ -12,6 +13,7 @@ public class Triggers : RecipeBase
 {
     private readonly CinemachineSettings config = new ();
     private const string packageName = "com.unity.cinemachine";
+    private const string branchName = "main";
 
     protected override ISet<Job> LoadJobs()
         => Combine.Collections(GetTriggers()).SelectJobs();
@@ -22,28 +24,33 @@ public class Triggers : RecipeBase
         var validationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation];
         var projectTests = new ProjectTest().AsDependencies();
         var codeCoverage = new CodeCoverage().AsDependencies();
+        
         builders.Add(JobBuilder.Create($"Nightly Trigger")
             .WithDependencies(projectTests)
             .WithDependencies(validationTests)
             .WithDescription("Nightly check on main")
-
         );
+        
         builders.Add(JobBuilder.Create($"All Trigger")
             .WithDependencies(projectTests)
             .WithDependencies(validationTests)
             .WithDependencies(codeCoverage)
-            .WithPullRequestTrigger(pr => pr.ExcludeDraft())
-            .WithDescription("All tests defined in recipes.")
+            .WithBranchesTrigger(b => b.Only(branchName, "release[/]\\\\d+[.]\\\\d+)"))
+            .WithDescription("All tests defined in recipes. Run in changes to mainline and release branches.")
         );
 
-        var prsubset = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("windows") || job.JobId.Contains("6000"));
+        var prProjectTests = projectTests.Where(job => job.JobId.Contains("Ubuntu"));
+        var prValidationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("ubuntu"));
 
-        builders.Add(JobBuilder.Create("Package CI")
-            .WithDependencies(prsubset)
-            .WithPullRequestTrigger(pr => pr.ExcludeDraft())
-            .WithBranchesTrigger(b => b.Only("main", "release[/]\\\\d+[.]\\\\d+)"))
-            .WithDescription("Tests to run on PRs and mainline branches.")
+        builders.Add(JobBuilder.Create("Pull Request Tests Trigger")
+            .WithDependencies(prProjectTests)
+            .WithDependencies(prValidationTests)
+            .WithDependencies(codeCoverage)
+            .WithPullRequestTrigger(pr => pr.ExcludeDraft(),
+                true, CancelLeftoverJobs.Always)
+            .WithDescription("Tests to run on PRs.")
         );
+        
         return builders;
     }
 }
