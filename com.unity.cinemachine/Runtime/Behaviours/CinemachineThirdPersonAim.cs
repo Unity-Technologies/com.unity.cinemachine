@@ -31,6 +31,7 @@ namespace Unity.Cinemachine
 
         /// <summary>How far to project the object detection ray.</summary>
         [Tooltip("How far to project the object detection ray")]
+        [Delayed]
         public float AimDistance;
 
         /// <summary>If set, camera noise will be adjusted to stabilize target on screen.</summary>

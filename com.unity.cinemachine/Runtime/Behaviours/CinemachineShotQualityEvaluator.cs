@@ -47,6 +47,7 @@ namespace Unity.Cinemachine
 
             /// <summary>Shots with targets closer to the camera than this will not get a quality boost</summary>
             [Tooltip("Shots with targets closer to the camera than this will not get a quality boost")]
+            [Delayed]
             public float NearLimit;
 
             /// <summary>Shots with targets farther from the camera than this will not get a quality boost</summary>

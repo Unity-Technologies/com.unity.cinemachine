@@ -23,6 +23,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("Camera will try to maintain this distance from any obstacle or terrain.  Increase it "
             + "if necessary to keep the camera from clipping the near edge of obsacles.")]
+        [Delayed]
         public float CameraRadius = 0.4f;
 
         /// <summary>Settings for pushing the camera out of intersecting objects</summary>
