@@ -47,6 +47,7 @@ namespace Unity.Cinemachine
         /// </summary>
         [Tooltip("Scale the zoom by this amount (normal = 1)")]
         [FormerlySerializedAs("m_ZoomScale")]
+        [Delayed]
         public float ZoomScale;
 
         /// <summary>
