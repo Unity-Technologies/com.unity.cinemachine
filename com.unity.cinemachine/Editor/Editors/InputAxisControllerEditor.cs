@@ -13,7 +13,7 @@ namespace Unity.Cinemachine.Editor
 
 #if ENABLE_LEGACY_INPUT_MANAGER && CINEMACHINE_UNITY_INPUTSYSTEM
             ux.AddChild(new HelpBox("Old and new input systems are both active.  For simplicity and clarity, "
-                    + "it's recommended to select one of them.\nYou can do this in Player Settings > Active Input Handling.",
+                    + "it's recommended to activate only one of them.\nYou can do this in Player Settings > Active Input Handling.",
                 HelpBoxMessageType.Info));
 #endif
             var prop = serializedObject.GetIterator();

@@ -591,28 +591,42 @@ namespace Unity.Cinemachine.Editor
             }
         }
 
-        public static VisualElement HelpBoxWithButton(
-            string message, HelpBoxMessageType messageType,
-            string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
+        /// <summary>
+        /// Add a widget to the bottom right of a HelpBox.  Can be called repeatedly to add more widgets.
+        /// <summary>
+        public static VisualElement AddWidget(this HelpBox box, VisualElement widget)
         {
-            var box = new VisualElement { style =
+            const string kButtonContainerName = "help-box-button-container";
+            var bottomContainer = box.Q(kButtonContainerName);
+            if (bottomContainer == null)
             {
-                flexDirection = FlexDirection.Row,
-                paddingTop = 8, paddingBottom = 8, paddingLeft = 8, paddingRight = 8
-            }};
-            box.AddToClassList("unity-help-box");
-            var innerBox = box.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Column, flexGrow = 1 }});
+                box.style.flexDirection = FlexDirection.Column;
+                box.style.alignItems = Align.Stretch;
+                var topContainer = new VisualElement() 
+                    { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center, marginBottom = 2, }};
+                var children = new List<VisualElement>();
+                children.AddRange(box.Children());
+                foreach (var child in children)
+                    topContainer.Add(child);
+                bottomContainer = new VisualElement() 
+                { 
+                    name = kButtonContainerName,
+                    style = { flexDirection = FlexDirection.Row, justifyContent = Justify.FlexEnd 
+                }};
+                box.Add(topContainer);
+                box.Add(bottomContainer);
+            }
+            bottomContainer.Add(widget);
+            return widget;
+        }
 
-            var row = innerBox.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1 }});
-            var icon = row.AddChild(MiniHelpIcon("", messageType));
-            icon.style.alignSelf = Align.Auto;
-            icon.style.marginRight = 6;
-            var text = row.AddChild(new Label(message)
-                { style = { flexGrow = 1, flexBasis = 100, alignSelf = Align.Center, whiteSpace = WhiteSpace.Normal }});
-
-            var buttons = innerBox.AddChild(new VisualElement { style = { flexDirection = FlexDirection.Row, flexGrow = 1, marginTop = 6 }});
-            buttons.Add(new VisualElement { style = { flexGrow = 1 }});
-            var button = buttons.AddChild(new Button(onClicked) { text = buttonText });
+        /// <summary>
+        /// Add a button to the bottom right of a HelpBox.  Can be called repeatedly to add more buttons.
+        /// <summary>
+        public static Button AddButton(
+            this HelpBox box, string buttonText, Action onClicked, ContextualMenuManipulator contextMenu = null)
+        {
+            var button = new Button(onClicked) { text = buttonText };
             if (contextMenu != null)
             {
                 contextMenu.activators.Clear();
@@ -620,8 +634,15 @@ namespace Unity.Cinemachine.Editor
                 button.AddManipulator(contextMenu);
                 button.clickable = null;
             }
-            return box;
+            box.AddWidget(button);
+            return button;
         }
+
+        /// <summary>
+        /// Change the text of a helpbox message
+        /// </summary>
+        public static void SetText(this HelpBox box, string text) 
+            => box.Q<Label>(className: "unity-help-box__label").text = text;
 
         public static void AddRemainingProperties(VisualElement ux, SerializedProperty property)
         {

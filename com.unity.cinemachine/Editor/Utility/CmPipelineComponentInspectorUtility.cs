@@ -36,9 +36,8 @@ namespace Unity.Cinemachine.Editor
                     requiredTargets = a.RequiredTarget;
             }
             var targets = editor.targets;
-            var noCameraHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
-                k_NeedCamera, HelpBoxMessageType.Warning,
-                k_AddCamera, () => AddCmCameraToTargets(targets)));
+            var noCameraHelp = ux.AddChild(new HelpBox(k_NeedCamera, HelpBoxMessageType.Warning));
+            noCameraHelp.AddButton(k_AddCamera, () => AddCmCameraToTargets(targets));
 
             var targetText = string.Empty;
             var lookAtText = string.Empty;
@@ -156,14 +155,12 @@ namespace Unity.Cinemachine.Editor
                 });
             }
 
-            var help = ux.AddChild(InspectorUtility.HelpBoxWithButton(
-                text, HelpBoxMessageType.Info, "Add Input Controller",
-                () =>
-                {
-                    if (s_AllAxisControllerTypes.Count == 1)
-                        AddController(s_AllAxisControllerTypes[0]);
-                },
-                menu));
+            var help = ux.AddChild(new HelpBox(text, HelpBoxMessageType.Info));
+            help.AddButton("Add Input Controller", () =>
+            {
+                if (s_AllAxisControllerTypes.Count == 1)
+                    AddController(s_AllAxisControllerTypes[0]);
+            }, menu);
 
             ux.TrackAnyUserActivity(() =>
             {

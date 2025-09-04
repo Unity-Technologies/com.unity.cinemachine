@@ -43,9 +43,8 @@ namespace Unity.Cinemachine.Editor
                 + "separate objects, not parented to each other.</b>",
                 HelpBoxMessageType.Error));
 
-            var noBrainMessage = ux.AddChild(InspectorUtility.HelpBoxWithButton(
-                "A CinemachineBrain is required in the scene.",
-                HelpBoxMessageType.Warning, "Add Brain", () => CinemachineMenu.GetOrCreateBrain()));
+            var noBrainMessage = ux.AddChild(new HelpBox("A CinemachineBrain is required in the scene.", HelpBoxMessageType.Warning));
+            noBrainMessage.AddButton("Add Brain", () => CinemachineMenu.GetOrCreateBrain());
 
             var navelGazeMessage = ux.AddChild(new HelpBox(
                 "The camera is trying to look at itself.  Please check your targets and settings.",

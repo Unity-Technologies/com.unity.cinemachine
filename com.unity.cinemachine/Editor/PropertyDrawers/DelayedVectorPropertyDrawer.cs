@@ -16,13 +16,17 @@ namespace Unity.Cinemachine.Editor
             ux.Contents.style.minWidth = 100;
             return ux;
 
+            // Unfortunatley this mess is necessary because we want to support delayed-friendly dragging
+            // (which cancels delay while label-dragging), but it's not possible to replace the
+            // existing draggers provided by the default PropertyField, so we have to make our own fields
+            // and do our best to mimic the layout of the default ones.
             VisualElement ChildField(SerializedProperty p)
             {
                 if (p == null)
-                    return new VisualElement { style = { flexBasis = 30, flexGrow = 1, marginLeft = 6 } };
+                    return new VisualElement { style = { flexBasis = 30, flexGrow = 1, marginLeft = 8 } };
                 var f = new InspectorUtility.CompactPropertyField(p)
-                    { style = { flexBasis = 30, flexGrow = 1, marginLeft = 9 } };
-                f.Label.style.minWidth = 15;
+                    { style = { flexBasis = 30, flexGrow = 1, marginLeft = 8 } };
+                f.Label.style.minWidth = 16;
                 f.OnInitialGeometry(() =>
                 {
                     f.SafeSetIsDelayed();
