@@ -247,19 +247,15 @@ namespace Unity.Cinemachine.Editor
         /// <param name="tooltip">optional tooltip for the header</param>
         public static void AddHeader(this VisualElement ux, string text, string tooltip = "")
         {
-            ux.AddChild(new Label()
+            var container = ux.AddChild(new VisualElement());
+            container.AddToClassList("unity-decorator-drawers-container");
+            var label = container.AddChild(new Label()
             {
-                text = $"<b>{text}</b>",
+                text = text,
                 tooltip = tooltip,
-                focusable = false,
-                style =
-                {
-                    //height = SingleLineHeight,
-                    marginLeft = 3, // GML TODO: remove hardcoded margin
-                    marginTop = SingleLineHeight / 2,
-                    marginBottom = EditorGUIUtility.standardVerticalSpacing / 2,
-                }
+                focusable = false
             });
+            label.AddToClassList("unity-header-drawer__label");
         }
 
         /// <summary>
