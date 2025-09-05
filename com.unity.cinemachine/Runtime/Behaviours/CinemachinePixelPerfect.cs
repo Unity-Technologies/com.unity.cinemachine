@@ -2,6 +2,12 @@ using UnityEngine;
 
 #if CINEMACHINE_URP || CINEMACHINE_PIXEL_PERFECT_2_0_3
 
+#if CINEMACHINE_URP
+    using PixelPerfectCamera = UnityEngine.Rendering.Universal.PixelPerfectCamera;
+#else
+    using PixelPerfectCamera = UnityEngine.U2D.PixelPerfectCamera;
+#endif
+
 namespace Unity.Cinemachine
 {
     /// <summary>
@@ -35,28 +41,33 @@ namespace Unity.Cinemachine
             if (brain == null || !brain.IsLiveChild(vcam))
                 return;
 
-#if CINEMACHINE_URP
-  #if UNITY_2023_2_OR_NEWER
-            UnityEngine.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
-  #else
-            UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
-  #endif
-#elif CINEMACHINE_PIXEL_PERFECT_2_0_3
-            UnityEngine.U2D.PixelPerfectCamera pixelPerfectCamera;
-#endif
-            brain.TryGetComponent(out pixelPerfectCamera);
-            if (pixelPerfectCamera == null || !pixelPerfectCamera.isActiveAndEnabled)
+            var pixelPerfectCamera = GetPixelPerfectCamera(vcam, true);
+            if (pixelPerfectCamera == null)
                 return;
-
 #if UNITY_EDITOR
             if (!UnityEditor.EditorApplication.isPlaying && !pixelPerfectCamera.runInEditMode)
                 return;
 #endif
-
             var lens = state.Lens;
             lens.OrthographicSize = pixelPerfectCamera.CorrectCinemachineOrthoSize(lens.OrthographicSize);
             state.Lens = lens;
         }
+
+        PixelPerfectCamera GetPixelPerfectCamera(CinemachineVirtualCameraBase vcam, bool liveOnly)
+        {
+            var brain = CinemachineCore.FindPotentialTargetBrain(vcam);
+            if (brain == null || (liveOnly && !brain.IsLiveChild(vcam)))
+                return null;
+            var camera = brain.OutputCamera;
+            if (camera == null || !camera.TryGetComponent(out PixelPerfectCamera pixelPerfectCamera) 
+                    || !pixelPerfectCamera.isActiveAndEnabled)
+                return null;
+            return pixelPerfectCamera;
+        }
+
+        // Used by inspector
+        internal bool HasValidPixelPerfectCamera() 
+            => TryGetComponent<CinemachineVirtualCameraBase>(out var vcam) && GetPixelPerfectCamera(vcam, false) != null;
     }
 }
 #else
