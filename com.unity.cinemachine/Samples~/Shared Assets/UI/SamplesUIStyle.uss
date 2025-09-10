@@ -38,8 +38,8 @@ Box {
     position: absolute;
     top: 5%;
     bottom: auto;
-    left: 10%;
-    right: 10%;
+    left: 20%;
+    right: 20%;
     max-height: 80%;
     justify-content: space-between;
 }
