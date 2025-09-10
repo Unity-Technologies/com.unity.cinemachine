@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Samples
         [Tooltip("Minimum distance at which to place the perspective camera which will mimic the orthographic one.  \n"
             + "Changing this distance may affect the feel of the blend: a large distance will produce a better approximation "
             + "of the ortho camera, but will also make the FOV change happen more quickly at the start of the blend.  \n"
-            + "Keep this ditance as small as you can tolerate, to avoid precision errors which can be present at "
+            + "Keep this distance as small as you can tolerate, to avoid precision errors which can be present at "
             + "large camera distances.")]
         public float FakeOrthoCameraDistance = 100;
 
