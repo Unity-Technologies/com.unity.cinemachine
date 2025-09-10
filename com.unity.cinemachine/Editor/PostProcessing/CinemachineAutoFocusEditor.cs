@@ -45,12 +45,12 @@ namespace Unity.Cinemachine.Editor
             var shaderDisplay = ux.AddChild(new PropertyField(computeShaderProp));
             shaderDisplay.SetEnabled(false);
 
-            var importHelp = ux.AddChild(InspectorUtility.HelpBoxWithButton(
+            var importHelp = ux.AddChild(new HelpBox(
                 $"The {k_ComputeShaderName} shader needs to be imported into "
                     + "the project. It will be imported by default into the Assets root.  "
                     + "After importing, you can move it elsewhere but don't rename it.",
-                    HelpBoxMessageType.Warning,
-                "Import\nShader", () =>
+                    HelpBoxMessageType.Warning));
+            importHelp.AddButton("Import\nShader", () =>
             {
                 // Check if it's already imported, just in case
                 var shader = FindShader();
@@ -65,7 +65,7 @@ namespace Unity.Cinemachine.Editor
                     shader = AssetDatabase.LoadAssetAtPath<ComputeShader>(shaderAssetPath);
                 }
                 AssignShaderToTarget(shader);
-            }));
+            });
 #endif
 
             ux.TrackPropertyWithInitialCallback(focusTargetProp, (p) =>
