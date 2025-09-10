@@ -20,22 +20,22 @@ Independently of Default Blend and Blender Settings assets, the Timeline also co
 
 Note that this precise control is obtained only when overlapping Cinemachine Shots.  If you use Activation Tracks in Timeline to activate and deactivate Cinemachine Cameras, then the standard blending controls (Default Blend and Blender Settings) will apply for those blends.
 
-## `CinemachineCore.BlendCreatedEvent`
+## `CinemachineCore.GetBlendOverride`
 
-Every time a blend is created by Cinemachine, an event is fired giving you a chance to override the settings of that blend based on arbitrary dynamic criteria.
+Every time a blend is created by Cinemachine, an delegate is called giving you a chance to override the settings of that blend based on arbitrary dynamic criteria.
 
-If you install a handler for this event (perhaps by using the CinemachineBrainEvents class), then your handler can check things like game context and decide either to allow the blend to remain as-is, or to override such things as blend style, blend duration, or blend algorithm.
+If you install a handler for this delegate, then your handler can check things like game context and decide either to allow the blend to remain as-is, or to override such things as blend style, blend duration, or blend algorithm.
 
 This is an advanced technique and requires scripting to implement the event handler.
 
-Note that this event is NOT fired for blends created by overlapping Timeline Shots.  This is because there is an expectation that Timeline precisely controls the blending, and this cannot be overridden.
+Note that this delegate is NOT called for blends created by overlapping Timeline Shots.  This is because there is an expectation that Timeline precisely controls the blending, and this cannot be overridden.
 
 ## `CinemachineCore.GetCustomBlender`
 
-The most advanced level of control is customizing the blend algorithm itself.  Cinemachine has a sophisticated algorithm for lerping camera states (`CameraState.Lerp()`), which interpoltes position, rotation, lens settings, and other attributes while taking into account blend hints and the screen position of the lookAt target.
+The most advanced level of control is customizing the blend algorithm itself.  Cinemachine has a sophisticated algorithm for lerping camera states (`CameraState.Lerp()`), which interpolates position, rotation, lens settings, and other attributes while taking into account blend hints and the screen position of the lookAt target.
 
 These things are all lerped at the same rate, so position, rotation, and lens all change together.  You may have a situation where you want the rotation to happen first, or the position to follow a path, or some other requirement not handled natively by Cinemachine.
 
-In this case, your recourse is to author a custom blender, which implements the `CinemachineBlend.IBlender` interface.  You can provide Cinemachine with this blender by hooking into the `CinemachineCore.GetCustomBlender` delegate.  Cinemachine will call this whenever a blend is created - even from Timeline.  You can check the cameras to be blended and whatever other state you like, and either provide a custom blender or returen null for the default one.
+In this case, your recourse is to author a custom blender, which implements the `CinemachineBlend.IBlender` interface.  You can provide Cinemachine with this blender by hooking into the `CinemachineCore.GetCustomBlender` delegate.  Cinemachine will call this whenever a blend is created - even from Timeline.  You can check the cameras to be blended and whatever other state you like, and either provide a custom blender or return null for the default one.
 
 Cinemachine comes with two sample scenes - `Early LookAt Custom Blend` and `Perspective To Ortho Custom Blend` which illustrate this technique.  Coding profficiency is required.
