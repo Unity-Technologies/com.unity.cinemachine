@@ -112,7 +112,7 @@ namespace Unity.Cinemachine
         public struct RecenteringSettings
         {
             /// <summary>If set, will enable automatic re-centering of the axis</summary>
-            [Tooltip("If set, will enable automatic re-centering of the axis")]
+            [Tooltip("If set, will enable automatic re-centering of the axis when the game is playing.")]
             public bool Enabled;
 
             /// <summary>If no user input has been detected on the axis for this man
@@ -258,7 +258,7 @@ namespace Unity.Cinemachine
         /// <param name="center">The value to recenter toward.</param>
         public void UpdateRecentering(float deltaTime, bool forceCancel, float center)
         {
-            if ((Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
+            if (!Application.isPlaying || (Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
                 return;
 
             if (forceCancel)

@@ -413,7 +413,7 @@ namespace Unity.Cinemachine
 
             // Force a reset if enabled, but don't be too aggressive about it,
             // because maybe we've just inherited a position
-            if (deltaTime < 0)// || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)
+            if (deltaTime < 0 && Application.isPlaying) // || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)
                 m_ResetHandler?.Invoke();
 
             var localOffset = GetCameraPoint();
