@@ -12,6 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - CinemachineVolumeSettings: changes to Focal Length and Aperture settings were not being applied while auto-focus was enabled.
 - InheritPosition was not inheriting the camera position in all cases.
 - Rotation Composer damping was not being applied when the Orbital Follow's Binding Mode was Lazy Follow.
+- GroupFraming extension did not respect PreviousStateIsValid flag, so could not be reset dynamically.
 
 ### Added
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.
