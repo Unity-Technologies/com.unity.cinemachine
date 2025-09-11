@@ -160,6 +160,8 @@ namespace Unity.Cinemachine.Editor
 
     partial class InputAxisPropertyDrawer : PropertyDrawer
     {
+        InputAxis def = new (); // to access name strings
+
         public override void OnGUI(Rect rect, SerializedProperty property, GUIContent label)
         {
             float height = EditorGUIUtility.singleLineHeight;
