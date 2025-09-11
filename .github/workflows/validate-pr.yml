@@ -20,7 +20,3 @@ jobs:
 
     # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      - name: Enforce Jira Issue Key in Pull Request Title
-        uses: mjmvisser/enforce-pr-title-style-action@v2
-        with:
-          projectKey: CMCL
