@@ -416,7 +416,7 @@ namespace Unity.Cinemachine
             if (deltaTime < 0)// || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)
                 m_ResetHandler?.Invoke();
 
-            Vector3 offset = GetCameraPoint();
+            var localOffset = GetCameraPoint();
 
             var gotInputX = HorizontalAxis.TrackValueChange();
             var gotInputY = VerticalAxis.TrackValueChange();
@@ -425,11 +425,11 @@ namespace Unity.Cinemachine
                 HorizontalAxis.SetValueAndLastValue(0);
 
             m_TargetTracker.TrackTarget(
-                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
+                this, deltaTime, curState.ReferenceUp, localOffset, TrackerSettings, ref curState,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera
-            offset = orient * offset;
+            var offset = orient * localOffset;
             curState.ReferenceUp = orient * Vector3.up;
 
             // Respect minimum target distance on XZ plane
@@ -449,6 +449,13 @@ namespace Unity.Cinemachine
                 var lookAtOfset = orient
                     * (curState.ReferenceLookAt - (FollowTargetPosition + FollowTargetRotation * TargetOffset));
                 offset = curState.RawPosition - (pos + lookAtOfset);
+            }
+            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
+            {
+                // LazyFollow resets local horizontal offset every frame
+                var previousLocalOffset = Quaternion.Inverse(orient) * m_PreviousOffset;
+                previousLocalOffset.x = 0;
+                m_PreviousOffset = orient * previousLocalOffset; // convert back to worldspace
             }
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
                 && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
