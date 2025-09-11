@@ -34,7 +34,7 @@ namespace Unity.Cinemachine.Editor
                 valueProp.serializedObject.ApplyModifiedProperties();
             })
             { 
-                text = "Center Now", 
+                text = "Recenter", 
                 tooltip = "Reset the axis value to the center",
                 style = { marginLeft = 4, marginRight = 0, marginTop = 0, marginBottom = 0 }
             });
