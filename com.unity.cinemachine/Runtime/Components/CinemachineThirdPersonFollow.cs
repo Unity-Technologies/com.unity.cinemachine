@@ -11,6 +11,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineThirdPersonFollow.html")]
     public class CinemachineThirdPersonFollow : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifierValueSource
