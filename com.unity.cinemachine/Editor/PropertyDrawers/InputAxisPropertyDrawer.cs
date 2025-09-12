@@ -75,7 +75,7 @@ namespace Unity.Cinemachine.Editor
             })
             { 
                 text = "Recenter", 
-                tooltip = "Reset the axis value to the center vlaue",
+                tooltip = "Reset the axis value to the center value",
                 style = { marginLeft = 4, marginRight = 0, marginTop = 0, marginBottom = 0 }
             };
         }
