@@ -56,10 +56,14 @@ namespace Unity.Cinemachine.Samples
 
         void OnValidate()
         {
+            Sideways.Validate();
+            UpDown.Validate();
+            Forward.Validate();
             Pan.Validate();
             Tilt.Range.x = Mathf.Clamp(Tilt.Range.x, -90, 90);
             Tilt.Range.y = Mathf.Clamp(Tilt.Range.y, -90, 90);
             Tilt.Validate();
+            Sprint.Validate();
         }
 
         void Reset()

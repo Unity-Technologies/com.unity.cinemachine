@@ -22,6 +22,7 @@ namespace Unity.Cinemachine.Samples
             });
         }
 
+        void OnValidate() => CursorLock.Validate();
         void OnEnable() => UnlockCursor();
         void OnDisable() => UnlockCursor();
 

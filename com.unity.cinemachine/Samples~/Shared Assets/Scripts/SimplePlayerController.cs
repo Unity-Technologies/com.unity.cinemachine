@@ -73,6 +73,14 @@ namespace Unity.Cinemachine.Samples
             axes.Add(new () { DrivenAxis = () => ref Sprint, Name = "Sprint" });
         }
 
+        protected virtual void OnValidate()
+        {
+            MoveX.Validate();
+            MoveZ.Validate();
+            Jump.Validate();
+            Sprint.Validate();
+        }
+
         public virtual void SetStrafeMode(bool b) {}
         public abstract bool IsMoving { get; }
     }
