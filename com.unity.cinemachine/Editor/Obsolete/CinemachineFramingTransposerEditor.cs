@@ -138,32 +138,6 @@ namespace Unity.Cinemachine.Editor
                 CmPipelineComponentInspectorUtility.OnGUI_DrawOnscreenTargetMarker(
                     Target.TrackedPoint, brain.OutputCamera);
         }
-
-        [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineFramingTransposer))]
-        private static void DrawGroupComposerGizmos(CinemachineFramingTransposer target, GizmoType selectionType)
-        {
-            // Show the group bounding box, as viewed from the camera position
-            if (target.FollowTargetAsGroup != null && target.FollowTargetAsGroup.IsValid
-                && target.m_GroupFramingMode != CinemachineFramingTransposer.FramingMode.None)
-            {
-                Matrix4x4 m = Gizmos.matrix;
-                Bounds b = target.LastBounds;
-                Gizmos.matrix = target.LastBoundsMatrix;
-                Gizmos.color = Color.yellow;
-                if (target.VcamState.Lens.Orthographic)
-                    Gizmos.DrawWireCube(b.center, b.size);
-                else
-                {
-                    float z = b.center.z;
-                    Vector3 e = b.extents;
-                    Gizmos.DrawFrustum(
-                        Vector3.zero,
-                        Mathf.Atan2(e.y, z) * Mathf.Rad2Deg * 2,
-                        z + e.z, z - e.z, e.x / e.y);
-                }
-                Gizmos.matrix = m;
-            }
-        }
     }
 }
 #endif

@@ -27,7 +27,7 @@ namespace Unity.Cinemachine
         /// <summary>Useful constant for very small floats</summary>
         protected const float Epsilon = UnityVectorExtensions.Epsilon;
 
-        /// <summary>Get the CinemachineVirtualCamera to which this extension is attached.
+        /// <summary>Get the CinemachineVirtualCameraBase to which this extension is attached.
         /// This is distinct from the CinemachineCameras that the extension will modify,
         /// as extensions owned by manager cameras will be applied to all the CinemachineCamera children.</summary>
         public CinemachineVirtualCameraBase ComponentOwner
