@@ -53,12 +53,12 @@ namespace Unity.Cinemachine
         public bool CenterOnActivate = true;
 
         /// <summary>
-        /// Offset from the target object (in target-local co-ordinates).  The camera will attempt to
+        /// Offset from the target object's orogin (in target-local co-ordinates).  The camera will attempt to
         /// frame the point which is the target's position plus this offset.  Use it to correct for
         /// cases when the target's origin is not the point of interest for the camera.
         /// </summary>
         [Header("Target Tracking")]
-        [Tooltip("Offset from the target object (in target-local co-ordinates).  "
+        [Tooltip("Offset from the target object's origin (in target-local co-ordinates).  "
             + "The camera will attempt to frame the point which is the target's position plus "
             + "this offset.  Use it to correct for cases when the target's origin is not the "
             + "point of interest for the camera.")]

@@ -23,11 +23,11 @@ namespace Unity.Cinemachine
         , CinemachineFreeLookModifier.IModifiablePositionDamping
         , CinemachineFreeLookModifier.IModifiableDistance
     {
-        /// <summary>Offset from the object's center in local space.
+        /// <summary>Offset from the object's origin in target-local space.
         /// Use this to fine-tune the orbit when the desired focus of the orbit is not
-        /// the tracked object's center</summary>
-        [Tooltip("Offset from the target object's center in target-local space. Use this to fine-tune the "
-            + "orbit when the desired focus of the orbit is not the tracked object's center.")]
+        /// the tracked object's origin</summary>
+        [Tooltip("Offset from the target object's origin in target-local space. Use this to fine-tune the "
+            + "orbit when the desired focus of the orbit is not the tracked object's origin.")]
         public Vector3 TargetOffset;
 
         /// <summary>Settings to control damping for target tracking.</summary>
@@ -101,7 +101,7 @@ namespace Unity.Cinemachine
         public InputAxis RadialAxis = DefaultRadial;
 
         // State information
-        Vector3 m_PreviousOffset;
+        Vector4 m_PreviousAxisValues;
 
         // Helper object to track the Follow target
         Tracker m_TargetTracker;
@@ -179,7 +179,7 @@ namespace Unity.Cinemachine
         bool IInputAxisResetSource.HasResetHandler => m_ResetHandler != null;
 
         float CinemachineFreeLookModifier.IModifierValueSource.NormalizedModifierValue 
-            => GetCameraPoint().w / Mathf.Max(Epsilon, RadialAxis.Value);
+            => GetCameraPoint(AxisValues).w / Mathf.Max(Epsilon, RadialAxis.Value);
 
         Vector3 CinemachineFreeLookModifier.IModifiablePositionDamping.PositionDamping
         {
@@ -201,7 +201,12 @@ namespace Unity.Cinemachine
         internal Vector3 GetCameraOffsetForNormalizedAxisValue(float t)
             => m_OrbitCache.SplineValue(Mathf.Clamp01((t + 1) * 0.5f));
 
-        Vector4 GetCameraPoint()
+        // Get input for GetCameraPoint()
+        Vector4 AxisValues => new Vector4(HorizontalAxis.Value, VerticalAxis.Value, RadialAxis.Value, VerticalAxis.GetNormalizedValue());
+
+        // Input is (horizontalValue, verticalValue, radialValue, verticalNormalized)
+        // Output is (pos.x, pos.y, pos.z, normalized vertical orbit value)
+        Vector4 GetCameraPoint(Vector4 axisValues)
         {
             Vector3 pos;
             float t;
@@ -209,16 +214,16 @@ namespace Unity.Cinemachine
             {
                 if (m_OrbitCache.SettingsChanged(Orbits))
                     m_OrbitCache.UpdateOrbitCache(Orbits);
-                var v = m_OrbitCache.SplineValue(VerticalAxis.GetNormalizedValue());
-                v *= RadialAxis.Value;
-                pos = Quaternion.AngleAxis(HorizontalAxis.Value, Vector3.up) * v;
+                var v = m_OrbitCache.SplineValue(axisValues.w);
+                v *= axisValues.z;
+                pos = Quaternion.AngleAxis(axisValues.x, Vector3.up) * v;
                 t = v.w;
             }
             else
             {
-                var rot = Quaternion.Euler(VerticalAxis.Value, HorizontalAxis.Value, 0);
-                pos = rot * new Vector3(0, 0, -Radius * RadialAxis.Value);
-                t = VerticalAxis.GetNormalizedValue() * 2 - 1;
+                var rot = Quaternion.Euler(axisValues.y, axisValues.x, 0);
+                pos = rot * new Vector3(0, 0, -Radius * axisValues.z);
+                t = axisValues.w * 2 - 1;
             }
             if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
                 pos.z = -Mathf.Abs(pos.z);
@@ -258,7 +263,6 @@ namespace Unity.Cinemachine
             if (FollowTarget != null)
             {
                 var state = VcamState;
-                m_PreviousOffset = (rot * Quaternion.Inverse(state.GetFinalOrientation())) * m_PreviousOffset;
 
                 state.RawPosition = pos;
                 state.RawOrientation = rot;
@@ -416,55 +420,58 @@ namespace Unity.Cinemachine
             if (deltaTime < 0 && Application.isPlaying) // || !VirtualCamera.PreviousStateIsValid || !CinemachineCore.IsLive(VirtualCamera)
                 m_ResetHandler?.Invoke();
 
-            var localOffset = GetCameraPoint();
-
             var gotInputX = HorizontalAxis.TrackValueChange();
             var gotInputY = VerticalAxis.TrackValueChange();
             var gotInputZ = RadialAxis.TrackValueChange();
-            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
-                HorizontalAxis.SetValueAndLastValue(0);
+
+            var axisValues = AxisValues;
+            Vector3 offset = GetCameraPoint(axisValues); // ignore w component here
 
             m_TargetTracker.TrackTarget(
-                this, deltaTime, curState.ReferenceUp, localOffset, TrackerSettings, ref curState,
+                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera
-            var offset = orient * localOffset;
+            offset = orient * offset;
             curState.ReferenceUp = orient * Vector3.up;
 
             // Respect minimum target distance on XZ plane
             var targetPosition = FollowTargetPosition;
-            pos += m_TargetTracker.GetOffsetForMinimumTargetDistance(
-                this, pos, offset, curState.RawOrientation * Vector3.forward,
-                curState.ReferenceUp, targetPosition);
-            pos += orient * TargetOffset;
-            TrackedPoint = pos;
+            TrackedPoint = pos
+                + m_TargetTracker.GetOffsetForMinimumTargetDistance(
+                    this, pos, offset, curState.RawOrientation * Vector3.forward,
+                    curState.ReferenceUp, targetPosition)
+                + orient * TargetOffset;
             curState.RawPosition = pos + offset;
 
-            // Compute the rotation bypass for the lookat target
-            if (curState.HasLookAt())
-            {
-                // Handle the common case where lookAt and follow targets are not the same point.
-                // If we don't do this, we can get inappropriate vertical damping when offset changes.
-                var lookAtOfset = orient
-                    * (curState.ReferenceLookAt - (FollowTargetPosition + FollowTargetRotation * TargetOffset));
-                offset = curState.RawPosition - (pos + lookAtOfset);
-            }
-            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
-            {
-                // LazyFollow resets local horizontal offset every frame
-                var previousLocalOffset = Quaternion.Inverse(orient) * m_PreviousOffset;
-                previousLocalOffset.x = 0;
-                m_PreviousOffset = orient * previousLocalOffset; // convert back to worldspace
-            }
+            // Compute the rotation bypass for the lookat target.  We need to take special care
+            // to handle the case where the lookAt and follow targets are different.
+            // If we don't do this, we can get spurious damping when the offset changes.
+            var lookAtOffset = curState.HasLookAt()
+                ? curState.ReferenceLookAt - (FollowTargetPosition + FollowTargetRotation * TargetOffset)
+                : Vector3.zero;
+            offset -= lookAtOffset;
+
+            // Place the camera using the previous frame's axis values
+            var prevOffset = orient * (Vector3)GetCameraPoint(m_PreviousAxisValues) - lookAtOffset;
+
+            // Account for the difference, to cancel rotation damping when the user changes the axis values
             if (deltaTime >= 0 && VirtualCamera.PreviousStateIsValid
-                && m_PreviousOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
+                && prevOffset.sqrMagnitude > Epsilon && offset.sqrMagnitude > Epsilon)
             {
                 curState.RotationDampingBypass = UnityVectorExtensions.SafeFromToRotation(
-                    m_PreviousOffset, offset, curState.ReferenceUp);
+                    prevOffset, offset, curState.ReferenceUp);
             }
-            m_PreviousOffset = offset;
 
+            // Reset the H axis value every frame to implement lazy follow
+            if (TrackerSettings.BindingMode == BindingMode.LazyFollow)
+            {
+                HorizontalAxis.SetValueAndLastValue(0);
+                axisValues.x = 0;
+            }
+            m_PreviousAxisValues = axisValues;
+
+            // Update H center value from recentering target
             if (HorizontalAxis.Recentering.Enabled)
                 UpdateHorizontalCenter(orient);
 
