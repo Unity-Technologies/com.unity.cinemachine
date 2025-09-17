@@ -8,15 +8,22 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Unreleased
 
 ### Bugfixes
-- Ensure that correct blend time is always used when backing out of a blend-in-progress.
+- Correct blend time was not always used when backing out of a blend-in-progress.
 - CinemachineVolumeSettings: changes to Focal Length and Aperture settings were not being applied while auto-focus was enabled.
 - InheritPosition was not inheriting the camera position in all cases.
+- Rotation Composer damping was not being applied when the Orbital Follow's Binding Mode was Lazy Follow.
+- GroupFraming extension did not respect PreviousStateIsValid flag, so could not be reset dynamically.
+- When blending between a 3rdPerson camera without a lookat target and a camera with a look-at target, the blend was incorrect.
 
 ### Added
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.
 - Added `InputAxisControllerBase.GetController()` method, to conveniently fetch an Input Controller having a specific name.
 - Added `InputAxisControllerBase.TriggerRecentering()` to trigger recentering of an axis having a specific name.
 - Added PerspectiveToOrthoCustomBlend sample scene.
+- Added "Recenter" button to input axis inspector, to immediately center the axis.
+
+### Changed
+- Input Axis recentering only operates when the game is playing.
 
 
 ## [3.1.4] - 2025-06-10

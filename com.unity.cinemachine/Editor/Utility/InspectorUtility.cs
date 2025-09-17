@@ -130,8 +130,14 @@ namespace Unity.Cinemachine.Editor
                         && t.GetCustomAttribute<ObsoleteAttribute>() == null);
                 var s = string.Empty;
                 var iter = allSources.GetEnumerator();
+                int count = 0;
                 while (iter.MoveNext())
                 {
+                    if (++count > 4)
+                    {
+                        s += ", ...";
+                        break;
+                    }
                     var sep = (s.Length == 0) ? string.Empty : ", ";
                     s += sep + iter.Current.Name;
                 }

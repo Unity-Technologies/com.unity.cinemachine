@@ -41,6 +41,13 @@ namespace Unity.Cinemachine.Samples
             axes.Add(new () { DrivenAxis = () => ref Brake, Name = "Brake" });
         }
 
+        void OnValidate()
+        {
+            MoveX.Validate();
+            MoveZ.Validate();
+            Brake.Validate();
+        }
+
         void FixedUpdate()
         {
             // Acceleration

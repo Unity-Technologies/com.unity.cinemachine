@@ -104,7 +104,11 @@ namespace Unity.Cinemachine
                 {
                     var itemCopy = Instantiate(source.components[i]);
                     profile.components.Add(itemCopy);
+#if UNITY_EDITOR
+#pragma warning disable CS0618 // Type or member is obsolete
                     profile.isDirty = true;
+#pragma warning restore CS0618
+#endif
                 }
                 ProfileCopy = profile;
             }
@@ -209,7 +213,12 @@ namespace Unity.Cinemachine
                                 dof.focalLength.value = srcDof.focalLength.value;
                             }
 #endif
+
+#if UNITY_EDITOR
+#pragma warning disable CS0618 // Type or member is obsolete
                             extra.ProfileCopy.isDirty = true;
+#pragma warning restore CS0618
+#endif
                         }
                         profile = extra.ProfileCopy;
                     }

@@ -11,6 +11,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Body)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineThirdPersonFollow.html")]
     public class CinemachineThirdPersonFollow : CinemachineComponentBase
         , CinemachineFreeLookModifier.IModifierValueSource
@@ -273,7 +274,7 @@ namespace Unity.Cinemachine
 
             // Correct the case where by default we're looking at the follow target
             if (!curState.HasLookAt() || curState.ReferenceLookAt.Equals(targetPos))
-                curState.ReferenceLookAt = targetPos + targetForward * 0.01f; // so that there's something
+                curState.ReferenceLookAt = CameraState.kNoPoint;
         }
 
         /// <summary>

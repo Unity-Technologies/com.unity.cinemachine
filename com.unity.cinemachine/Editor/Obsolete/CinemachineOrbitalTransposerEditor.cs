@@ -91,28 +91,6 @@ namespace Unity.Cinemachine.Editor
             DrawRemainingPropertiesInInspector();
         }
 
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineOrbitalTransposer))]
-        static void DrawTransposerGizmos(CinemachineOrbitalTransposer target, GizmoType selectionType)
-        {
-            if (target.IsValid && !target.HideOffsetInInspector)
-            {
-                Color originalGizmoColour = Gizmos.color;
-                Gizmos.color = CinemachineCore.IsLive(target.VirtualCamera)
-                    ? CinemachineCorePrefs.ActiveGizmoColour.Value
-                    : CinemachineCorePrefs.InactiveGizmoColour.Value;
-
-                Vector3 up = target.VirtualCamera.State.ReferenceUp;
-                Vector3 pos = target.FollowTargetPosition;
-
-                Quaternion orient = target.GetReferenceOrientation(up);
-                up = orient * Vector3.up;
-                DrawCircleAtPointWithRadius
-                    (pos + up * target.m_FollowOffset.y, orient, target.m_FollowOffset.z);
-
-                Gizmos.color = originalGizmoColour;
-            }
-        }
-
         public static void DrawCircleAtPointWithRadius(Vector3 point, Quaternion orient, float radius)
         {
             Matrix4x4 prevMatrix = Gizmos.matrix;

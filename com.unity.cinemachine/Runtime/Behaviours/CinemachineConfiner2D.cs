@@ -12,7 +12,9 @@ namespace Unity.Cinemachine
     /// of the virtual camera.  It will confine the camera's position such that the screen edges stay
     /// within a shape defined by a 2D polygon.  This will work for orthographic or perspective cameras,
     /// provided that the camera's forward vector remains parallel to the bounding shape's normal,
-    /// i.e. that the camera is looking straight at the polygon, and not obliquely at it.
+    /// i.e. that the camera is looking straight at the polygon, and not obliquely at it.  If the camera is
+    /// looking obliquely at the  polygon, confining will still occur but not precisely at the polyon edges.
+    /// In this situation, you can adjust the polygon until the desired confining occurs.
     ///
     /// When confining the camera, the camera's view size at the polygon plane is considered, and
     /// also its aspect ratio. Based on this information and the input polygon, a second (smaller)

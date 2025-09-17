@@ -232,60 +232,6 @@ namespace Unity.Cinemachine
                 };
             }
         }
-
-        [DrawGizmo(GizmoType.Active | GizmoType.Selected, typeof(CinemachineFreeLook))]
-        private static void DrawFreeLookGizmos(CinemachineFreeLook vcam, GizmoType selectionType)
-        {
-            // Standard frustum and logo
-            CinemachineBrainEditor.DrawVirtualCameraBaseGizmos(vcam, selectionType);
-
-            Color originalGizmoColour = Gizmos.color;
-            bool isActiveVirtualCam = CinemachineCore.IsLive(vcam);
-            Gizmos.color = isActiveVirtualCam
-                ? CinemachineCorePrefs.ActiveGizmoColour.Value
-                : CinemachineCorePrefs.InactiveGizmoColour.Value;
-
-            if (vcam.Follow != null)
-            {
-                var pos = vcam.Follow.position;
-                var middleRig = vcam.GetRig(1).GetCinemachineComponent<CinemachineOrbitalTransposer>();
-                if (middleRig != null)
-                {
-                    Quaternion orient = middleRig.GetReferenceOrientation(vcam.State.ReferenceUp);
-                    var up = orient * Vector3.up;
-                    float rotation = vcam.m_XAxis.Value + vcam.m_Heading.m_Bias;
-                    orient = Quaternion.AngleAxis(rotation, up) * orient;
-
-                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[0].m_Height, orient, vcam.m_Orbits[0].m_Radius);
-                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[1].m_Height, orient, vcam.m_Orbits[1].m_Radius);
-                    CinemachineOrbitalTransposerEditor.DrawCircleAtPointWithRadius(
-                        pos + up * vcam.m_Orbits[2].m_Height, orient, vcam.m_Orbits[2].m_Radius);
-
-                    DrawCameraPath(pos, orient, vcam);
-                }
-            }
-
-            Gizmos.color = originalGizmoColour;
-        }
-
-        private static void DrawCameraPath(Vector3 atPos, Quaternion orient, CinemachineFreeLook vcam)
-        {
-            Matrix4x4 prevMatrix = Gizmos.matrix;
-            Gizmos.matrix = Matrix4x4.TRS(atPos, orient, Vector3.one);
-
-            const int kNumSteps = 20;
-            Vector3 currPos = vcam.GetLocalPositionForCameraFromInput(0f);
-            for (int i = 1; i < kNumSteps + 1; ++i)
-            {
-                float t = (float)i / (float)kNumSteps;
-                Vector3 nextPos = vcam.GetLocalPositionForCameraFromInput(t);
-                Gizmos.DrawLine(currPos, nextPos);
-                currPos = nextPos;
-            }
-            Gizmos.matrix = prevMatrix;
-        }
     }
 }
 #endif

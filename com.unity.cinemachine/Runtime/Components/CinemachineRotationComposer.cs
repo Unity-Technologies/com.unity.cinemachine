@@ -33,12 +33,12 @@ namespace Unity.Cinemachine
             + "clamp target to the edges of the dead zone")]
         public bool CenterOnActivate = true;
 
-        /// <summary>Target offset from the object's center in LOCAL space which
+        /// <summary>Target offset from the object's origin in target-local space which
         /// the Composer tracks. Use this to fine-tune the tracking target position
-        /// when the desired area is not in the tracked object's center</summary>
+        /// when the desired area is not in the tracked object's origin</summary>
         [Header("Target Tracking")]
-        [Tooltip("Target offset from the target object's center in target-local space. Use this to "
-            + "fine-tune the tracking target position when the desired area is not the tracked object's center.")]
+        [Tooltip("Target offset from the target object's origin in target-local space. Use this to "
+            + "fine-tune the tracking target position when the desired area is not the tracked object's origin.")]
         [FormerlySerializedAs("TrackedObjectOffset")]
         public Vector3 TargetOffset;
 

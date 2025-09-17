@@ -1,7 +1,6 @@
 #if !CINEMACHINE_NO_CM2_SUPPORT
 using System.Collections.Generic;
 using UnityEditor;
-using UnityEngine;
 namespace Unity.Cinemachine.Editor
 {
     [System.Obsolete]
@@ -47,27 +46,6 @@ namespace Unity.Cinemachine.Editor
                 EditorGUILayout.HelpBox("AutoDolly requires a Follow Target", MessageType.Warning);
 
             DrawRemainingPropertiesInInspector();
-        }
-
-        [DrawGizmo(GizmoType.Active | GizmoType.InSelectionHierarchy, typeof(CinemachineTrackedDolly))]
-        private static void DrawTrackeDollyGizmos(CinemachineTrackedDolly target, GizmoType selectionType)
-        {
-            if (target.IsValid)
-            {
-                var path = target.m_Path;
-                if (path != null)
-                {
-                    var isActive = CinemachineCore.IsLive(target.VirtualCamera);
-                    CinemachinePathEditor.DrawPathGizmo(path, path.m_Appearance.pathColor, isActive);
-                    var pos = path.EvaluatePositionAtUnit(target.m_PathPosition, target.m_PositionUnits);
-                    var oldColor = Gizmos.color;
-                    Gizmos.color = isActive
-                        ? CinemachineCorePrefs.ActiveGizmoColour.Value
-                        : CinemachineCorePrefs.InactiveGizmoColour.Value;
-                    Gizmos.DrawLine(pos, target.VirtualCamera.State.RawPosition);
-                    Gizmos.color = oldColor;
-                }
-            }
         }
     }
 }

@@ -32,6 +32,8 @@ namespace Unity.Cinemachine.Samples
             axes.Add(new () { DrivenAxis = () => ref AimMode, Name = "Aim" });
         }
 
+        void OnValidate() => AimMode.Validate();
+
         protected override void Start()
         {
             base.Start();
