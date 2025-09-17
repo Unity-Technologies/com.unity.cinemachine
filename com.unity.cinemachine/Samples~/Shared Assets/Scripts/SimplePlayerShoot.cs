@@ -47,6 +47,7 @@ namespace Unity.Cinemachine.Samples
 
         void OnValidate()
         {
+            Fire.Validate();
             MaxBulletsPerSec = Mathf.Max(1, MaxBulletsPerSec);
         }
 

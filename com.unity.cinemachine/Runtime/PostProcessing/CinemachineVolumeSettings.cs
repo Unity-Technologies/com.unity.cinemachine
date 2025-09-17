@@ -213,7 +213,12 @@ namespace Unity.Cinemachine
                                 dof.focalLength.value = srcDof.focalLength.value;
                             }
 #endif
+
+#if UNITY_EDITOR
+#pragma warning disable CS0618 // Type or member is obsolete
                             extra.ProfileCopy.isDirty = true;
+#pragma warning restore CS0618
+#endif
                         }
                         profile = extra.ProfileCopy;
                     }

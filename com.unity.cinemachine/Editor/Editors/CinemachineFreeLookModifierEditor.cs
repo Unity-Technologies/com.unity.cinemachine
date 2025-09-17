@@ -23,8 +23,8 @@ namespace Unity.Cinemachine
                 HelpBoxMessageType.Info));
 
             var invalidSrcMsg = ux.AddChild(
-                new HelpBox("<b>Component will be ignored because no modifiable targets are present.</b>\n\n"
-                    + "Modifiable target components include: "
+                new HelpBox("This component will be ignored because no modifiable targets are present.\n"
+                    + "<b>You can remove this component.\n</b>Modifiable targets include: "
                     + InspectorUtility.GetAssignableBehaviourNames(
                         typeof(CinemachineFreeLookModifier.IModifierValueSource)),
                     HelpBoxMessageType.Warning));
