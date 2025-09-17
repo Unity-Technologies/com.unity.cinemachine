@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - InheritPosition was not inheriting the camera position in all cases.
 - Rotation Composer damping was not being applied when the Orbital Follow's Binding Mode was Lazy Follow.
 - GroupFraming extension did not respect PreviousStateIsValid flag, so could not be reset dynamically.
+- When blending between a 3rdPerson camera without a lookat target and a camera with a look-at target, the blend was incorrect.
 
 ### Added
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.

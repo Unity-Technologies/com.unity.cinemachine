@@ -274,7 +274,7 @@ namespace Unity.Cinemachine
 
             // Correct the case where by default we're looking at the follow target
             if (!curState.HasLookAt() || curState.ReferenceLookAt.Equals(targetPos))
-                curState.ReferenceLookAt = targetPos + targetForward * 0.01f; // so that there's something
+                curState.ReferenceLookAt = CameraState.kNoPoint;
         }
 
         /// <summary>
