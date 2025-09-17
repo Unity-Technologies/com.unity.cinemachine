@@ -485,7 +485,6 @@ namespace Unity.Cinemachine
             gotInputZ |= gotInputX && (RadialAxis.Recentering.Time == HorizontalAxis.Recentering.Time);
             gotInputZ |= gotInputY && (RadialAxis.Recentering.Time == VerticalAxis.Recentering.Time);
 
-            HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
             if (Application.isPlaying)
             {
                 HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
