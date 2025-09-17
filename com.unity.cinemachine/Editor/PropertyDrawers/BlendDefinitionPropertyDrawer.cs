@@ -38,8 +38,8 @@ namespace Unity.Cinemachine.Editor
 
             contents.TrackPropertyWithInitialCallback(styleProp, (p) =>
             {
-                if (p.serializedObject == null)
-                    return; // object deleted
+                if (p.IsDeletedObject())
+                    return;
                 curveWidget.SetVisible(p.intValue == (int)CinemachineBlendDefinition.Styles.Custom);
                 timeWidget.SetVisible(p.intValue != (int)CinemachineBlendDefinition.Styles.Cut);
             });

@@ -167,9 +167,10 @@ namespace Unity.Cinemachine.Editor
                     + "<b>You can remove this component.\n</b>Applicable target components include: "
                     + InspectorUtility.GetAssignableBehaviourNames(typeof(IInputAxisOwner)),
                 HelpBoxMessageType.Warning));
+
             list.TrackPropertyWithInitialCallback(property, (p) => 
             {
-                bool isEmpty = p.serializedObject == null || p.arraySize == 0;
+                bool isEmpty = p.IsDeletedObject() || p.arraySize == 0;
                 isEmptyMessage.SetVisible(isEmpty);
                 list.SetVisible(!isEmpty);
             });
@@ -177,15 +178,19 @@ namespace Unity.Cinemachine.Editor
             // Synchronize the controller list
             ux.TrackAnyUserActivity(() =>
             {
-                if (property.serializedObject == null)
-                    return; // object deleted
+                if (property.IsDeletedObject())
+                    return;
                 var targets = property.serializedObject.targetObjects;
                 for (int i = 0; i < targets.Length; ++i)
                 {
-                    if (targets[i] is IInputAxisController target && !target.ControllersAreValid())
+                    var obj = targets[i];
+                    if (obj is IInputAxisController target && !target.ControllersAreValid())
                     {
-                        Undo.RecordObject(targets[i], "SynchronizeControllers");
-                        target.SynchronizeControllers();
+                        EditorApplication.delayCall += () =>
+                        {
+                            Undo.RecordObject(obj, "SynchronizeControllers");
+                            target.SynchronizeControllers();
+                        };
                     }
                 }
             });

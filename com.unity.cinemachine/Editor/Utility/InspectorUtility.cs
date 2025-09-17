@@ -148,6 +148,12 @@ namespace Unity.Cinemachine.Editor
             return s_AssignableTypes[inputType];
         }
 
+        public static bool IsDeletedObject(this SerializedProperty p)
+        {
+            try { return p == null || p.serializedObject == null || p.serializedObject.targetObject == null; }
+            catch { return true; }
+        }
+
         /// <summary>Aligns fields created by UI toolkit the unity inspector standard way.</summary>
         public static string AlignFieldClassName => BaseField<bool>.alignedFieldUssClassName;
 

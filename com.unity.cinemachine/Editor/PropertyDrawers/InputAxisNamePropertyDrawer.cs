@@ -17,7 +17,7 @@ namespace Unity.Cinemachine.Editor
 
             row.TrackPropertyWithInitialCallback(property, (p) =>
             {
-                if (p == null || p.serializedObject == null)
+                if (p.IsDeletedObject())
                     return;
                 // Is the axis name valid?
                 var nameError = string.Empty;
