@@ -134,7 +134,7 @@ namespace Unity.Cinemachine
             TargetOffset = Vector3.zero;
             TrackerSettings = TrackerSettings.Default;
             OrbitStyle = OrbitStyles.Sphere;
-            Radius = 10;
+            Radius = 5;
             Orbits = Cinemachine3OrbitRig.Settings.Default;
             HorizontalAxis = DefaultHorizontal;
             VerticalAxis = DefaultVertical;
@@ -269,6 +269,8 @@ namespace Unity.Cinemachine
                 state.PositionCorrection = Vector3.zero;
                 state.OrientationCorrection = Quaternion.identity;
 
+                m_TargetTracker.OnForceCameraPosition(this, TrackerSettings.BindingMode, ref state);
+
                 var dir = pos - FollowTarget.TransformPoint(TargetOffset);
                 var distance = dir.magnitude;
                 if (distance > 0.001f)
@@ -278,8 +280,8 @@ namespace Unity.Cinemachine
                         InferAxesFromPosition_ThreeRing(dir, distance, ref state);
                     else
                         InferAxesFromPosition_Sphere(dir, distance, ref state);
+                    m_PreviousAxisValues = AxisValues;
                 }
-                m_TargetTracker.OnForceCameraPosition(this, TrackerSettings.BindingMode, ref state);
             }
         }
 
@@ -483,9 +485,12 @@ namespace Unity.Cinemachine
             gotInputZ |= gotInputX && (RadialAxis.Recentering.Time == HorizontalAxis.Recentering.Time);
             gotInputZ |= gotInputY && (RadialAxis.Recentering.Time == VerticalAxis.Recentering.Time);
 
-            HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
-            VerticalAxis.UpdateRecentering(deltaTime, gotInputY);
-            RadialAxis.UpdateRecentering(deltaTime, gotInputZ);
+            if (Application.isPlaying)
+            {
+                HorizontalAxis.UpdateRecentering(deltaTime, gotInputX);
+                VerticalAxis.UpdateRecentering(deltaTime, gotInputY);
+                RadialAxis.UpdateRecentering(deltaTime, gotInputZ);
+            }
         }
 
         void UpdateHorizontalCenter(Quaternion referenceOrientation)
