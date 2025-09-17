@@ -169,9 +169,12 @@ namespace Unity.Cinemachine
                 gotInputY |= gotInputX;
             }
 
-            var recenterTarget = GetRecenterTarget();
-            PanAxis.UpdateRecentering(deltaTime, gotInputX, recenterTarget.x);
-            TiltAxis.UpdateRecentering(deltaTime, gotInputY, recenterTarget.y);
+            if (Application.isPlaying)
+            {
+                var recenterTarget = GetRecenterTarget();
+                PanAxis.UpdateRecentering(deltaTime, gotInputX, recenterTarget.x);
+                TiltAxis.UpdateRecentering(deltaTime, gotInputY, recenterTarget.y);
+            }
         }
 
         /// <summary>
