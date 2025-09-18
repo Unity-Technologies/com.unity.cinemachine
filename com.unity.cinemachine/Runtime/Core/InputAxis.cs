@@ -258,7 +258,7 @@ namespace Unity.Cinemachine
         /// <param name="center">The value to recenter toward.</param>
         public void UpdateRecentering(float deltaTime, bool forceCancel, float center)
         {
-            if (!Application.isPlaying || (Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
+            if ((Restrictions & (RestrictionFlags.NoRecentering | RestrictionFlags.Momentary)) != 0)
                 return;
 
             if (forceCancel)
