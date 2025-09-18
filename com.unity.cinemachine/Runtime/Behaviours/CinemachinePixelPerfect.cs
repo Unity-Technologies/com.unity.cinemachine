@@ -3,7 +3,11 @@ using UnityEngine;
 #if CINEMACHINE_URP || CINEMACHINE_PIXEL_PERFECT_2_0_3
 
 #if CINEMACHINE_URP
-    using PixelPerfectCamera = UnityEngine.Rendering.Universal.PixelPerfectCamera;
+    #if UNITY_2023_2_OR_NEWER
+        using PixelPerfectCamera = UnityEngine.Rendering.Universal.PixelPerfectCamera;
+    #else
+        using PixelPerfectCamera = UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
+    #endif
 #else
     using PixelPerfectCamera = UnityEngine.U2D.PixelPerfectCamera;
 #endif

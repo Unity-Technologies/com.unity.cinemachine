@@ -144,7 +144,9 @@ namespace Unity.Cinemachine
                 PosAdjustment = Vector3.zero;
                 RotAdjustment = Vector2.zero;
                 FovAdjustment = 0;
+#if CINEMACHINE_PHYSICS_2D
                 PreviousOrthoSize = state.Lens.OrthographicSize;
+#endif
             }
         };
 
