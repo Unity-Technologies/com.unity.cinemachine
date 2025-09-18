@@ -339,7 +339,7 @@ namespace Unity.Cinemachine
 
             var state = VcamState;
             float targetHeading = GetTargetHeading(
-                axis.Value, m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up, ref state));
+                axis.Value, m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, Vector3.zero, up, ref state));
             recentering.DoRecentering(ref axis, deltaTime, targetHeading);
             return axis.Value;
         }
@@ -442,7 +442,7 @@ namespace Unity.Cinemachine
         public float GetAxisClosestValue(Vector3 cameraPos, Vector3 up)
         {
             var state = VcamState;
-            Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up, ref state);
+            Quaternion orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, Vector3.zero, up, ref state);
             Vector3 fwd = (orient * Vector3.forward).ProjectOntoPlane(up);
             if (!fwd.AlmostZero() && FollowTarget != null)
             {
@@ -468,7 +468,7 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            m_TargetTracker.InitStateInfo(this, deltaTime, m_BindingMode, curState.ReferenceUp);
+            m_TargetTracker.InitStateInfo(this, deltaTime, m_BindingMode, Vector3.zero, curState.ReferenceUp);
 
             // Update the heading
             if (FollowTarget != m_PreviousTarget)
@@ -494,7 +494,7 @@ namespace Unity.Cinemachine
 
                 // Track the target, with damping
                 m_TargetTracker.TrackTarget(
-                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
+                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, Vector3.zero, ref curState,
                     out Vector3 pos, out Quaternion orient);
 
                 // Place the camera
@@ -536,7 +536,7 @@ namespace Unity.Cinemachine
                 heading += m_Heading.m_Bias;
             var state = VcamState;
             Quaternion orient = Quaternion.AngleAxis(heading, Vector3.up);
-            orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, worldUp, ref state) * orient;
+            orient = m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, Vector3.zero, worldUp, ref state) * orient;
             var pos = orient * EffectiveOffset;
             pos += m_LastTargetPosition;
             return pos;

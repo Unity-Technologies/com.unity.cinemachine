@@ -146,12 +146,12 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            m_TargetTracker.InitStateInfo(this, deltaTime, m_BindingMode, curState.ReferenceUp);
+            m_TargetTracker.InitStateInfo(this, deltaTime, m_BindingMode, Vector3.zero, curState.ReferenceUp);
             if (IsValid)
             {
                 Vector3 offset = EffectiveOffset;
                 m_TargetTracker.TrackTarget(
-                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
+                    this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, Vector3.zero, ref curState,
                     out Vector3 pos, out Quaternion orient);
                 offset = orient * offset;
 
@@ -192,13 +192,13 @@ namespace Unity.Cinemachine
             state.RawOrientation = rot;
             state.PositionCorrection = Vector3.zero;
             state.OrientationCorrection = Quaternion.identity;
-            m_TargetTracker.OnForceCameraPosition(this, m_BindingMode, ref state);
+            m_TargetTracker.OnForceCameraPosition(this, m_BindingMode, Vector3.zero, ref state);
         }
 
         internal Quaternion GetReferenceOrientation(Vector3 up)
         {
             var state = VcamState;
-            return m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, up, ref state);
+            return m_TargetTracker.GetReferenceOrientation(this, m_BindingMode, Vector3.zero, up, ref state);
         }
 
         /// <summary>Internal API for the Inspector Editor, so it can draw a marker at the target</summary>
@@ -210,7 +210,7 @@ namespace Unity.Cinemachine
                 return Vector3.zero;
             var state = VcamState;
             return FollowTargetPosition + m_TargetTracker.GetReferenceOrientation(
-                this, m_BindingMode, worldUp, ref state) * EffectiveOffset;
+                this, m_BindingMode, Vector3.zero, worldUp, ref state) * EffectiveOffset;
         }
 
         // Helper to upgrade to CM3
