@@ -22,6 +22,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `InputAxisControllerBase.GetController()` method, to conveniently fetch an Input Controller having a specific name.
 - Added `InputAxisControllerBase.TriggerRecentering()` to trigger recentering of an axis having a specific name.
 - Added "Recenter" button to input axis inspector, to immediately center the axis.
+- Added new Portals sample scene to illustrate camera teleportation.
 
 ### Changed
 - Input Axis recentering only operates when the game is playing.
