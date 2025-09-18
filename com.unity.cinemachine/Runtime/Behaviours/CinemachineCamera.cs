@@ -145,6 +145,10 @@ namespace Unity.Cinemachine
             m_State.RawPosition = pos;
             m_State.RawOrientation = rot;
 
+            // Push the raw position back to the game object's transform, so it
+            // moves along with the camera.
+            transform.ConservativeSetPositionAndRotation(pos, rot);
+
             base.ForceCameraPosition(pos, rot);
         }
 
