@@ -6,7 +6,7 @@ using UnityEngine;
     #if UNITY_2023_2_OR_NEWER
         using PixelPerfectCamera = UnityEngine.Rendering.Universal.PixelPerfectCamera;
     #else
-        using PixelPerfectCamera = UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera pixelPerfectCamera;
+        using PixelPerfectCamera = UnityEngine.Experimental.Rendering.Universal.PixelPerfectCamera;
     #endif
 #else
     using PixelPerfectCamera = UnityEngine.U2D.PixelPerfectCamera;
