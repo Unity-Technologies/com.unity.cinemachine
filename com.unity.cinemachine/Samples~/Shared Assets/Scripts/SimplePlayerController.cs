@@ -388,5 +388,18 @@ namespace Unity.Cinemachine.Samples
                 return hit.distance - kExtraHeight;
             return max + 1;
         }
+
+        // Call this to teleport the player
+        public void Teleport(Vector3 newPos, Quaternion newRot)
+        {
+            if (m_Controller != null)
+                m_Controller.enabled = false;
+            var rot = transform.rotation;
+            var rotDelta = newRot * Quaternion.Inverse(rot);
+            m_CurrentVelocityXZ = rotDelta * m_CurrentVelocityXZ;
+            transform.SetPositionAndRotation(newPos, newRot);
+            if (m_Controller != null)
+                m_Controller.enabled = true;
+        }
     }
 }
