@@ -63,7 +63,8 @@ namespace Unity.Cinemachine.Editor
             var palette = CinemachineLensPalette.InstanceIfExists;
             for (int i = 0; palette != null && i < palette.Presets.Count; ++i)
                 m_PresetOptions.Add(palette.Presets[i].Name);
-            m_PresetOptions.Add("");
+            if (palette != null && palette.Presets.Count > 0)
+                m_PresetOptions.Add("");
             m_PresetOptions.Add(k_AddPresetsLabel);
             m_PresetOptions.Add(k_EditPresetsLabel);
 
@@ -72,7 +73,8 @@ namespace Unity.Cinemachine.Editor
             m_PhysicalPresetOptions.Clear();
             for (int i = 0; physicalPresets != null && i < physicalPresets.Presets.Count; ++i)
                 m_PhysicalPresetOptions.Add(physicalPresets.Presets[i].Name);
-            m_PhysicalPresetOptions.Add("");
+            if (physicalPresets != null && physicalPresets.Presets.Count > 0)
+                m_PhysicalPresetOptions.Add("");
             m_PhysicalPresetOptions.Add(k_AddPresetsLabel);
             m_PhysicalPresetOptions.Add(k_EditPresetsLabel);
         }
