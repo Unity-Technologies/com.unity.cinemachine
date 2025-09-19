@@ -70,8 +70,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackPropertyWithInitialCallback(focusTargetProp, (p) =>
             {
-                if (p.serializedObject == null)
-                    return; // object deleted
+                if (p.IsDeletedObject())
+                    return;
                 var mode = (CinemachineAutoFocus.FocusTrackingMode)p.intValue;
                 customTarget.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.CustomTarget);
                 offset.SetVisible(mode != CinemachineAutoFocus.FocusTrackingMode.None);
@@ -98,8 +98,8 @@ namespace Unity.Cinemachine.Editor
             // Make the import box disappear after import
             ux.TrackPropertyWithInitialCallback(computeShaderProp, (p) =>
             {
-                if (p.serializedObject == null)
-                    return; // object deleted
+                if (p.IsDeletedObject())
+                    return;
                 var mode = (CinemachineAutoFocus.FocusTrackingMode)focusTargetProp.intValue;
                 importHelp.SetVisible(mode == CinemachineAutoFocus.FocusTrackingMode.ScreenCenter
                     && p.objectReferenceValue == null);
