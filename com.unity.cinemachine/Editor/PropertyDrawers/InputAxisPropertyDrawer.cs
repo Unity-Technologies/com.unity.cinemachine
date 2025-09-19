@@ -49,8 +49,8 @@ namespace Unity.Cinemachine.Editor
             var flagsProp = property.FindPropertyRelative(nameof(InputAxis.Restrictions));
             ux.TrackPropertyWithInitialCallback(flagsProp, (prop) =>
             {
-                if (prop.serializedObject == null)
-                    return; // object deleted
+                if (prop.IsDeletedObject())
+                    return;
                 var flags = prop.intValue;
                 var rangeDisabled = (flags & (int)InputAxis.RestrictionFlags.RangeIsDriven) != 0;
                 centerField.SetEnabled(!rangeDisabled);
