@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - ForceCameraPosition was not working properly for LazyFollow cameras.
 - Teleporting a camera with a nonzero Target Offset was not smooth.
 - Exceptions were sometimes generated when an OrbitalFollow component was deleted.
+- Input Axis Controller was losing user input after a play-mode domain reload.
 
 ### Added
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.
