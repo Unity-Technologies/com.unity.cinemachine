@@ -105,7 +105,7 @@ namespace Unity.Cinemachine
             public float Gain = 1;
 
             /// <summary>The actual action, resolved for player</summary>
-            internal InputAction m_CachedAction;
+            [NonSerialized] internal InputAction m_CachedAction;
 
             /// <summary>
             /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.
