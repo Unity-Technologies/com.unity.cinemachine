@@ -434,7 +434,7 @@ namespace Unity.Cinemachine.Editor
                         }
                     }
                 }
-                m_Presets.SetValueWithoutNotify(string.Empty);
+                m_Presets.SetValueWithoutNotify(k_PaletteLabel);
             }
 
             LensSettings.PhysicalSettings ReadPhysicalSettings()
