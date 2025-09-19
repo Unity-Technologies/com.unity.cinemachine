@@ -58,3 +58,4 @@ _**Cut example:** two Cinemachine Cameras taking turns controlling the Unity Cam
 ## Additional resources
 
 * [Set up multiple Cinemachine Cameras and transitions](setup-multiple-cameras.md)
+* [Control and customize blends](ControllingAndCustomizingBlends.md)

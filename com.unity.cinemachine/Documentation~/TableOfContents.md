@@ -36,6 +36,7 @@
   * [Filtering impulses](CinemachineImpulseFiltering.md)
 * [Split screen and multiple Unity Cameras](CinemachineMultipleCameras.md)
 * [Use Input System with Cinemachine](InputSystemComponents.md)
+* [Control and customize blends](ControllingAndCustomizingBlends.md)
 * [Samples and tutorials](samples-tutorials.md)
   * [Import samples to your project](samples-import.md)
   * [Simple Player Controller](SimplePlayerController.md)
