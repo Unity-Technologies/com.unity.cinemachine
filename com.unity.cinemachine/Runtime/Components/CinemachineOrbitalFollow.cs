@@ -259,7 +259,6 @@ namespace Unity.Cinemachine
         /// <param name="rot">World-space orientation to take</param>
         public override void ForceCameraPosition(Vector3 pos, Quaternion rot)
         {
-            m_ResetHandler?.Invoke(); // cancel re-centering
             if (FollowTarget != null)
             {
                 var state = VcamState;
@@ -269,9 +268,9 @@ namespace Unity.Cinemachine
                 state.PositionCorrection = Vector3.zero;
                 state.OrientationCorrection = Quaternion.identity;
 
-                m_TargetTracker.OnForceCameraPosition(this, TrackerSettings.BindingMode, ref state);
+                m_TargetTracker.OnForceCameraPosition(this, TrackerSettings.BindingMode, TargetOffset, ref state);
 
-                var dir = pos - FollowTarget.TransformPoint(TargetOffset);
+                var dir = pos - m_TargetTracker.PreviousTargetPosition;
                 var distance = dir.magnitude;
                 if (distance > 0.001f)
                 {
@@ -288,7 +287,7 @@ namespace Unity.Cinemachine
         void InferAxesFromPosition_Sphere(Vector3 dir, float distance, ref CameraState state)
         {
             var up = state.ReferenceUp;
-            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up, ref state);
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, TargetOffset, up, ref state);
             var localDir = Quaternion.Inverse(orient) * dir;
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
             VerticalAxis.Value = VerticalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.x));
@@ -299,7 +298,7 @@ namespace Unity.Cinemachine
         void InferAxesFromPosition_ThreeRing(Vector3 dir, float distance, ref CameraState state)
         {
             var up = state.ReferenceUp;
-            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, up, ref state);
+            var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, TargetOffset, up, ref state);
             HorizontalAxis.Value = GetHorizontalAxis();
             VerticalAxis.Value = GetVerticalAxisClosestValue(out var splinePoint);
             RadialAxis.Value = RadialAxis.ClampValue(distance / splinePoint.magnitude);
@@ -413,7 +412,7 @@ namespace Unity.Cinemachine
         /// <param name="deltaTime">Used for damping.  If less than 0, no damping is done.</param>
         public override void MutateCameraState(ref CameraState curState, float deltaTime)
         {
-            m_TargetTracker.InitStateInfo(this, deltaTime, TrackerSettings.BindingMode, curState.ReferenceUp);
+            m_TargetTracker.InitStateInfo(this, deltaTime, TrackerSettings.BindingMode, TargetOffset, curState.ReferenceUp);
             if (!IsValid)
                 return;
 
@@ -430,7 +429,7 @@ namespace Unity.Cinemachine
             Vector3 offset = GetCameraPoint(axisValues); // ignore w component here
 
             m_TargetTracker.TrackTarget(
-                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, ref curState,
+                this, deltaTime, curState.ReferenceUp, offset, TrackerSettings, TargetOffset, ref curState,
                 out Vector3 pos, out Quaternion orient);
 
             // Place the camera
@@ -439,11 +438,9 @@ namespace Unity.Cinemachine
 
             // Respect minimum target distance on XZ plane
             var targetPosition = FollowTargetPosition;
-            TrackedPoint = pos
-                + m_TargetTracker.GetOffsetForMinimumTargetDistance(
-                    this, pos, offset, curState.RawOrientation * Vector3.forward,
-                    curState.ReferenceUp, targetPosition)
-                + orient * TargetOffset;
+            TrackedPoint = pos + m_TargetTracker.GetOffsetForMinimumTargetDistance(
+                this, pos, offset, curState.RawOrientation * Vector3.forward, curState.ReferenceUp, targetPosition);
+
             curState.RawPosition = pos + offset;
 
             // Compute the rotation bypass for the lookat target.  We need to take special care

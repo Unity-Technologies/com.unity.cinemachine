@@ -26,8 +26,8 @@ namespace Unity.Cinemachine.Editor
 
             void UpdateRotVisibility()
             {
-                if (modeProp.serializedObject == null)
-                    return; // object deleted
+                if (modeProp.IsDeletedObject())
+                    return;
                 var mode = (TargetTracking.BindingMode)modeProp.intValue;
                 var rotMode = (TargetTracking.AngularDampingMode)rotModeProp.intValue;
 

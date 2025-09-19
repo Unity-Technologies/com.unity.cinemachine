@@ -109,7 +109,7 @@ namespace Unity.Cinemachine.Samples
     /// The Simple Player Controller has an ad-hoc technique of resolving this discontinuity,
     /// (you can see this in the code), but it is only used in this very specific situation.
     /// </summary>
-    public class SimplePlayerController : SimplePlayerControllerBase
+    public class SimplePlayerController : SimplePlayerControllerBase, ITeleportable
     {
         [Tooltip("Transition duration (in seconds) when the player changes velocity or rotation.")]
         public float Damping = 0.5f;
@@ -389,7 +389,7 @@ namespace Unity.Cinemachine.Samples
             return max + 1;
         }
 
-        // Call this to teleport the player
+        // ITeleportable implementation
         public void Teleport(Vector3 newPos, Quaternion newRot)
         {
             if (m_Controller != null)
