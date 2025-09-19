@@ -39,8 +39,8 @@ public class Triggers : RecipeBase
             .WithDescription("All tests defined in recipes. Run in changes to mainline and release branches.")
         );
 
-        var prProjectTests = projectTests.Where(job => job.JobId.Contains("Ubuntu"));
-        var prValidationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("ubuntu"));
+        var prProjectTests = projectTests.Where(job => job.JobId.Contains("Windows"));
+        var prValidationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("windows"));
 
         builders.Add(JobBuilder.Create("Pull Request Tests Trigger")
             .WithDependencies(prProjectTests)

@@ -19,7 +19,7 @@ public class CodeCoverage :RecipeBase
 
     private static readonly CinemachineSettings settings = new();
     private const string PackageName = "com.unity.cinemachine";
-    private static readonly Platform Platform = settings.Wrench.Packages[PackageName].EditorPlatforms[SystemType.Ubuntu];
+    private static readonly Platform Platform = settings.Wrench.Packages[PackageName].EditorPlatforms[SystemType.Windows];
     private const string EditorVersion = "trunk";
     private const string YamatoSourceDir = "${YAMATO_SOURCE_DIR}";
 
