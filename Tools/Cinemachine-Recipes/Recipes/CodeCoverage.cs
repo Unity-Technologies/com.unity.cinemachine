@@ -7,6 +7,7 @@ using RecipeEngine.Api.Recipes;
 using RecipeEngine.Modules.UnifiedTestRunner;
 using RecipeEngine.Modules.UpmCi;
 using RecipeEngine.Modules.UpmPvp;
+using RecipeEngine.Modules.Wrench.Helpers;
 using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Platforms;
 
@@ -30,10 +31,11 @@ public class CodeCoverage :RecipeBase
     }
 
     private List<IJobBuilder> GetJobs()
-    {
+    {   
+        var trunkVersion = settings.Wrench.EditorVersionToBranches.Where(kvp => kvp.Value == EditorVersion).Select(kvp => kvp.Key).First();
         List<IJobBuilder> builders = new();
         IJobBuilder job = JobBuilder.Create($"Code coverage - {Platform.System}  - {EditorVersion}")
-                .WithPlatform(Platform)
+                .WithPlatform(CinemachineSettings.OverrideUbuntuVersionFor6000(Platform, new EditorVersion(trunkVersion)))
                 .WithCommands( c => c
                     .Add("npm install upm-ci-utils@stable -g --registry https://artifactory.prd.cds.internal.unity3d.com/artifactory/api/npm/upm-npm")
                     .Add($"upm-ci package test -u trunk --package-path com.unity.cinemachine --type package-tests --enable-code-coverage --code-coverage-options \"generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor\" --extra-utr-arg=\"--coverage-results-path={YamatoSourceDir}/upm-ci~/test-results/CoverageResults --coverage-upload-options=\\\"reportsDir:upm-ci~/test-results;name:{Platform.System}_{EditorVersion};flags:{Platform.System}_{EditorVersion}\\\"\"")

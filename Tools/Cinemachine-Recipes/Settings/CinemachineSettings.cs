@@ -1,5 +1,8 @@
+using RecipeEngine.Api.Platforms;
+using RecipeEngine.Modules.Wrench.Helpers;
 using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Modules.Wrench.Settings;
+using RecipeEngine.Platforms;
 
 namespace Cinemachine.Cookbook.Settings;
 
@@ -49,4 +52,11 @@ public class CinemachineSettings
     }
 
     public WrenchSettings Wrench { get; set; }
+    
+    public static Platform OverrideUbuntuVersionFor6000(Platform editorPlatform, EditorVersion editorVersion)
+    {
+        if (editorVersion >= new EditorVersion("6000.0.0f1") && editorPlatform.System == SystemType.Ubuntu)
+            return new Platform(new Agent("package-ci/ubuntu-22.04:default", editorPlatform.Agent.Flavor, editorPlatform.Agent.Resource), editorPlatform.System);
+        return editorPlatform;
+    }
 }

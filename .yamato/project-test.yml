@@ -132,7 +132,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_2_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_2_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.2 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -187,7 +187,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -242,7 +242,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -407,7 +407,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_2_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_2_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.2 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -462,7 +462,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -517,7 +517,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -682,7 +682,7 @@ test_project_-_cinemachine_-_standalone_-_6000_2_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_2_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.2 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -737,7 +737,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -792,7 +792,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -957,7 +957,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_2_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_2_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.2 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1012,7 +1012,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1067,7 +1067,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1232,7 +1232,7 @@ test_project_-_cinemachine_-_urp_-_6000_2_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_2_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.2 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1287,7 +1287,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1342,7 +1342,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1507,7 +1507,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_2_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_2_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.2 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1562,7 +1562,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1617,7 +1617,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:

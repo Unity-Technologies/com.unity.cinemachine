@@ -9,6 +9,7 @@ using RecipeEngine.Modules.UpmPvp;
 using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Platforms;
 using RecipeEngine.Api.Dependencies;
+using RecipeEngine.Modules.Wrench.Helpers;
 
 
 namespace Cinemachine.Cookbook.Recipes;
@@ -40,12 +41,11 @@ public class ProjectTest : RecipeBase
             {
                 var supportedVersions = settings.Wrench.Packages[packageName].SupportedEditorVersions;
                 foreach (var editorVersion in supportedVersions)
-                    // foreach (var VARIABLE in _settings.Wrench.Packages[packageName].SupportedEditorVersions)
                 {
                     foreach (var project in settings.ProjectNames)
                     {
                         IJobBuilder job = JobBuilder.Create(GetJobName(settings.Wrench.Packages[packageName].ShortName, project, editorVersion, platform.Key))
-                            .WithPlatform(platform.Value)
+                            .WithPlatform(CinemachineSettings.OverrideUbuntuVersionFor6000(platform.Value, new EditorVersion(editorVersion)))
                             .WithOptionalCommands(
                                 platform.Value.RunsOnLinux(), c => c
                                     .Add("rm com.unity.cinemachine/Tests/.tests.json "))
