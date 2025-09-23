@@ -618,7 +618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5810a0e64264ad44499c7ec07b601026, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  RotationDamping: 0.2
+  RotationDamping: 0.15
   GroundLayers:
     serializedVersion: 2
     m_Bits: 1
@@ -825,8 +825,8 @@ MonoBehaviour:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
     HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
+      Enabled: 1
+      Size: {x: 0.25, y: 0.25}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 1, z: 0}
@@ -1137,8 +1137,8 @@ MonoBehaviour:
       Enabled: 0
       Size: {x: 0.2, y: 0.2}
     HardLimits:
-      Enabled: 0
-      Size: {x: 0.8, y: 0.8}
+      Enabled: 1
+      Size: {x: 0.25, y: 0.25}
       Offset: {x: 0, y: 0}
   CenterOnActivate: 1
   TargetOffset: {x: 0, y: 1, z: 0}
@@ -1567,7 +1567,7 @@ MonoBehaviour:
     BindingMode: 3
     PositionDamping: {x: 3, y: 3, z: 3}
     AngularDampingMode: 0
-    RotationDamping: {x: 1, y: 1, z: 1}
+    RotationDamping: {x: 0.5, y: 0.5, z: 0.5}
     QuaternionDamping: 1
   OrbitStyle: 0
   Radius: 10
