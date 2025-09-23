@@ -1,8 +1,10 @@
+using System;
 using UnityEngine;
 using UnityEngine.Splines;
 
 namespace Unity.Cinemachine.Samples
 {
+    [Serializable]
     public class RandomizedDollySpeed : SplineAutoDolly.ISplineAutoDolly
     {
         [Tooltip("Minimum speed the cart can travel")]
