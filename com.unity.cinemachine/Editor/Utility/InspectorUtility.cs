@@ -196,7 +196,7 @@ namespace Unity.Cinemachine.Editor
         public static void OnInitialGeometry(
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
-            owner.RegisterCallbackOnce<GeometryChangedEvent>((_) => EditorApplication.delayCall += callback);
+            owner.RegisterCallbackOnce<GeometryChangedEvent>((_) => callback());
         }
 
         /// <summary>
