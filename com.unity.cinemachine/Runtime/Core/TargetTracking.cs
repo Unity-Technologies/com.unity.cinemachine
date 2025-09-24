@@ -178,8 +178,10 @@ namespace Unity.Cinemachine.TargetTracking
         /// <summary>State information for damping</summary>
         public Quaternion PreviousReferenceOrientation { get; private set; }
 
-        Quaternion m_TargetOrientationOnAssign;
         Vector3 m_PreviousOffset;
+        Vector3 m_PreviousTargetPositionDampingOffset;
+
+        Quaternion m_TargetOrientationOnAssign;
         Transform m_PreviousTarget;
 
         /// <summary>Initializes the state for previous frame if appropriate.</summary>
@@ -302,8 +304,7 @@ namespace Unity.Cinemachine.TargetTracking
             PreviousReferenceOrientation = dampedRot;
 
             // Get the target position with the target offset applied
-            var targetPosition = component.FollowTargetPosition
-                + (settings.BindingMode == BindingMode.LazyFollow ? component.FollowTargetRotation : dampedRot) * targetOffset;
+            var targetPosition = GetTargetPositionWithOffset(component, settings.BindingMode, targetOffset, dampedRot);
 
             var currentPosition = PreviousTargetPosition;
             var previousOffset = prevStateValid ? m_PreviousOffset : desiredCameraOffset;
@@ -330,6 +331,14 @@ namespace Unity.Cinemachine.TargetTracking
 
             outTargetPosition = PreviousTargetPosition = currentPosition;
             outTargetOrient = dampedRot;
+            m_PreviousTargetPositionDampingOffset = currentPosition - targetPosition;
+        }
+
+        Vector3 GetTargetPositionWithOffset(
+            CinemachineComponentBase component, BindingMode bindingMode, Vector3 targetOffset, Quaternion referenceOrient)
+        {
+            return component.FollowTargetPosition
+                + (bindingMode == BindingMode.LazyFollow ? component.FollowTargetRotation : referenceOrient) * targetOffset;
         }
 
         /// <summary>Return a new damped target position that respects the minimum
@@ -390,23 +399,28 @@ namespace Unity.Cinemachine.TargetTracking
         /// <param name="component">The component caller</param>
         /// <param name="bindingMode">Current binding mode for damping and offset</param>
         /// <param name="targetOffset">Offset from target root, in target-local space</param>
-        /// <param name="pos">World-space position to take</param>
-        /// <param name="rot">World-space orientation to take</param>
         /// <param name="newState">Calling camera's new state</param>
         public void OnForceCameraPosition(
             CinemachineComponentBase component,
             BindingMode bindingMode, Vector3 targetOffset,
             ref CameraState newState)
         {
-            // Get target position relative to camera, in camera-local space
             var state = component.VcamState; // old state
-            var offset = Quaternion.Inverse(state.GetFinalOrientation()) * (PreviousTargetPosition - state.GetFinalPosition());
+            var prevOrient = GetReferenceOrientation(
+                component, bindingMode, targetOffset, newState.ReferenceUp, ref state);
+            var targetPos = GetTargetPositionWithOffset(component, bindingMode, targetOffset, prevOrient);
 
-            // Apply it to the new state
-            offset = newState.GetFinalOrientation() * offset;
-            PreviousTargetPosition = newState.GetFinalPosition() + offset;
-            PreviousReferenceOrientation = GetReferenceOrientation(component, bindingMode, targetOffset, newState.ReferenceUp, ref newState);
-            m_PreviousOffset = -offset;
+            var orient = GetReferenceOrientation(
+                component, bindingMode, targetOffset, newState.ReferenceUp, ref newState);
+            m_PreviousOffset = orient * (Quaternion.Inverse(prevOrient) * m_PreviousOffset);
+            PreviousReferenceOrientation = orient;
+
+            // Rotate the damping data also, to preserve position damping integrity
+            var deltaRot = newState.GetFinalOrientation() * Quaternion.Inverse(state.GetFinalOrientation());
+            m_PreviousTargetPositionDampingOffset = deltaRot * m_PreviousTargetPositionDampingOffset;
+            PreviousTargetPosition = targetPos + m_PreviousTargetPositionDampingOffset;
+            if (bindingMode == BindingMode.WorldSpace)
+                m_PreviousOffset = deltaRot * m_PreviousOffset;
         }
     }
 }
