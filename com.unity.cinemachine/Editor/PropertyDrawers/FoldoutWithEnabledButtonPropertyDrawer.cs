@@ -92,6 +92,8 @@ namespace Unity.Cinemachine.Editor
 
             row.TrackPropertyWithInitialCallback(enabledProp, (p) =>
             {
+                if (p.IsDeletedObject())
+                    return;
                 childField?.SetVisible(p.boolValue);
                 childLabel?.SetVisible(p.boolValue);
                 disabledText?.SetVisible(!p.boolValue);

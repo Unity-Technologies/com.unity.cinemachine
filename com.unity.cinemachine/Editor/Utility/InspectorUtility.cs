@@ -196,12 +196,7 @@ namespace Unity.Cinemachine.Editor
         public static void OnInitialGeometry(
             this VisualElement owner, EditorApplication.CallbackFunction callback)
         {
-            owner.RegisterCallback<GeometryChangedEvent>(OnGeometryChanged);
-            void OnGeometryChanged(GeometryChangedEvent _)
-            {
-                owner.UnregisterCallback<GeometryChangedEvent>(OnGeometryChanged); // call only once
-                callback();
-            }
+            owner.RegisterCallbackOnce<GeometryChangedEvent>((_) => EditorApplication.delayCall += callback);
         }
 
         /// <summary>
@@ -211,7 +206,11 @@ namespace Unity.Cinemachine.Editor
         public static void TrackPropertyWithInitialCallback(
             this VisualElement owner, SerializedProperty property, Action<SerializedProperty> callback)
         {
-            owner.OnInitialGeometry(() => callback(property));
+            owner.OnInitialGeometry(() => 
+            {
+                if (!property.IsDeletedObject()) 
+                    callback(property);
+            });
             owner.TrackPropertyValue(property, callback);
         }
 
@@ -291,6 +290,8 @@ namespace Unity.Cinemachine.Editor
                 label.AddToClassList("unity-base-field__label--with-dragger");
                 label.OnInitialGeometry(() =>
                 {
+                    if (p.IsDeletedObject())
+                        return;
                     if (p.propertyType == SerializedPropertyType.Float)
                     {
                         var dragger = new DelayedFriendlyFieldDragger<float>(field.Q<FloatField>());
