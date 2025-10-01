@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Editor
             valueField.OnInitialGeometry(() => 
             {
                 valueField.SafeSetIsDelayed();
-                valueField.Q<FloatField>().Add(recenterButton1);
+                valueField.Q<FloatField>()?.Add(recenterButton1);
             });
             valueLabel.AddDelayedFriendlyPropertyDragger(valueProp, valueField, (d) => d.CancelDelayedWhenDragging = true);
 
