@@ -12,25 +12,25 @@ namespace Unity.Cinemachine.Tests.Editor
     {
         [SerializeField] bool m_NoExistingSamples; // Serialize to restore after domain reload.
         bool m_IsSupportedProject;
-        
-        readonly string[] m_supportedProjectNames =
-            { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
-        readonly string m_projectName = Application.productName;
 
         [SetUp]
         public void CheckExistingSamplesAndValidProjects()
         {
-            m_NoExistingSamples = m_NoExistingSamples
-                                  || !Directory.Exists("Assets/Samples") && !File.Exists("Assets/Samples.meta");
-
-            foreach (var name in m_supportedProjectNames)
+            string[] supportedProjectNames =
+                { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
+            string projectName = Application.productName;
+            
+            foreach (var name in supportedProjectNames)
             {
-                if (name == m_projectName)
+                if (name == projectName)
                 {
                     m_IsSupportedProject = true;
                     break;
                 }
             }
+            
+            m_NoExistingSamples = m_NoExistingSamples
+                                  || !Directory.Exists("Assets/Samples") && !File.Exists("Assets/Samples.meta");
         }
 
         [TearDown]
@@ -71,15 +71,14 @@ namespace Unity.Cinemachine.Tests.Editor
                 CopyDirectory(sharedAssetsSource, sharedAssetsDest);
             }
 
-            // Determine if project name contains "Input"
-            var projectNameLower = m_projectName.ToLower();
-            var projectHasInput = projectNameLower.Contains("input");
+            // Determine if project has "Input System" package installed
+            var projectHasInput = PackageInfo.FindForAssetPath("Packages/com.unity.inputsystem") != null;
 
             // Import samples using Package Manager API
             var samples = Sample.FindByPackage(packageInfo.name, version);
             foreach (var sample in samples)
             {
-                // Skip importing "Input System Samples" if project name does not contain "input"
+                // Skip importing "Input System Samples" if project doesn't have "Input System" package installed
                 bool isInputSample = sample.displayName.ToLower().Contains("input");
                 if (isInputSample && !projectHasInput)
                     continue;
