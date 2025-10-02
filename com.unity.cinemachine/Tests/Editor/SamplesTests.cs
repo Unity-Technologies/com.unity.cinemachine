@@ -36,7 +36,7 @@ namespace Unity.Cinemachine.Tests.Editor
         [TearDown]
         public void DeleteImportedSamples()
         {
-            if (m_NoExistingSamples || !m_IsSupportedProject)
+            if (m_NoExistingSamples && m_IsSupportedProject)
             {
                 if (Directory.Exists("Assets/Samples"))
                 {
