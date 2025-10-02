@@ -10,34 +10,59 @@ namespace Unity.Cinemachine.Tests.Editor
 {
     public class SamplesTests
     {
-        [SerializeField] bool s_NoExistingSamples; // Serialize to restore after domain reload.
+        [SerializeField] bool m_NoExistingSamples; // Serialize to restore after domain reload.
+        bool m_IsSupportedProject;
+        
+        readonly string[] m_supportedProjectNames =
+            { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
+        readonly string m_projectName = Application.productName;
 
         [SetUp]
-        public void CheckExistingSamples()
+        public void CheckExistingSamplesAndValidProjects()
         {
-            s_NoExistingSamples = s_NoExistingSamples 
+            m_NoExistingSamples = m_NoExistingSamples
                                   || !Directory.Exists("Assets/Samples") && !File.Exists("Assets/Samples.meta");
+
+            foreach (var name in m_supportedProjectNames)
+            {
+                if (name == m_projectName)
+                {
+                    m_IsSupportedProject = true;
+                    break;
+                }
+            }
         }
 
         [TearDown]
         public void DeleteImportedSamples()
         {
-            if (s_NoExistingSamples)
+            if (m_NoExistingSamples || !m_IsSupportedProject)
             {
-                Directory.Delete("Assets/Samples", recursive: true);
-                File.Delete("Assets/Samples.meta");
+                if (Directory.Exists("Assets/Samples"))
+                {
+                    Directory.Delete("Assets/Samples", recursive: true);
+                }
+                if (File.Exists("Assets/Samples.meta"))
+                {
+                    File.Delete("Assets/Samples.meta");
+                }
             }
         }
 
         [UnityTest]
         public IEnumerator ImportSamples()
         {
-            Assume.That(s_NoExistingSamples, Is.True, "Samples already imported");
+            // Skip test if project name is not in list of supported project names and/or samples not already imported.
+            if (!m_IsSupportedProject)
+            {
+                Assert.Ignore($"Project not valid for Project Testing. Skipping sample import test.");
+            }
+            Assume.That(m_NoExistingSamples, Is.True, "Samples already imported");
 
             var packageInfo = PackageInfo.FindForAssetPath("Packages/com.unity.cinemachine");
             var version = packageInfo.version;
-            
-            // Import Shared Assets manually if not already present
+
+            // Import Shared Assets manually since Package Manager API cannot do it.
             var sharedAssetsSource = Path.Combine(packageInfo.resolvedPath, "Samples~", "Shared Assets");
             var sharedAssetsDest = Path.Combine("Assets/Samples/Cinemachine", version, "Shared Assets");
             if (Directory.Exists(sharedAssetsSource) && !Directory.Exists(sharedAssetsDest))
@@ -47,8 +72,8 @@ namespace Unity.Cinemachine.Tests.Editor
             }
 
             // Determine if project name contains "Input"
-            var projectName = Application.productName;
-            var projectHasInput = projectName.ToLower().Contains("input");
+            var projectNameLower = m_projectName.ToLower();
+            var projectHasInput = projectNameLower.Contains("input");
 
             // Import samples using Package Manager API
             var samples = Sample.FindByPackage(packageInfo.name, version);
@@ -58,7 +83,7 @@ namespace Unity.Cinemachine.Tests.Editor
                 bool isInputSample = sample.displayName.ToLower().Contains("input");
                 if (isInputSample && !projectHasInput)
                     continue;
-                
+
                 sample.Import(Sample.ImportOptions.OverridePreviousImports | Sample.ImportOptions.HideImportWindow);
             }
             yield return new WaitForDomainReload();
