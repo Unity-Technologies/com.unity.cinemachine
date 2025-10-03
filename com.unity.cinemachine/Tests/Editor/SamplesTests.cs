@@ -106,7 +106,7 @@ namespace Unity.Cinemachine.Tests.Editor
             {
                 Directory.CreateDirectory(dir.Replace(sourceDir, destDir));
             }
-            foreach (var file in Directory.GetFiles(sourceDir, "*.*", SearchOption.AllDirectories))
+            foreach (var file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
             {
                 File.Copy(file, file.Replace(sourceDir, destDir), true);
             }
