@@ -49,7 +49,7 @@ namespace Unity.Cinemachine.Tests.Editor
             var samples = Sample.FindByPackage(packageInfo.name, version);
             foreach (var sample in samples)
             {
-                // Skip importing "Input System Samples" if project doesn't have "Input System" package installed
+                // Skip importing input-specific samples if project doesn't have Input System package installed
                 bool isInputSample = sample.displayName.ToLower().Contains("input");
                 if (isInputSample && !projectHasInput)
                     continue;
