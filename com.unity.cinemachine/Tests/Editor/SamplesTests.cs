@@ -10,65 +10,25 @@ namespace Unity.Cinemachine.Tests.Editor
 {
     public class SamplesTests
     {
-        [SerializeField] bool m_NoExistingSamples; // Serialize to restore after domain reload.
-        bool m_IsSupportedProject;
+        // We only want to run this test on our test projects, which we assume to have no samples imported yet.
+        bool IsSupportedProject() => Application.productName == "CinemachineTestProject" && Application.companyName == "Unity";
 
-        [SetUp]
-        public void CheckExistingSamplesAndValidProjects()
+        void DeleteSamplesIfExisting()
         {
-            string[] supportedProjectNames =
-                { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
-            string projectName = Application.productName;
-            
-            foreach (var name in supportedProjectNames)
-            {
-                if (name == projectName)
-                {
-                    m_IsSupportedProject = true;
-                    break;
-                }
-            }
-            
-            m_NoExistingSamples = m_NoExistingSamples
-                                  || !Directory.Exists("Assets/Samples") && !File.Exists("Assets/Samples.meta");
-        }
-
-        [TearDown]
-        public void DeleteImportedSamples()
-        {
-            if (m_NoExistingSamples && m_IsSupportedProject)
-            {
-                var rootSamplesPath = "Assets/Samples";
-                var cineSamplesPath = rootSamplesPath + "/Cinemachine";
-                var samplesMeta = rootSamplesPath + ".meta";
-                var cineMeta = cineSamplesPath + ".meta";
-                
-                // Delete imported Cinemachine samples
-                if (Directory.Exists(cineSamplesPath))
-                    Directory.Delete(cineSamplesPath, recursive: true);
-                if (File.Exists(cineMeta))
-                    File.Delete(cineMeta);
-
-                // Delete Samples folder if empty
-                var entries = Directory.Exists(rootSamplesPath) ? Directory.GetFileSystemEntries(rootSamplesPath) : null;
-                if (entries != null && entries.Length == 0)
-                {
-                    Directory.Delete(rootSamplesPath, recursive: false);
-                    if (File.Exists(samplesMeta))
-                        File.Delete(samplesMeta);
-                }
-            }
+            if (Directory.Exists("Assets/Samples/Cinemachine"))
+                Directory.Delete("Assets/Samples/Cinemachine", recursive: true);
+            if (File.Exists("Assets/Samples/Cinemachine.meta"))
+                File.Delete("Assets/Samples/Cinemachine.meta");
         }
 
         [UnityTest]
-        public IEnumerator ImportSamples()
+        public IEnumerator TestImportSamples()
         {
-            // Skip test if project name is not in list of supported project names and/or samples not already imported.
-            if (!m_IsSupportedProject)
-            {
-                Assert.Ignore($"Project not valid for Project Testing. Skipping sample import test.");
-            }
-            Assume.That(m_NoExistingSamples, Is.True, "Samples already imported");
+            // Skip test if project name is not in list of supported projects.
+            if (!IsSupportedProject())
+                Assert.Ignore($"Project is not valid for Samples Testing. Skipping sample import test.");
+
+            DeleteSamplesIfExisting();
 
             var packageInfo = PackageInfo.FindForAssetPath("Packages/com.unity.cinemachine");
             var version = packageInfo.version;
@@ -103,13 +63,10 @@ namespace Unity.Cinemachine.Tests.Editor
         static void CopyDirectory(string sourceDir, string destDir)
         {
             foreach (var dir in Directory.GetDirectories(sourceDir, "*", SearchOption.AllDirectories))
-            {
                 Directory.CreateDirectory(dir.Replace(sourceDir, destDir));
-            }
+
             foreach (var file in Directory.GetFiles(sourceDir, "*", SearchOption.AllDirectories))
-            {
                 File.Copy(file, file.Replace(sourceDir, destDir), true);
-            }
         }
     }
 }
