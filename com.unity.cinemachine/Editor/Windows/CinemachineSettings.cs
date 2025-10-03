@@ -111,7 +111,7 @@ namespace Unity.Cinemachine.Editor
             static byte[] Base64Decode(string base64EncodedData) => Convert.FromBase64String(base64EncodedData);
         }
 
-        // Called by the ingrastructure.  We install our hierarchy icon drawer.
+        // Called by the infrastructure.  We install our hierarchy icon drawer.
         static void OnPostprocessAllAssets(
             string[] importedAssets, string[] deletedAssets, string[] movedAssets,
             string[] movedFromAssetPaths, bool didDomainReload)
@@ -119,7 +119,11 @@ namespace Unity.Cinemachine.Editor
             if (didDomainReload)
                 EditorApplication.hierarchyWindowItemOnGUI += (instanceID, r) =>
                 {
+#if UNITY_6000_3_OR_NEWER
+                    var instance = EditorUtility.EntityIdToObject(instanceID) as GameObject;
+#else
                     var instance = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+#endif
                     if (instance == null)
                         return; // object in process of being deleted
 

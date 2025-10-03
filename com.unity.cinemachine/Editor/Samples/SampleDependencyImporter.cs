@@ -328,11 +328,11 @@ namespace Unity.Cinemachine.Editor
                             didSomething |= ConvertBultinMaterials(folder);
 #endif
 #if CINEMACHINE_UNITY_INPUTSYSTEM
-                            didSomething |= ReplacePrefabs(Path.GetFullPath($"{CinemachineCore.kPackageRoot}/Samples~/InputSystem~/"), folder);
+                            didSomething |= ReplacePrefabs($"{CinemachineCore.kPackageRoot}/Samples~/InputSystem~/", folder);
                             didSomething |= CopyAssets(Path.GetFullPath($"{CinemachineCore.kPackageRoot}/Samples~/InputSystem~/"), folder);
 #endif
 #if CINEMACHINE_HDRP
-                            didSomething |= ReplacePrefabs(Path.GetFullPath($"{CinemachineCore.kPackageRoot}/Samples~/HDRP~/"), folder);
+                            didSomething |= ReplacePrefabs($"{CinemachineCore.kPackageRoot}/Samples~/HDRP~/", folder);
                             didSomething |= CopyAssets(Path.GetFullPath($"{CinemachineCore.kPackageRoot}/Samples~/HDRP~/"), folder);
 #endif
                         }
@@ -356,18 +356,50 @@ namespace Unity.Cinemachine.Editor
                     {
                         var localPath = matInfo.FullName[Application.dataPath.Length..];
                         var material = AssetDatabase.LoadAssetAtPath<Material>("Assets/" + localPath);
-
-                        MaterialUpgrader.Upgrade(material,
-#if CINEMACHINE_URP
-                            new UnityEditor.Rendering.Universal.StandardUpgrader(material.shader.name),
-#elif CINEMACHINE_HDRP
-                            UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
-#endif
-                            MaterialUpgrader.UpgradeFlags.None);
+                        Upgrade(material);
                         didSomething = true;
                     }
                 }
                 return didSomething;
+
+                static void Upgrade(Material m)
+                {
+#if CINEMACHINE_URP
+                    bool isTransparent = m.GetFloat("_Mode") > 1;
+                    MaterialUpgrader.Upgrade(m,
+                        new UnityEditor.Rendering.Universal.StandardUpgrader(m.shader.name),
+                        MaterialUpgrader.UpgradeFlags.None);
+                    if (isTransparent)
+                    {
+                        // Set Surface Type to Transparent
+                        m.SetFloat("_Surface", 1); 
+    
+                        // Set Blend Mode to Alpha
+                        m.SetFloat("_Blend", 0); 
+    
+                        // Set the specific blend factors for standard alpha blending
+                        m.SetInt("_SrcBlend", (int)UnityEngine.Rendering.BlendMode.SrcAlpha);
+                        m.SetInt("_DstBlend", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+    
+                        // For correct alpha blending, the alpha channel's blend factors are often set differently
+                        m.SetInt("_SrcBlendAlpha", (int)UnityEngine.Rendering.BlendMode.One);
+                        m.SetInt("_DstBlendAlpha", (int)UnityEngine.Rendering.BlendMode.OneMinusSrcAlpha);
+    
+                        // Disable Z-Write and set the render queue for transparency
+                        m.SetInt("_ZWrite", 0);
+                        m.renderQueue = (int)UnityEngine.Rendering.RenderQueue.Transparent;
+    
+                        // Enable the necessary keywords
+                        m.EnableKeyword("_SURFACE_TYPE_TRANSPARENT");
+                        m.DisableKeyword("_SURFACE_TYPE_OPAQUE");
+                    }
+#else
+                    MaterialUpgrader.Upgrade(m,
+                        UnityEditor.Rendering.HighDefinition.MaterialUpgradeHelper.GetHDRPMaterialUpgraders(),
+                        MaterialUpgrader.UpgradeFlags.None);
+                    UnityEngine.Rendering.HighDefinition.HDMaterial.ValidateMaterial(m);
+#endif
+                }
             }
 #endif
 
