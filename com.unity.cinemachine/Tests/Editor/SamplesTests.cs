@@ -38,13 +38,24 @@ namespace Unity.Cinemachine.Tests.Editor
         {
             if (m_NoExistingSamples && m_IsSupportedProject)
             {
-                if (Directory.Exists("Assets/Samples"))
+                var rootSamplesPath = "Assets/Samples";
+                var cineSamplesPath = rootSamplesPath + "/Cinemachine";
+                var samplesMeta = rootSamplesPath + ".meta";
+                var cineMeta = cineSamplesPath + ".meta";
+                
+                // Delete imported Cinemachine samples
+                if (Directory.Exists(cineSamplesPath))
+                    Directory.Delete(cineSamplesPath, recursive: true);
+                if (File.Exists(cineMeta))
+                    File.Delete(cineMeta);
+
+                // Delete Samples folder if empty
+                var entries = Directory.Exists(rootSamplesPath) ? Directory.GetFileSystemEntries(rootSamplesPath) : null;
+                if (entries != null && entries.Length == 0)
                 {
-                    Directory.Delete("Assets/Samples", recursive: true);
-                }
-                if (File.Exists("Assets/Samples.meta"))
-                {
-                    File.Delete("Assets/Samples.meta");
+                    Directory.Delete(rootSamplesPath, recursive: false);
+                    if (File.Exists(samplesMeta))
+                        File.Delete(samplesMeta);
                 }
             }
         }
