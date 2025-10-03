@@ -17,21 +17,38 @@ namespace Unity.Cinemachine.Samples
         public Teleporter TargetPortal;
 
         // Sets the teleported in receivce-only mode, which prevents received
-        // objects from immediately being teloported out
+        // objects from immediately being teleported out
         public bool ReceiveOnlyMode  { get; set; }
 
+        // Teleport an object to the target portal
         void TeleportToTarget(Transform player)
         {
-            if (ReceiveOnlyMode || TargetPortal == null)
-                return;
+            // If a target portal is not specified, choose one at random
+            var targetPortal = TargetPortal;
+            if (targetPortal == null)
+            {
+                var allPortals = FindObjectsByType<Teleporter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+                if (allPortals.Length < 2)
+                    return; // no other portals
 
-            // Deactivate the target so it can receive player without re-teleporting
-            TargetPortal.ReceiveOnlyMode = true;
+                // Choose a random one
+                var index = Random.Range(0, allPortals.Length);
+                if (allPortals[index] == this && --index < 0)
+                    index = allPortals.Length - 1;
+                targetPortal = allPortals[index];
+            }
+            targetPortal.ReceiveObjectFromPortal(player, transform);
+        }
 
-            var pivot = transform.position;
-            var destination = TargetPortal.transform;
-            var rotDelta = Quaternion.FromToRotation(transform.forward, destination.forward);
-            var posDelta = destination.position - pivot;
+        // Receive an object from another portal
+        void ReceiveObjectFromPortal(Transform player, Transform srcPortal)
+        {
+            // Deactivate so we can receive player without re-teleporting
+            ReceiveOnlyMode = true;
+
+            var pivot = srcPortal.position;
+            var rotDelta = Quaternion.FromToRotation(srcPortal.forward, transform.forward);
+            var posDelta = transform.position - pivot;
 
             // Teleport the player.  Either set the new pos/rot directly, or if a ITeleportable
             // is present, get it to do the teleportation.
@@ -63,19 +80,20 @@ namespace Unity.Cinemachine.Samples
                 // but it will not handle a change of rotation
                 cam.OnTargetObjectWarped(cameraTarget, newPlayerPos - playerPos);
 
-                // If the entire player-camera combo is also being rotated by the portal, we need to do some
-                // additional work to tell the CinemachineCamera to rotate its state and teleport seamlessly.
+                // If the player-camera combo is not only being translated but also rotated by the portal,
+                // we need to do some additional work to tell the CinemachineCamera to rotate its state
+                // and teleport seamlessly.
                 if (rotDelta != Quaternion.identity)
                 {
-                    // Here we grab the camera original position and put it through the same teleportation
+                    // Here we grab the camera's original position and put it through the same teleportation
                     // as the player, preserving the relationship between camera and player.
                     var camPos = state.GetFinalPosition();
                     var camRot = state.GetFinalOrientation();
                     var newCamPos = RotateAround(camPos, pivot, rotDelta) + posDelta;
                     var newCamRot = rotDelta * camRot;
 
-                    // Now force the CinemachineCamera to be at the desired position and rotation.
-                    // This will also position and rotate the internal camera state, so that no damping will occur
+                    // Now force the CinemachineCamera to be at the desired position and rotation.  This will
+                    // also manipulate the internal camera state, so that no spurious damping or gitching will occur
                     cam.ForceCameraPosition(newCamPos, newCamRot);
                 }
             }
@@ -84,7 +102,14 @@ namespace Unity.Cinemachine.Samples
             static Vector3 RotateAround(Vector3 p, Vector3 pivot, Quaternion rot) => rot * (p - pivot) + pivot;
         }
 
-        void OnTriggerEnter(Collider other) => TeleportToTarget(other.transform);
+        // When something enters the trigger zone, we teleport it
+        void OnTriggerEnter(Collider other)
+        {
+            if (!ReceiveOnlyMode)
+                TeleportToTarget(other.transform);
+        }
+
+        // After receiving an object, we can't teleport it away until after it leaves the trigger zone
         void OnTriggerExit(Collider other) => ReceiveOnlyMode = false;
     }
 }

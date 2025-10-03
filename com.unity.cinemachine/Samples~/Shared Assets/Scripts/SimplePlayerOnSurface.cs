@@ -128,9 +128,9 @@ namespace Unity.Cinemachine.Samples
             }
 
             // Rotate to match the desired up direction
-            float t = Damper.Damp(1, damping, Time.deltaTime);
+            float t = Damper.Damp(100, damping, Time.deltaTime) * 0.01f;
             var fwd = tr.forward.ProjectOntoPlane(desiredUp);
-            if (fwd.sqrMagnitude > 0.0001f)
+            if (fwd.sqrMagnitude > 0.000001f)
                 tr.rotation = Quaternion.Slerp(tr.rotation, Quaternion.LookRotation(fwd, desiredUp), t);
             else
             {

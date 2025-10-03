@@ -292,7 +292,8 @@ namespace Unity.Cinemachine
             var r = UnityVectorExtensions.SafeFromToRotation(Vector3.back, localDir, up).eulerAngles;
             VerticalAxis.Value = VerticalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.x));
             HorizontalAxis.Value = HorizontalAxis.ClampValue(UnityVectorExtensions.NormalizeAngle(r.y));
-            RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
+            // Prefer to leave radial axis alone
+            //RadialAxis.Value = RadialAxis.ClampValue(distance / Radius);
         }
 
         void InferAxesFromPosition_ThreeRing(Vector3 dir, float distance, ref CameraState state)
@@ -301,7 +302,8 @@ namespace Unity.Cinemachine
             var orient = m_TargetTracker.GetReferenceOrientation(this, TrackerSettings.BindingMode, TargetOffset, up, ref state);
             HorizontalAxis.Value = GetHorizontalAxis();
             VerticalAxis.Value = GetVerticalAxisClosestValue(out var splinePoint);
-            RadialAxis.Value = RadialAxis.ClampValue(distance / splinePoint.magnitude);
+            // Prefer to leave radial axis alone
+            //RadialAxis.Value = RadialAxis.ClampValue(distance / splinePoint.magnitude);
 
             // local functions
             float GetHorizontalAxis()

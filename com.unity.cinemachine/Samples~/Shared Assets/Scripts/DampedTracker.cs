@@ -27,16 +27,16 @@ namespace Unity.Cinemachine.Samples
             if (Target != null)
             {
                 // Match the player's position
-                float t = Damper.Damp(1, PositionDamping, Time.deltaTime);
+                float t = Damper.Damp(100, PositionDamping, Time.deltaTime) * 0.01f;
                 var pos = Vector3.Lerp(transform.position, Target.position, t);
 
                 // Rotate my transform to make my up match the target's up
                 var rot = transform.rotation;
-                t = Damper.Damp(1, RotationDamping, Time.deltaTime);
+                t = Damper.Damp(100, RotationDamping, Time.deltaTime) * 0.01f;
                 var srcUp = transform.up;
                 var dstUp = Target.up;
                 var axis = Vector3.Cross(srcUp, dstUp);
-                if (axis.sqrMagnitude > 0.001f)
+                if (axis.sqrMagnitude > 0.000001f)
                 {
                     var angle = UnityVectorExtensions.SignedAngle(srcUp, dstUp, axis) * t;
                     rot = Quaternion.AngleAxis(angle, axis) * rot;

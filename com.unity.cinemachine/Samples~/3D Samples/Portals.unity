@@ -131,6 +131,7 @@ GameObject:
   - component: {fileID: 315485077}
   - component: {fileID: 315485076}
   - component: {fileID: 315485075}
+  - component: {fileID: 315485079}
   - component: {fileID: 315485074}
   - component: {fileID: 315485073}
   m_Layer: 0
@@ -163,6 +164,8 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: 1
+        LegacyInput: Mouse X
+        LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
       Driver:
@@ -174,6 +177,8 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -5630151704836100654, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: -1
+        LegacyInput: Mouse Y
+        LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
       Driver:
@@ -185,6 +190,8 @@ MonoBehaviour:
       Input:
         InputAction: {fileID: -423771258819551211, guid: 1d6e640e716dc4ff6989b73d02023f2b, type: 3}
         Gain: -1
+        LegacyInput: Mouse ScrollWheel
+        LegacyGain: 1
         CancelDeltaTime: 0
       InputValue: 0
       Driver:
@@ -359,6 +366,23 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &315485079
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 315485072}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 68bb026fafb42b14791938953eaace77, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  NoiseProfile: {fileID: 11400000, guid: 46965f9cbaf525742a6da4c2172a99cd, type: 2}
+  PivotOffset: {x: 0, y: 0, z: 0}
+  AmplitudeGain: 1
+  FrequencyGain: 0.5
+  m_NoiseOffsets: {x: 0, y: 0, z: 0}
 --- !u!114 &826448326 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 5616521885787618667, guid: 1f96a4357fa88664aa5acb8a2ef296b6, type: 3}
@@ -386,6 +410,10 @@ PrefabInstance:
       propertyPath: TargetPortal
       value: 
       objectReference: {fileID: 826448326}
+    - target: {fileID: 6465999172809046225, guid: 1f96a4357fa88664aa5acb8a2ef296b6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: d30fd4822efbfe8448c2e608ba7d5d72, type: 2}
     - target: {fileID: 8382159967153296003, guid: 1f96a4357fa88664aa5acb8a2ef296b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: 6.19
@@ -561,6 +589,10 @@ PrefabInstance:
       propertyPath: TargetPortal
       value: 
       objectReference: {fileID: 1224579613}
+    - target: {fileID: 6465999172809046225, guid: 1f96a4357fa88664aa5acb8a2ef296b6, type: 3}
+      propertyPath: 'm_Materials.Array.data[0]'
+      value: 
+      objectReference: {fileID: 2100000, guid: 3c6a36271c061714fb72ecb0d79d1177, type: 2}
     - target: {fileID: 8382159967153296003, guid: 1f96a4357fa88664aa5acb8a2ef296b6, type: 3}
       propertyPath: m_LocalPosition.x
       value: -0.92
