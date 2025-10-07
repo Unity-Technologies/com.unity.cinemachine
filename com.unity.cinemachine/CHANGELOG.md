@@ -13,7 +13,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - InheritPosition was not inheriting the camera position in all cases.
 - Rotation Composer damping was not being applied when the Orbital Follow's Binding Mode was Lazy Follow.
 - GroupFraming extension did not respect PreviousStateIsValid flag, so could not be reset dynamically.
-- When blending between a 3rdPerson camera without a lookat target and a camera with a look-at target, the blend was incorrect.
+- When blending between a 3rdPerson camera without a look-at target and a camera with a look-at target, the blend was incorrect.
 - ForceCameraPosition was not working properly for LazyFollow cameras.
 - Teleporting a camera with a nonzero Target Offset was not smooth.
 - Exceptions were sometimes generated when an OrbitalFollow component was deleted.
@@ -24,8 +24,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.
 - Added `InputAxisControllerBase.GetController()` method, to conveniently fetch an Input Controller having a specific name.
 - Added `InputAxisControllerBase.TriggerRecentering()` to trigger recentering of an axis having a specific name.
-- Added PerspectiveToOrthoCustomBlend sample scene.
 - Added "Recenter" button to input axis inspector, to immediately center the axis.
+- Added PerspectiveToOrthoCustomBlend sample scene.
 - Added new Portals sample scene to illustrate camera teleportation.
 
 ### Changed
