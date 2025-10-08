@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Exceptions were sometimes generated when an OrbitalFollow component was deleted.
 - Input Axis Controller was losing user input after a play-mode domain reload.
 - Input Axis Controller was not always reading composite actions correctly.
+- CinemachineConfiner2D.BakeBoundingShape() was leaving confiner with a not-fully-baked shape.
 
 ### Added
 - Added `CinemachineConfiner2D.CameraWasDisplaced()` and `CinemachineConfiner2D.GetCameraDisplacementDistance()` methods.

@@ -270,12 +270,16 @@ namespace Unity.Cinemachine
         /// than 5 baking seconds have elapsed.</returns>
         public bool BakeBoundingShape(CinemachineVirtualCameraBase vcam, float maxTimeInSeconds)
         {
-            if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, vcam.State.Lens.Aspect, out _))
+            if (!m_ShapeCache.ValidateCache(BoundingShape2D, OversizeWindow, vcam.State.Lens.Aspect, out bool baked))
                 return false; // invalid path
             if (m_ShapeCache.ConfinerOven == null)
                 return false;
+            m_ShapeCache.ForceBaked = baked;
             if (m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKING)
+            {
                 m_ShapeCache.ConfinerOven.BakeConfiner(maxTimeInSeconds);
+                m_ShapeCache.ForceBaked = m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKED;
+            }
             return m_ShapeCache.ConfinerOven.State == ConfinerOven.BakingState.BAKED;
         }
 
@@ -410,6 +414,7 @@ namespace Unity.Cinemachine
             Matrix4x4 m_BakedToWorld; // defines baked space
             Collider2D m_BoundingShape2D;
 
+            public bool ForceBaked;
 
             /// <summary>
             /// Invalidates shapeCache
@@ -438,7 +443,8 @@ namespace Unity.Cinemachine
                 OversizeWindowSettings oversize, float aspectRatio,
                 out bool confinerStateChanged)
             {
-                confinerStateChanged = false;
+                confinerStateChanged = ForceBaked;
+                ForceBaked = false;
 
                 if (IsValid(boundingShape2D, oversize, aspectRatio))
                 {
