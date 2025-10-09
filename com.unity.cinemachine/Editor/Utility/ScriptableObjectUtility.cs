@@ -1,6 +1,5 @@
 using UnityEngine;
 using UnityEditor;
-using System.IO;
 using System;
 
 namespace Unity.Cinemachine.Editor
@@ -10,15 +9,6 @@ namespace Unity.Cinemachine.Editor
     /// </summary>
     class ScriptableObjectUtility
     {
-        /// <summary>Create a scriptable object asset</summary>
-        /// <typeparam name="T">The type of asset to create</typeparam>
-        /// <param name="assetPath">The full path and filename of the asset to create</param>
-        /// <returns>The newly-created asset</returns>
-        public static T CreateAt<T>(string assetPath) where T : ScriptableObject
-        {
-            return CreateAt(typeof(T), assetPath) as T;
-        }
-
         /// <summary>Create a scriptable object asset</summary>
         /// <param name="assetType">The type of asset to create</param>
         /// <param name="assetPath">The full path and filename of the asset to create</param>
@@ -35,82 +25,33 @@ namespace Unity.Cinemachine.Editor
             return asset;
         }
 
-        /// <summary>Create a ScriptableObject asset</summary>
-        /// <typeparam name="T">The type of asset to create</typeparam>
-        /// <param name="prependFolderName">If true, prepend the selected asset folder name to the asset name</param>
-        /// <param name="trimName">If true, remove instances of the "Asset", "Attributes", "Container" strings from the name</param>
-        public static void Create<T>(bool prependFolderName = false, bool trimName = true) where T : ScriptableObject
+        class CreateAssetAction : UnityEditor.ProjectWindowCallback.EndNameEditAction
         {
-            string className = typeof(T).Name;
-            string assetName = className;
-            string folder = GetSelectedAssetFolder();
-
-            if (trimName)
+            public Type TypeToCreate;
+            public override void Action(int instanceId, string pathName, string resourceFile)
             {
-                var standardNames = new string[] { "Asset", "Attributes", "Container" };
-                for (int i = 0; i < standardNames.Length; ++i)
-                    assetName = assetName.Replace(standardNames[i], "");
+                var asset = CreateAt(TypeToCreate, pathName);
+                ProjectWindowUtil.ShowCreatedAsset(asset);
             }
-
-            if (prependFolderName)
-            {
-                string folderName = Path.GetFileName(folder);
-                assetName = (string.IsNullOrEmpty(assetName) ? folderName : string.Format("{0}_{1}", folderName, assetName));
-            }
-
-            Create(className, assetName, folder);
         }
 
-        private static ScriptableObject Create(string className, string assetName, string folder)
+        /// <summary>
+        /// Creates a new asset of the specified type in the Unity project.
+        /// </summary>
+        /// <remarks>This method initializes the asset creation process in the Unity project window. The
+        /// user is prompted to name the asset before it is finalized. The asset is created as a `.asset`
+        /// file.</remarks>
+        /// <typeparam name="T">The type of the asset to create. Must derive from <see cref="ScriptableObject"/>.</typeparam>
+        /// <param name="defaultName">The default name for the new asset. If null or empty, a name is 
+        /// automatically generated based on the type of the asset.</param>
+        public static void Create<T>(string defaultName = null) where T : ScriptableObject
         {
-            var asset = ScriptableObject.CreateInstance(className);
-            if (asset == null)
-            {
-                Debug.LogError("failed to create instance of " + className);
-                return null;
-            }
-
-            asset.name = assetName ?? className;
-
-            string assetPath = GetUnusedAssetPath(folder, asset.name);
-            AssetDatabase.CreateAsset(asset, assetPath);
-
-            return asset;
-        }
-
-        private static string GetSelectedAssetFolder()
-        {
-            if ((Selection.activeObject != null) && AssetDatabase.Contains(Selection.activeObject))
-            {
-                string assetPath = AssetDatabase.GetAssetPath(Selection.activeObject);
-                string assetPathAbsolute = string.Format("{0}/{1}", Path.GetDirectoryName(Application.dataPath), assetPath);
-
-                if (Directory.Exists(assetPathAbsolute))
-                {
-                    return assetPath;
-                }
-                else
-                {
-                    return Path.GetDirectoryName(assetPath);
-                }
-            }
-
-            return "Assets";
-        }
-
-        private static string GetUnusedAssetPath(string folder, string assetName)
-        {
-            for (int n = 0; n < 9999; n++)
-            {
-                string assetPath = string.Format("{0}/{1}{2}.asset", folder, assetName, (n == 0 ? "" : n.ToString()));
-                string existingGUID = AssetDatabase.AssetPathToGUID(assetPath);
-                if (string.IsNullOrEmpty(existingGUID))
-                {
-                    return assetPath;
-                }
-            }
-
-            return null;
+            if (string.IsNullOrEmpty(defaultName))
+                defaultName = "New " + ObjectNames.NicifyVariableName(typeof(T).Name);
+            var action = ScriptableObject.CreateInstance<CreateAssetAction>();
+            action.TypeToCreate = typeof(T);
+            var icon = EditorGUIUtility.IconContent("ScriptableObject Icon").image as Texture2D;
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, $"{defaultName}.asset", icon , null);
         }
     }
 }
