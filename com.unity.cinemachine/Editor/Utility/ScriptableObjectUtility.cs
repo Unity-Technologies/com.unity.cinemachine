@@ -31,7 +31,8 @@ namespace Unity.Cinemachine.Editor
             public override void Action(int instanceId, string pathName, string resourceFile)
             {
                 var asset = CreateAt(TypeToCreate, pathName);
-                ProjectWindowUtil.ShowCreatedAsset(asset);
+                if (asset != null)
+                    ProjectWindowUtil.ShowCreatedAsset(asset);
             }
         }
 
