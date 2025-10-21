@@ -1,5 +1,5 @@
 {
-  "requires": [
+  "com.unity.cinemachine": [
     "PVP-20-1"
   ]
 }
