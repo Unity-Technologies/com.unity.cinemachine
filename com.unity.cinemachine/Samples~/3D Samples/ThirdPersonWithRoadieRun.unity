@@ -1482,7 +1482,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[4].Input.LegacyGain
-      value: 1
+      value: 50
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[5].Driver.AccelTime
@@ -1494,7 +1494,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[5].Input.LegacyGain
-      value: 1
+      value: -50
       objectReference: {fileID: 0}
     - target: {fileID: 7804758404662293724, guid: 4d8d7a9a98d3f4ac2967d48094ea010f, type: 3}
       propertyPath: m_ControllerManager.Controllers.Array.data[6].Input.LegacyGain
