@@ -29,7 +29,7 @@ public class CinemachineSettings
     public readonly string[] ProjectNames = new[]
         { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
 
-    ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
+    //ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
 
     public CinemachineSettings()
     {
@@ -45,7 +45,7 @@ public class CinemachineSettings
         Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Unity.Cinemachine$");
         Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Unity.Cinemachine.Editor$");
 
-        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
+        //Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }
 
     public WrenchSettings Wrench { get; set; }
