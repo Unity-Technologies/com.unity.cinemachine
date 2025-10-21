@@ -84,7 +84,7 @@ namespace Unity.Cinemachine.Editor
                         if (sampleEntry != null)
                         {
                             // Import common asset dependencies
-                            assetsImported = ImportAssetDependencies(
+                            assetsImported |= ImportAssetDependencies(
                                 m_PackageInfo, m_SampleConfiguration.SharedAssetDependencies, out var sharedDestinations);
 
                             // Import sample-specific asset dependencies
@@ -165,8 +165,7 @@ namespace Unity.Cinemachine.Editor
                     var dependencyPath = Path.GetFullPath($"Packages/{packageInfo.name}/Samples~/{path}");
                     if (Directory.Exists(dependencyPath))
                     {
-                        var copyTo =
-                            $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
+                        var copyTo = $"{Application.dataPath}/Samples/{packageInfo.displayName}/{packageInfo.version}/{path}";
                         CopyDirectory(dependencyPath, copyTo);
                         destinations.Add(copyTo);
                         assetsImported = true;
@@ -365,6 +364,10 @@ namespace Unity.Cinemachine.Editor
                 static void Upgrade(Material m)
                 {
 #if CINEMACHINE_URP
+                    // Skip already-converted shaders
+                    if (!m.HasFloat("_Mode"))
+                        return;
+
                     bool isTransparent = m.GetFloat("_Mode") > 1;
                     MaterialUpgrader.Upgrade(m,
                         new UnityEditor.Rendering.Universal.StandardUpgrader(m.shader.name),
