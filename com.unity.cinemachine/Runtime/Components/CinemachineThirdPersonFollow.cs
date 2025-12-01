@@ -272,9 +272,16 @@ namespace Unity.Cinemachine
             curState.RawPosition = camPos;
             curState.RawOrientation = targetRot; // not necessary, but left in to avoid breaking scenes that depend on this
 
-            // Correct the case where by default we're looking at the follow target
-            if (!curState.HasLookAt() || curState.ReferenceLookAt.Equals(targetPos))
-                curState.ReferenceLookAt = CameraState.kNoPoint;
+            const float kHeadRadius = 0.15f; // Approximation of a normal radius.
+            
+            // Correct the case where by default we're looking at the camera position. Trying to detect a first person camera. 
+            if (!curState.HasLookAt() || (camPos - curState.ReferenceLookAt).sqrMagnitude < kHeadRadius * kHeadRadius)
+            {
+                curState.BlendHint |= CameraState.BlendHints.IgnoreLookAtTarget;
+               
+                if (!curState.HasLookAt() || camPos.Equals(curState.ReferenceLookAt))
+                    curState.ReferenceLookAt = targetPos + targetForward * 0.01f; // so that there's something
+            }
         }
 
         /// <summary>
