@@ -256,7 +256,7 @@ namespace Unity.Cinemachine
                 Quaternion.Slerp(stateA.OrientationCorrection, stateB.OrientationCorrection, t));
 
             // LookAt target
-            if (!stateA.HasLookAt() || !stateB.HasLookAt())
+            if (!stateA.HasLookAt() || !stateB.HasLookAt() || ((stateA.BlendHint | stateB.BlendHint) & BlendHints.IgnoreLookAtTarget) != 0)
                 state.ReferenceLookAt = kNoPoint;
             else
             {

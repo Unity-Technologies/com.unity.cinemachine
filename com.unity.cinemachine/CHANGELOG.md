@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.1.6] - 2026-12-31
 ### Unreleased
 
+### Bugfixes
+- Fixed look at being ignored in third person camera when camera is navel gazing
 
 ## [3.1.5] - 2025-10-21
 
