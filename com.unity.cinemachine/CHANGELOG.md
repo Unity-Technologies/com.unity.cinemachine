@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Bugfixes
 - Fixed look at being ignored in third person camera when camera is navel gazing
+- Fixed outdated warning on RotationComposerComponent.
 
 ## [3.1.5] - 2025-10-21
 

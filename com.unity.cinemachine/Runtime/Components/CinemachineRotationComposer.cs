@@ -17,7 +17,7 @@ namespace Unity.Cinemachine
     [SaveDuringPlay]
     [DisallowMultipleComponent]
     [CameraPipeline(CinemachineCore.Stage.Aim)]
-    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.LookAt)]
+    [RequiredTarget(RequiredTargetAttribute.RequiredTargets.Tracking)]
     [HelpURL(Documentation.BaseURL + "manual/CinemachineRotationComposer.html")]
     public class CinemachineRotationComposer : CinemachineComponentBase,
         CinemachineFreeLookModifier.IModifiableComposition
