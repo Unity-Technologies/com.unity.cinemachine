@@ -72,7 +72,12 @@ namespace Unity.Cinemachine.Editor
                         switch (requiredTargets)
                         {
                             case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= c.FollowTarget == null; break;
-                            case RequiredTargetAttribute.RequiredTargets.LookAt: noLookAtTarget |= c.LookAtTarget == null; break;
+                            case RequiredTargetAttribute.RequiredTargets.LookAt:
+                                if (c.VirtualCamera.CustomLookAtTarget)
+                                    noLookAtTarget |= c.LookAtTarget == null;
+                                else
+                                    noTarget |= c.FollowTarget == null;
+                                break;
                             case RequiredTargetAttribute.RequiredTargets.GroupLookAt:
                                 noLookAtTarget |= c.LookAtTargetAsGroup == null || !c.LookAtTargetAsGroup.IsValid; break;
                         }
@@ -89,7 +94,12 @@ namespace Unity.Cinemachine.Editor
                             switch (requiredTargets)
                             {
                                 case RequiredTargetAttribute.RequiredTargets.Tracking: noTarget |= vcam.Follow == null; break;
-                                case RequiredTargetAttribute.RequiredTargets.LookAt: noLookAtTarget |= vcam.LookAt == null; break;
+                                case RequiredTargetAttribute.RequiredTargets.LookAt:
+                                    if (vcam.CustomLookAtTarget)
+                                        noLookAtTarget |= vcam.LookAt == null;
+                                    else
+                                        noTarget |= vcam.Follow == null;
+                                    break;
                                 case RequiredTargetAttribute.RequiredTargets.GroupLookAt:
                                     noLookAtTarget |= vcam.LookAtTargetAsGroup == null || !vcam.LookAtTargetAsGroup.IsValid; break;
                             }
