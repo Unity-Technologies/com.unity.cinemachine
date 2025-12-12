@@ -92,6 +92,8 @@ namespace Unity.Cinemachine
         /// <summary>The current camera state, which will applied to the Unity Camera</summary>
         public override CameraState State { get => m_State; }
 
+        internal override bool CustomLookAtTarget => Target.CustomLookAtTarget;
+
         /// <summary>Get the current LookAt target.  Returns parent's LookAt if parent
         /// is non-null and no specific LookAt defined for this camera</summary>
         public override Transform LookAt

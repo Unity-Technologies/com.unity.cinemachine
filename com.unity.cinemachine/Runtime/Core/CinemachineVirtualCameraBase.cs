@@ -430,6 +430,8 @@ namespace Unity.Cinemachine
             }
         }
 
+        internal virtual bool CustomLookAtTarget => false;
+
         /// <summary>Get the LookAt target for the Aim component in the Cinemachine pipeline.</summary>
         public abstract Transform LookAt { get; set; }
 
