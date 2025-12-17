@@ -47,23 +47,18 @@ Once you import the Input System Samples set, the following scene is available i
 | :--- | :--- |
 | **Split Screen Multiplayer** | <ul> <li>Author a custom Cinemachine input handler that interacts with the Player Input component of the Input System package.</li> <li>Dynamically add multiple players in split screen, each with their own free look camera system.</li> </ul> |
 
-### Simple Player Controller
+## Simple Player Controller
 
 Several of the samples listed above make use of Cinemachine's [Simple Player Controller](SimplePlayerController.md), a basic but versatile player controller that you can use in your own projects. It is a suite of scripts that you can combine and configure to create character controllers which you can use in different contexts to implement several types of character movement.
 
 ## Tutorials
 
-> [!NOTE]
-> This section links to videos that were made with a previous version of Cinemachine. You might notice a few changes in the interface and the naming of some elements, but all the explained concepts and shown functionality still apply to the latest Cinemachine version.
-
-[A "Using Cinemachine" series of video tutorials](https://www.youtube.com/playlist?list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) is available online in Unity's official YouTube channel. Discover various Cinemachine use cases and watch the immediate effects resulting from the corresponding project setup.
+[A series of "Cinemachine 3.1 Tutorials"](https://www.youtube.com/playlist?list=PLX2vGYjWbI0QiMBrmyzbxZeHepAbhVOJa) is available online in Unity's official YouTube channel. Discover various Cinemachine use cases and watch the immediate effects resulting from the corresponding project setup.
 
 | Video | Description |
 | :--- | :--- |
-| [Getting Started](https://www.youtube.com/watch?v=x6Q5sKXjZOM&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | Keep a camera focused on a Transform and follow it as it moves around in the Scene. |
-| [Track & Dolly](https://www.youtube.com/watch?v=q1fkx94vHtg&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | Track targets by setting paths for the Cinemachine Cameras to move between. |
-| [State Driven Cameras](https://www.youtube.com/watch?v=2X00qXErxIM&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | Link Cinemachine Cameras to animation states and further customize their behavior in the Scene. |
-| [Free Look](https://www.youtube.com/watch?v=X33t13gOBFw&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | Create an orbital camera system with input from the player and maintain control of the camera composition at different orbit stages. |
-| [Clear Shot](https://www.youtube.com/watch?v=I9w-agFYZ3I&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | Dynamically cut between Cinemachine Cameras in the Scene as a tracked target is occluded. |
-| [Post Processing](https://www.youtube.com/watch?v=jFqOEvrVZeE&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | With the addition of the post-processing stack, Cinemachine allows to blend easily between different effects on the cameras or in the Scene. |
-| [Cinemachine 2D](https://www.youtube.com/watch?v=mWqX8GxeCBk&list=PLX2vGYjWbI0TQpl4JdfEDNO1xK_I34y8P) | Use Cinemachine composition tools with an orthographic virtual camera in a 2D Project. |
+| [Types of Cinemachine cameras](https://www.youtube.com/watch?v=XTVzs4B1d7I&list=PLX2vGYjWbI0QiMBrmyzbxZeHepAbhVOJa&index=1) | Get started with Cinemachine 3.1 and discover the types of cameras you can use: Follow Camera, Third Person Aim extension, FreeLook Camera, Spline Dolly, Sequencer Camera, and more. |
+| [Cinemachine and Timeline](https://www.youtube.com/watch?v=Px_H1oyZgGY&list=PLX2vGYjWbI0QiMBrmyzbxZeHepAbhVOJa&index=2) | Combine Cinemachine with Timeline to create complex animated sequences directly in Unity. Set up shots and animations, activate and deactivate sequences, camera events, depth of field blurs, and more. |
+| [Cinemachine 2D cameras](https://www.youtube.com/watch?v=-tUd-bLmoO8&list=PLX2vGYjWbI0QiMBrmyzbxZeHepAbhVOJa&index=3) | Use Cinemachine cameras for 2D games. Set up confiners to keep the camera within gameplay boundaries, trigger events for 2D camera zoom, and use the camera shake feature. |
+| [Cinemachine player controller cameras](https://www.youtube.com/watch?v=u0a1F6BlczE&list=PLX2vGYjWbI0QiMBrmyzbxZeHepAbhVOJa&index=4) | Explore the different types of Cinemachine cameras you can use to track your playable characters. Switch between camera types, add object avoidance to ensure the camera does not clip through walls. Learn how to use the Deoccluder extension, the Clear Shot component, and more. |
+| [Cinemachine tips and tricks](https://www.youtube.com/watch?v=AFU9hsxPLZU&list=PLX2vGYjWbI0QiMBrmyzbxZeHepAbhVOJa&index=5) | Learn tips to work efficiently with Cinemachine 3.1 in your projects. Fix jitters in object movement, make a FreeLook Camera rotate in real time around a character in slow motion, use the FreeLook Modifier component, and work with the Cinemachine Target Group component to track multiple characters. |
