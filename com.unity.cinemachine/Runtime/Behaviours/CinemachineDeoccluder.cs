@@ -827,6 +827,14 @@ namespace Unity.Cinemachine
 
         static Collider[] s_ColliderBuffer = new Collider[5];
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            Array.Fill(s_ColliderBuffer, null);
+        }
+#endif
+        
         Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
         {
             var result = Vector3.zero;

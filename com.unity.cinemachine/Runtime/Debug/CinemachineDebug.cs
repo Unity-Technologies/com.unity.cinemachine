@@ -148,5 +148,13 @@ namespace Unity.Cinemachine
             s_AvailableStringBuilders ??= new List<StringBuilder>();
             s_AvailableStringBuilders.Add(sb);
         }
+        
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_AvailableStringBuilders = null;
+        }
+#endif 
     }
 }

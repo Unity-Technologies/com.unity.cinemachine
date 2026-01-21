@@ -21,6 +21,12 @@ namespace Unity.Cinemachine.Editor
                 CinemachineDebug.GameViewGuidesEnabled = value;
             }
         }
+        
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            CinemachineDebug.GameViewGuidesEnabled = ShowInGameGuides.Value;
+        }
 
         static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Core_Folded", true);
 

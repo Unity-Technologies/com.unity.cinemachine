@@ -110,6 +110,16 @@ namespace Unity.Cinemachine
         static float[] s_ColliderDistanceBuffer = new float[kColliderBufferSize];
         static int[] s_ColliderOrderBuffer = new int[kColliderBufferSize];
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            Array.Fill(s_ColliderBuffer, null);
+            Array.Fill(s_ColliderDistanceBuffer, 0f);
+            Array.Fill(s_ColliderOrderBuffer, 0);
+        }
+#endif 
+        
         // Farthest stuff comes first
         static readonly IComparer<int> s_ColliderBufferSorter = Comparer<int>.Create((a, b) =>
         {

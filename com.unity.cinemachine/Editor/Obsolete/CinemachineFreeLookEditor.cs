@@ -175,62 +175,59 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Register with CinemachineFreeLook to create the pipeline in an undo-friendly manner
         /// </summary>
-        [InitializeOnLoad]
-        class CreateRigWithUndo
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
         {
-            static CreateRigWithUndo()
+            CinemachineFreeLook.CreateRigOverride
+                = (CinemachineFreeLook vcam, string name, CinemachineVirtualCamera copyFrom) =>
             {
-                CinemachineFreeLook.CreateRigOverride
-                    = (CinemachineFreeLook vcam, string name, CinemachineVirtualCamera copyFrom) =>
+                // Recycle the game object if it exists
+                GameObject go = null;
+                foreach (Transform child in vcam.transform)
                 {
-                    // Recycle the game object if it exists
-                    GameObject go = null;
-                    foreach (Transform child in vcam.transform)
+                    if (child.gameObject.name == name)
                     {
-                        if (child.gameObject.name == name)
-                        {
-                            go = child.gameObject;
-                            break;
-                        }
+                        go = child.gameObject;
+                        break;
                     }
+                }
 
-                    CinemachineVirtualCamera rig = null;
-                    if (go == null)
-                    {
-                        // Create a new rig - can't do it if prefab instance
-                        if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject))
-                            return null;
-                        go =  ObjectFactory.CreateGameObject(name);
-                        Undo.RegisterCreatedObjectUndo(go, "created rig");
-                        Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
-                    }
-
-                    // Create a new rig with default components
-                    rig = Undo.AddComponent<CinemachineVirtualCamera>(go);
-                    rig.CreatePipeline(copyFrom);
-                    if (copyFrom != null)
-                        ReflectionHelpers.CopyFields(copyFrom, rig);
-                    else
-                    {
-                        // Defaults
-                        go = rig.GetComponentOwner().gameObject;
-                        Undo.AddComponent<CinemachineOrbitalTransposer>(go);
-                        Undo.AddComponent<CinemachineComposer>(go);
-                        rig.InvalidateComponentPipeline();
-                    }
-                    return rig;
-                };
-
-                CinemachineFreeLook.DestroyRigOverride = (GameObject rig) =>
+                CinemachineVirtualCamera rig = null;
+                if (go == null)
                 {
-                    var vcam = rig.GetComponent<CinemachineVirtualCamera>();
-                    if (vcam != null)
-                    {
-                        vcam.DestroyPipeline();
-                        Undo.DestroyObjectImmediate(vcam);
-                    }
-                };
-            }
+                    // Create a new rig - can't do it if prefab instance
+                    if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject))
+                        return null;
+                    go =  ObjectFactory.CreateGameObject(name);
+                    Undo.RegisterCreatedObjectUndo(go, "created rig");
+                    Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
+                }
+
+                // Create a new rig with default components
+                rig = Undo.AddComponent<CinemachineVirtualCamera>(go);
+                rig.CreatePipeline(copyFrom);
+                if (copyFrom != null)
+                    ReflectionHelpers.CopyFields(copyFrom, rig);
+                else
+                {
+                    // Defaults
+                    go = rig.GetComponentOwner().gameObject;
+                    Undo.AddComponent<CinemachineOrbitalTransposer>(go);
+                    Undo.AddComponent<CinemachineComposer>(go);
+                    rig.InvalidateComponentPipeline();
+                }
+                return rig;
+            };
+
+            CinemachineFreeLook.DestroyRigOverride = (GameObject rig) =>
+            {
+                var vcam = rig.GetComponent<CinemachineVirtualCamera>();
+                if (vcam != null)
+                {
+                    vcam.DestroyPipeline();
+                    Undo.DestroyObjectImmediate(vcam);
+                }
+            };
         }
     }
 }

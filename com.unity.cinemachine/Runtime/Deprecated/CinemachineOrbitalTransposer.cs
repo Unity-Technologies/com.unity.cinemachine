@@ -49,8 +49,8 @@ namespace Unity.Cinemachine
             mHeadingSum = Vector3.zero;
         }
 
-        static float mDecayExponent;
-        static float Decay(float time) { return Mathf.Exp(time * mDecayExponent); }
+        float mDecayExponent;
+        float Decay(float time) { return Mathf.Exp(time * mDecayExponent); }
 
         /// <summary>Add a new velocity frame.  This should be called once per frame,
         /// unless the velocity is zero</summary>
