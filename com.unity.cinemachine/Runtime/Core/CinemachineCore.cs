@@ -103,7 +103,7 @@ namespace Unity.Cinemachine
         public delegate float AxisInputDelegate(string axisName);
 
 #if ENABLE_LEGACY_INPUT_MANAGER
-        static readonly AxisInputDelegate DefaultGetInputAxis = UnityEngine.Input.GetAxis;
+        static readonly AxisInputDelegate s_DefaultGetInputAxis = UnityEngine.Input.GetAxis;
 #else
         static readonly AxisInputDelegate s_DefaultGetInputAxis = delegate { return 0; };
 #endif
