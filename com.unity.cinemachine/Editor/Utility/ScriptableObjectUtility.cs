@@ -25,7 +25,7 @@ namespace Unity.Cinemachine.Editor
             return asset;
         }
 
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
         class CreateAssetAction : UnityEditor.ProjectWindowCallback.AssetCreationEndAction
         {
             public Type TypeToCreate;
