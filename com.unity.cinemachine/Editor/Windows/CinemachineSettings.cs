@@ -117,7 +117,7 @@ namespace Unity.Cinemachine.Editor
             string[] movedFromAssetPaths, bool didDomainReload)
         {
             if (didDomainReload)
-#if UNITY_6000_3_OR_NEWER
+#if UNITY_6000_4_OR_NEWER
                 EditorApplication.hierarchyWindowItemByEntityIdOnGUI += (instanceID, r) =>
 #else
                 EditorApplication.hierarchyWindowItemOnGUI += (instanceID, r) =>
