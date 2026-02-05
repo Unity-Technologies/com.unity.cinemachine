@@ -8,7 +8,8 @@
         "Unity.Mathematics",
         "Unity.Cinemachine",
         "Unity.Cinemachine.Editor",
-        "Unity.Cinemachine.Shared.Tests"
+        "Unity.Cinemachine.Shared.Tests",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
@@ -46,6 +47,11 @@
             "name": "com.unity.render-pipelines.high-definition",
             "expression": "14.0.0",
             "define": "CINEMACHINE_HDRP"
+        },
+        {
+            "name": "com.unity.inputsystem",
+            "expression": "1.0.0-preview",
+            "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
         }
     ],
     "noEngineReferences": false

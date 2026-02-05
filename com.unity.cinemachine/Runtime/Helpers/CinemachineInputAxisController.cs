@@ -107,6 +107,8 @@ namespace Unity.Cinemachine
             /// <summary>The actual action, resolved for player</summary>
             [NonSerialized] internal InputAction m_CachedAction;
 
+            [NonSerialized] ControlValueReader m_CachedDefaultReader;
+
             /// <summary>
             /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.
             /// To handle other types you can install a handler to read InputActions of a different type.
@@ -210,7 +212,11 @@ namespace Unity.Cinemachine
                 {
                     // If client installed an override, use it
                     if (context.ReadControlValueOverride != null)
-                        return context.ReadControlValueOverride.Invoke(m_CachedAction, hint, context, ReadInput);
+                    {
+                        m_CachedDefaultReader ??= ReadInput;
+                        return context.ReadControlValueOverride.Invoke(m_CachedAction, hint, context, m_CachedDefaultReader);
+                    }
+
                     return ReadInput(m_CachedAction, hint, context, null);
                 }
                 return 0;
