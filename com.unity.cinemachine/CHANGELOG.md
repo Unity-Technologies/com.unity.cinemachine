@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed outdated warning on RotationComposerComponent.
 - Fixed GC Alloc in CinemachineInputAxisController.Update().
 
+### Changed
+- Converted code using InstanceID references and API to EntityID.
+
 ## [3.1.5] - 2025-10-21
 
 ### Bugfixes

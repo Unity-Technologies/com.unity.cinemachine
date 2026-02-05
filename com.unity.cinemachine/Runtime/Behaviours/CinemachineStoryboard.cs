@@ -201,7 +201,11 @@ namespace Unity.Cinemachine
                 DestroyCanvas();
         }
 
+#if UNITY_6000_3_OR_NEWER
+        string CanvasName => "_CM_canvas" + gameObject.GetEntityId();
+#else 
         string CanvasName => "_CM_canvas" + gameObject.GetInstanceID();
+#endif
 
         void CameraUpdatedCallback(CinemachineBrain brain)
         {
