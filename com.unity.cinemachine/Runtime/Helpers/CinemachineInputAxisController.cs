@@ -213,9 +213,7 @@ namespace Unity.Cinemachine
                     // If client installed an override, use it
                     if (context.ReadControlValueOverride != null)
                     {
-                        if (m_CachedDefaultReader == null)
-                            m_CachedDefaultReader = ReadInput;
-
+                        m_CachedDefaultReader ??= ReadInput;
                         return context.ReadControlValueOverride.Invoke(m_CachedAction, hint, context, m_CachedDefaultReader);
                     }
 
