@@ -212,11 +212,11 @@ namespace Unity.Cinemachine
         [RuntimeInitializeOnLoadMethod]
         private static void ResetStaticsOnLoad()
         {
-            CreatePipelineOverride = null;
-            DestroyPipelineOverride
+            //CreatePipelineOverride = null;
+            //DestroyPipelineOverride = null;
         }
 #endif
-
+        
         void OnTransformChildrenChanged()
         {
             InvalidateComponentPipeline();

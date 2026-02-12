@@ -946,8 +946,8 @@ namespace Unity.Cinemachine
         [RuntimeInitializeOnLoadMethod]
         private static void ResetStaticsOnLoad()
         {
-            CreateRigOverride = null;
-            DestroyRigOverride = null;
+            //CreateRigOverride = null;
+            //DestroyRigOverride = null;
         }
 #endif
     }

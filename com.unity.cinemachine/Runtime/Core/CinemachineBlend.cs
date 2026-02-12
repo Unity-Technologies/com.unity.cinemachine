@@ -274,7 +274,7 @@ namespace Unity.Cinemachine
 
             s_StandardCurves[(int)Styles.Linear] = AnimationCurve.Linear(0f, 0f, 1, 1f);
         }
-        
+
         /// <summary>
         /// A normalized AnimationCurve specifying the interpolation curve
         /// for this camera blend. Y-axis values must be in range [0,1] (internally clamped
