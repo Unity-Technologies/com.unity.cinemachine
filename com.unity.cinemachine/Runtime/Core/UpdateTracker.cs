@@ -129,5 +129,14 @@ namespace Unity.Cinemachine
             if (s_LastUpdateContext == context)
                 s_LastUpdateContext = null;
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_ToDelete.Clear();
+            s_LastUpdateContext = null;
+        }
+#endif
     }
 }

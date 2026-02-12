@@ -941,6 +941,15 @@ namespace Unity.Cinemachine
                 m_CachedTension = m_SplineCurvature;
             }
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            CreateRigOverride = null;
+            DestroyRigOverride = null;
+        }
+#endif
     }
 }
 #endif

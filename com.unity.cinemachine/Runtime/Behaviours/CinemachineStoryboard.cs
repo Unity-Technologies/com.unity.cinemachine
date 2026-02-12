@@ -442,6 +442,12 @@ namespace Unity.Cinemachine
                 s_CanvasesAndTheirOwners.Add(canvas, owner);
             }
         }
+
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_StoryboardGlobalMute = false;
+        }
 #endif
     }
 }

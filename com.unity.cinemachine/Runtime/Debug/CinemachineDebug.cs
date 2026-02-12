@@ -126,7 +126,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Tracks CinemachineCorePrefs.ShowInGameGuides.Value, so it can be accessed at runtime
         /// </summary>
-        public static bool GameViewGuidesEnabled;
+        public static bool GameViewGuidesEnabled = false;
 
         /// <summary>Get a pre-allocated StringBuilder from the pool</summary>
         /// <returns>The pre-allocated StringBuilder from the pool.
@@ -154,6 +154,8 @@ namespace Unity.Cinemachine
         private static void ResetStaticsOnLoad()
         {
             s_AvailableStringBuilders = null;
+            OnGUIHandlers = null;
+            GameViewGuidesEnabled = false;
         }
 #endif 
     }

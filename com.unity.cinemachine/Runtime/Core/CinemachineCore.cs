@@ -28,12 +28,14 @@ namespace Unity.Cinemachine
         /// </summary>
         public const string kPackageRoot = "Packages/com.unity.cinemachine";
 
+        const float k_DefaultCurrentUnscaledTimeTimeOverride = -1;
+
         /// <summary>
         /// Unit-test support:
         /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
         /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
         /// </summary>
-        internal static float CurrentUnscaledTimeTimeOverride = -1;
+        internal static float CurrentUnscaledTimeTimeOverride = k_DefaultCurrentUnscaledTimeTimeOverride;
 
         /// <summary>
         /// Unit-test support:
@@ -269,21 +271,6 @@ namespace Unity.Cinemachine
         }
         static ICinemachineCamera s_SoloCamera;
 
-       
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod]
-        private static void ResetStaticsOnLoad()
-        {
-            UniformDeltaTimeOverride = k_DefaultUniformDeltaTimeOverride;
-            CurrentTimeOverride = k_DefaultCurrentTimeOverride;
-            CurrentUpdateFrame = k_DefaultCurrentUpdateFrame;
-            GetInputAxis = s_DefaultGetInputAxis;
-            s_SoloCamera = null;
-        }
-#endif
-
-        
-        
         /// <summary>
         /// Is this virtual camera currently actively controlling any Camera?
         /// </summary>
@@ -391,5 +378,26 @@ namespace Unity.Cinemachine
             for (int i = 0; i < numBrains; ++i)
                 CinemachineBrain.GetActiveBrain(i).ResetState();
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            CurrentUnscaledTimeTimeOverride = k_DefaultCurrentUnscaledTimeTimeOverride;
+            UnitTestMode = false;
+            UniformDeltaTimeOverride = k_DefaultUniformDeltaTimeOverride;
+            CurrentTimeOverride = k_DefaultCurrentTimeOverride;
+            CurrentUpdateFrame = k_DefaultCurrentUpdateFrame;
+            GetInputAxis = s_DefaultGetInputAxis;
+            GetBlendOverride = null;
+            GetCustomBlender = null;
+            //CameraUpdatedEvent = new();
+            //CameraActivatedEvent = new();
+            CameraDeactivatedEvent = new();
+            BlendCreatedEvent = new();
+            BlendFinishedEvent = new();
+            s_SoloCamera = null;
+        }
+#endif
     }
 }

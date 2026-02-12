@@ -208,6 +208,15 @@ namespace Unity.Cinemachine
             m_Lens.Validate();
         }
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            CreatePipelineOverride = null;
+            DestroyPipelineOverride
+        }
+#endif
+
         void OnTransformChildrenChanged()
         {
             InvalidateComponentPipeline();

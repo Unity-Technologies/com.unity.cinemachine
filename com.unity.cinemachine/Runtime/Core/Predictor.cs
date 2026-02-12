@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -295,6 +296,20 @@ namespace Unity.Cinemachine
                 // Valid only for kSubframeTime = 1.0f / 1024.0f
                 DampTimeScale = 2.0f - 1.81e-3f * fps + 7.9e-07f * fps * fps;
             }
+
+#if UNITY_EDITOR
+            [RuntimeInitializeOnLoadMethod]
+            private static void ResetStaticsOnLoad()
+            {
+                Array.Fill(s_Buffer, 0f);
+                s_NumItems = 0;
+                s_Head = 0;
+                s_Sum = 0;
+
+                FPS = 0f;
+                DampTimeScale = 0f;
+            }
+#endif
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -222,7 +223,20 @@ namespace Unity.Cinemachine
                 s_ScratchCollider = null;
             }
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            Array.Fill(s_HitBuffer, default);
+            Array.Fill(s_PenetrationIndexBuffer, 0);
+            s_ScratchCollider = null;
+            s_ScratchColliderGameObject = null;
+            s_ScratchColliderRefCount = 0;
+        }
 #endif
+
+#endif // CINEMACHINE_PHYSICS
 
         /// <summary>
         /// Normalize a curve so that its X and Y axes range from 0 to 1
