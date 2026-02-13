@@ -15,6 +15,7 @@ namespace Unity.Cinemachine.Tests
         protected CinemachineBrain m_Brain;
         protected readonly FloatEqualityComparer m_FloatEqualityComparer = new(UnityVectorExtensions.Epsilon);
         protected readonly Vector3EqualityComparer m_Vector3EqualityComparer = new(UnityVectorExtensions.Epsilon);
+        protected readonly QuaternionEqualityComparer m_QuaternionComparer = new QuaternionEqualityComparer(1e-5f);
 
         [SetUp]
         public override void SetUp()
