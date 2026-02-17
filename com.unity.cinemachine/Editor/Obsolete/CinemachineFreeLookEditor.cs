@@ -34,8 +34,6 @@ namespace Unity.Cinemachine
         {
             base.OnEnable();
             Target.UpdateInputAxisProvider();
-            
-            CinemachineFreeLook.CreateRigOverride += CreateRigOverride;
         }
 
         protected override void OnDisable()

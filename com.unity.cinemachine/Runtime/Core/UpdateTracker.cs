@@ -72,9 +72,6 @@ namespace Unity.Cinemachine
         }
         static Dictionary<Transform, UpdateStatus> s_UpdateStatus  = new();
 
-        [RuntimeInitializeOnLoadMethod]
-        static void InitializeModule() => s_UpdateStatus.Clear();
-
         static List<Transform> s_ToDelete = new();
         static void UpdateTargets(UpdateClock currentClock)
         {
@@ -135,6 +132,7 @@ namespace Unity.Cinemachine
         private static void ResetStaticsOnLoad()
         {
             s_ToDelete.Clear();
+            s_UpdateStatus.Clear();
             s_LastUpdateContext = null;
         }
 #endif

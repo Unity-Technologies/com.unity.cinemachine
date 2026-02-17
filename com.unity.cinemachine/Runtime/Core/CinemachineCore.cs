@@ -200,7 +200,9 @@ namespace Unity.Cinemachine
         public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         /// <summary>This event will fire after a brain updates its Camera</summary>
+#pragma warning disable UDR0001
         public static BrainEvent CameraUpdatedEvent = new ();
+#pragma warning restore UDR0001
 
         /// <summary>This is sent with BlendEvent</summary>
         public struct BlendEventParams
@@ -217,7 +219,9 @@ namespace Unity.Cinemachine
 
         /// <summary>This event will fire when the current camera changes,
         /// at the start of a blend</summary>
+#pragma warning disable UDR0001
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
+#pragma warning restore UDR0001
 
         /// <summary>This event will fire immediately after a camera that is
         /// live in some context stops being live.</summary>
@@ -391,8 +395,6 @@ namespace Unity.Cinemachine
             GetInputAxis = s_DefaultGetInputAxis;
             GetBlendOverride = null;
             GetCustomBlender = null;
-            //CameraUpdatedEvent = new();
-            //CameraActivatedEvent = new();
             CameraDeactivatedEvent = new();
             BlendCreatedEvent = new();
             BlendFinishedEvent = new();
