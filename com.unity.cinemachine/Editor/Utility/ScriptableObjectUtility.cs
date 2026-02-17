@@ -25,6 +25,18 @@ namespace Unity.Cinemachine.Editor
             return asset;
         }
 
+#if UNITY_6000_4_OR_NEWER
+        class CreateAssetAction : UnityEditor.ProjectWindowCallback.AssetCreationEndAction
+        {
+            public Type TypeToCreate;
+            public override void Action(EntityId entityId, string pathName, string resourceFile)
+            {
+                var asset = CreateAt(TypeToCreate, pathName);
+                if (asset != null)
+                    ProjectWindowUtil.ShowCreatedAsset(asset);
+            }
+        } 
+#else
         class CreateAssetAction : UnityEditor.ProjectWindowCallback.EndNameEditAction
         {
             public Type TypeToCreate;
@@ -35,6 +47,7 @@ namespace Unity.Cinemachine.Editor
                     ProjectWindowUtil.ShowCreatedAsset(asset);
             }
         }
+#endif
 
         /// <summary>
         /// Creates a new asset of the specified type in the Unity project.
@@ -52,7 +65,13 @@ namespace Unity.Cinemachine.Editor
             var action = ScriptableObject.CreateInstance<CreateAssetAction>();
             action.TypeToCreate = typeof(T);
             var icon = EditorGUIUtility.IconContent("ScriptableObject Icon").image as Texture2D;
-            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(0, action, $"{defaultName}.asset", icon , null);
+            
+#if UNITY_6000_3_OR_NEWER
+            var entityId = EntityId.None;
+#else
+            var entityId = 0;
+#endif
+            ProjectWindowUtil.StartNameEditingIfProjectWindowExists(entityId, action, $"{defaultName}.asset", icon , null);
         }
     }
 }
