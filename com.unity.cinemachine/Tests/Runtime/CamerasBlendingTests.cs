@@ -210,5 +210,48 @@ namespace Unity.Cinemachine.Tests
             yield return UpdateCinemachine();
             Assert.That(m_Brain.ActiveBlend == null);
         }
+
+        [UnityTest]
+        [Description("Regression test for UUM-131151 tests that blend snapshots are reset correctly when blending is interrupted")]
+        public IEnumerator BlendClearsSnapshotWhenBlendingIsInterrupted()
+        {
+            // We test cancelling a blend, changing the source camera position and then restarting the blend
+            // The camera must be in FreezeWhenBlendingOut mode
+            // We expect the blend to start from the new position
+
+            ((CinemachineCamera)m_Source).BlendHint |= CinemachineCore.BlendHints.FreezeWhenBlendingOut;
+
+            yield return UpdateCinemachine();
+            Assume.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
+            Assume.That(m_Brain.transform.position, Is.EqualTo(m_Source.transform.position));
+
+            // Start blend to target
+            m_Target.enabled = true;
+            yield return UpdateCinemachine();
+            Assume.That(m_Brain.IsBlending, Is.True);
+
+            yield return UpdateCinemachine();
+
+            // Cancel, blend back to source
+            m_Target.enabled = false;
+            yield return UpdateCinemachine();
+            Assume.That(m_Brain.IsBlending, Is.True);
+
+            while (m_Brain.IsBlending)
+                yield return UpdateCinemachine();
+
+            Assume.That(ReferenceEquals(m_Brain.ActiveVirtualCamera, m_Source));
+            Assume.That(m_Brain.transform.position, Is.EqualTo(m_Source.transform.position));
+
+            var newPos = new Vector3(0, 5, 0);
+            m_Source.transform.position = newPos;
+
+            // Restart blend to target
+            m_Target.enabled = true;
+            yield return UpdateCinemachine();
+
+            // Make sure we started from 0, 5, 0 and not 10, 0, 0
+            Assert.That(m_Brain.transform.position.y, Is.GreaterThan(4.0f));
+        }
     }
 }
