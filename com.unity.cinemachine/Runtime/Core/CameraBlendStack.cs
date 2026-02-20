@@ -101,6 +101,13 @@ namespace Unity.Cinemachine
                 // Use the most recent snapshot
                 return m_Snapshot;
             }
+
+            public void ClearSnapshot()
+            {
+                m_Snapshot.TakeSnapshot(null);
+                m_SnapshotSource = null;
+                m_SnapshotBlendWeight = 0;
+            }
         }
 
         // Current game state is always frame 0, overrides are subsequent frames
@@ -213,6 +220,7 @@ namespace Unity.Cinemachine
                 frame.Blend.CamB = null;
                 frame.Source.ClearBlend();
                 frame.Source.CamB = null;
+                frame.ClearSnapshot();
             }
         }
 
@@ -329,7 +337,10 @@ namespace Unity.Cinemachine
 
             // Advance the working blend
             if (AdvanceBlend(frame.Blend, deltaTime))
+            {
                 frame.Source.ClearBlend();
+                frame.ClearSnapshot();
+            }
             frame.UpdateCameraState(up, deltaTime);
 
             // local function
