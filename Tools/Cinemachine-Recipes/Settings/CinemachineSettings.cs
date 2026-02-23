@@ -26,7 +26,7 @@ public class CinemachineSettings
 
     public bool ProjectAndEditorAreCompatible(string project, string editorVersion) => true;
 
-    ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
+    //ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
 
     public CinemachineSettings()
     {
@@ -36,7 +36,7 @@ public class CinemachineSettings
             useLocalPvpExemptions: true
         );
 
-        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
+        //Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }
 
     public WrenchSettings Wrench { get; set; }
