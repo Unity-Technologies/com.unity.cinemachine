@@ -1,5 +1,7 @@
-﻿using RecipeEngine.Modules.Wrench.Models;
+﻿using RecipeEngine.Api.Platforms;
+using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Modules.Wrench.Settings;
+using RecipeEngine.Platforms;
 
 namespace Cinemachine.Cookbook.Settings;
 
@@ -7,6 +9,8 @@ public class CinemachineSettings
 {
     // Path from the root of the repository where packages are located.
     string[] PackagesRootPaths = { "." };
+
+    public static readonly string CinemachinePackageName = "com.unity.cinemachine";
 
     // update this to list all packages in this repo that you want to release.
     Dictionary<string, PackageOptions> PackageOptions = new()
@@ -37,6 +41,11 @@ public class CinemachineSettings
         );
 
         //Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
+
+        var defaultUbuntuPlatform = WrenchPackage.DefaultEditorPlatforms[SystemType.Ubuntu];
+        // Use Ubuntu image package-ci/ubuntu-22.04 which is required by 6000.0+ versions.
+        Wrench.Packages[CinemachinePackageName].EditorPlatforms[SystemType.Ubuntu] = new Platform(new Agent("package-ci/ubuntu-22.04:default",
+            defaultUbuntuPlatform.Agent.Flavor, defaultUbuntuPlatform.Agent.Resource), defaultUbuntuPlatform.System);
     }
 
     public WrenchSettings Wrench { get; set; }
