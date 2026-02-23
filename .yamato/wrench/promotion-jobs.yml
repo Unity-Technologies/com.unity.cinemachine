@@ -5,7 +5,7 @@
 publish_cinemachine:
   name: Publish cinemachine
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -86,66 +86,6 @@ publish_cinemachine:
         unzip: true
       packages:
         ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_macos
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.1-macos
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.1-macos
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_ubuntu
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.1-ubuntu
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.1-ubuntu
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_windows
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.1-windows
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.1-windows
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_2_-_macos
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.2-macos
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.2-macos
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_2_-_ubuntu
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.2-ubuntu
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.2-ubuntu
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_2_-_windows
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.2-windows
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.2-windows
-        unzip: true
-      packages:
-        ignore_artifact: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_3_-_macos
     specific_options:
       UTR:
@@ -176,18 +116,108 @@ publish_cinemachine:
         unzip: true
       packages:
         ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_macos
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.4-macos
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.4-macos
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_ubuntu
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.4-ubuntu
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.4-ubuntu
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_windows
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.4-windows
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.4-windows
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_macos
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.5-macos
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.5-macos
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_ubuntu
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.5-ubuntu
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.5-ubuntu
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_windows
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.5-windows
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.5-windows
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_macos
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.6-macos
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.6-macos
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_ubuntu
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.6-ubuntu
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.6-ubuntu
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_windows
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.6-windows
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.6-windows
+        unzip: true
+      packages:
+        ignore_artifact: true
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
 
 # Publish Dry Run  for cinemachine to https://artifactory-slo.bf.unity3d.com/artifactory/api/npm/upm-npm
 publish_dry_run_cinemachine:
   name: Publish Dry Run cinemachine
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -268,66 +298,6 @@ publish_dry_run_cinemachine:
         unzip: true
       packages:
         ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_macos
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.1-macos
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.1-macos
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_ubuntu
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.1-ubuntu
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.1-ubuntu
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_1_-_windows
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.1-windows
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.1-windows
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_2_-_macos
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.2-macos
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.2-macos
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_2_-_ubuntu
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.2-ubuntu
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.2-ubuntu
-        unzip: true
-      packages:
-        ignore_artifact: true
-  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_2_-_windows
-    specific_options:
-      UTR:
-        location: results/UTR/validate-cinemachine-6000.2-windows
-        unzip: true
-      pvp-results:
-        location: results/pvp/validate-cinemachine-6000.2-windows
-        unzip: true
-      packages:
-        ignore_artifact: true
   - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_3_-_macos
     specific_options:
       UTR:
@@ -358,10 +328,100 @@ publish_dry_run_cinemachine:
         unzip: true
       packages:
         ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_macos
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.4-macos
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.4-macos
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_ubuntu
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.4-ubuntu
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.4-ubuntu
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_windows
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.4-windows
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.4-windows
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_macos
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.5-macos
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.5-macos
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_ubuntu
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.5-ubuntu
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.5-ubuntu
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_windows
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.5-windows
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.5-windows
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_macos
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.6-macos
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.6-macos
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_ubuntu
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.6-ubuntu
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.6-ubuntu
+        unzip: true
+      packages:
+        ignore_artifact: true
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_windows
+    specific_options:
+      UTR:
+        location: results/UTR/validate-cinemachine-6000.6-windows
+        unzip: true
+      pvp-results:
+        location: results/pvp/validate-cinemachine-6000.6-windows
+        unzip: true
+      packages:
+        ignore_artifact: true
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
 
