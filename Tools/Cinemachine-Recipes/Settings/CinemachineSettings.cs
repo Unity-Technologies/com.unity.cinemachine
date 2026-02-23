@@ -1,5 +1,7 @@
+using RecipeEngine.Api.Platforms;
 using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Modules.Wrench.Settings;
+using RecipeEngine.Platforms;
 
 namespace Cinemachine.Cookbook.Settings;
 
@@ -44,6 +46,11 @@ public class CinemachineSettings
         // Exclude code coverage for tests
         Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Unity.Cinemachine$");
         Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Unity.Cinemachine.Editor$");
+
+        var defaultUbuntuPlatform = WrenchPackage.DefaultEditorPlatforms[SystemType.Ubuntu];
+        // Use Ubuntu image package-ci/ubuntu-22.04 which is required by 6000.0+ versions.
+        Wrench.Packages[packageName].EditorPlatforms[SystemType.Ubuntu] = new Platform(new Agent("package-ci/ubuntu-22.04:default",
+            defaultUbuntuPlatform.Agent.Flavor, defaultUbuntuPlatform.Agent.Resource), defaultUbuntuPlatform.System);
 
         //Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }

@@ -85,7 +85,7 @@ preview_apv_-_2022_3_-_macos:
 preview_apv_-_2022_3_-_ubuntu:
   name: Preview APV - 2022.3 - ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:

@@ -72,7 +72,7 @@ validate_-_cinemachine_-_2022_3_-_macos:
 validate_-_cinemachine_-_2022_3_-_ubuntu:
   name: Validate - cinemachine - 2022.3 - ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
