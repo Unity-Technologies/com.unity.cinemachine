@@ -179,7 +179,6 @@ namespace Unity.Cinemachine.TargetTracking
         public Quaternion PreviousReferenceOrientation { get; private set; }
 
         Vector3 m_PreviousOffset;
-        Vector3 m_PreviousTargetPositionDampingOffset;
 
         Quaternion m_TargetOrientationOnAssign;
         Transform m_PreviousTarget;
@@ -331,7 +330,6 @@ namespace Unity.Cinemachine.TargetTracking
 
             outTargetPosition = PreviousTargetPosition = currentPosition;
             outTargetOrient = dampedRot;
-            m_PreviousTargetPositionDampingOffset = currentPosition - targetPosition;
         }
 
         Vector3 GetTargetPositionWithOffset(
@@ -405,20 +403,20 @@ namespace Unity.Cinemachine.TargetTracking
             BindingMode bindingMode, Vector3 targetOffset,
             ref CameraState newState)
         {
-            var state = component.VcamState; // old state
-            var prevOrient = GetReferenceOrientation(
-                component, bindingMode, targetOffset, newState.ReferenceUp, ref state);
-            var targetPos = GetTargetPositionWithOffset(component, bindingMode, targetOffset, prevOrient);
+            var oldState = component.VcamState;
 
-            var orient = GetReferenceOrientation(
-                component, bindingMode, targetOffset, newState.ReferenceUp, ref newState);
-            m_PreviousOffset = orient * (Quaternion.Inverse(prevOrient) * m_PreviousOffset);
-            PreviousReferenceOrientation = orient;
+            var oldOrient = GetReferenceOrientation(component, bindingMode, targetOffset, newState.ReferenceUp, ref oldState);
+            var newOrient = GetReferenceOrientation(component, bindingMode, targetOffset, newState.ReferenceUp, ref newState);
 
-            // Rotate the damping data also, to preserve position damping integrity
-            var deltaRot = newState.GetFinalOrientation() * Quaternion.Inverse(state.GetFinalOrientation());
-            m_PreviousTargetPositionDampingOffset = deltaRot * m_PreviousTargetPositionDampingOffset;
-            PreviousTargetPosition = targetPos + m_PreviousTargetPositionDampingOffset;
+            // Recompute the target position based on the camera state and target offset. This has the effect
+            // of snapping the camera to camera position since the camera posistion will be computed from the target and
+            // the target offset during the next frame.
+            var cameraOffset = Quaternion.Inverse(oldState.GetFinalOrientation()) * (PreviousTargetPosition - oldState.GetFinalPosition());
+            PreviousTargetPosition = newState.GetFinalOrientation() * cameraOffset + newState.GetFinalPosition();
+            PreviousReferenceOrientation = newOrient;
+
+            m_PreviousOffset = newOrient * (Quaternion.Inverse(oldOrient) * m_PreviousOffset);
+            var deltaRot = newState.GetFinalOrientation() * Quaternion.Inverse(oldState.GetFinalOrientation());
             if (bindingMode == BindingMode.WorldSpace)
                 m_PreviousOffset = deltaRot * m_PreviousOffset;
         }

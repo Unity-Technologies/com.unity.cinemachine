@@ -11,6 +11,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 - Fixed error when both HDRP and URP rendering pipelines are added to a project.\
 - Fixed outdated warning on RotationComposerComponent.
 - Fixed GC Alloc in CinemachineInputAxisController.Update().
+- Fixed ForceCameraPosition regression in CinemachineFollow/CinemachineOrbitalFollow/CinemachineTransposer/CinemachineOrbitalTransposer to allow looking away from targets.
 
 ### Changed
 - Converted code using InstanceID references and API to EntityID.
