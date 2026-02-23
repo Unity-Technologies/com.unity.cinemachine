@@ -22,7 +22,11 @@ namespace Cinemachine.Editor
         {
             if (didDomainReload)
             {
+#if UNITY_6000_4_OR_NEWER
+                EditorApplication.hierarchyWindowItemByEntityIdOnGUI += OnHierarchyGUI;
+#else
                 EditorApplication.hierarchyWindowItemOnGUI += OnHierarchyGUI;
+#endif
             }
         }
 #endif
@@ -511,9 +515,15 @@ namespace Cinemachine.Editor
             GUILayout.EndScrollView();
         }
 
+#if UNITY_6000_4_OR_NEWER
+        private static void OnHierarchyGUI(EntityId entityId, Rect selectionRect)
+        {
+            GameObject instance = EditorUtility.EntityIdToObject(entityId) as GameObject;
+#else
         private static void OnHierarchyGUI(int instanceID, Rect selectionRect)
         {
             GameObject instance = EditorUtility.InstanceIDToObject(instanceID) as GameObject;
+#endif
             if (instance == null)
             {
                 // Object in process of being deleted?
