@@ -13,7 +13,7 @@ validate_-_cinemachine_-_2022_3_-_macos:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -21,16 +21,14 @@ validate_-_cinemachine_-_2022_3_-_macos:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
@@ -60,10 +58,10 @@ validate_-_cinemachine_-_2022_3_-_macos:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -71,7 +69,7 @@ validate_-_cinemachine_-_2022_3_-_macos:
 validate_-_cinemachine_-_2022_3_-_ubuntu:
   name: Validate - cinemachine - 2022.3 - ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -79,7 +77,7 @@ validate_-_cinemachine_-_2022_3_-_ubuntu:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -87,16 +85,14 @@ validate_-_cinemachine_-_2022_3_-_ubuntu:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
@@ -126,10 +122,10 @@ validate_-_cinemachine_-_2022_3_-_ubuntu:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -145,7 +141,7 @@ validate_-_cinemachine_-_2022_3_-_windows:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -153,16 +149,14 @@ validate_-_cinemachine_-_2022_3_-_windows:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
@@ -192,10 +186,10 @@ validate_-_cinemachine_-_2022_3_-_windows:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -211,7 +205,7 @@ validate_-_cinemachine_-_6000_0_-_macos:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -219,16 +213,14 @@ validate_-_cinemachine_-_6000_0_-_macos:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
@@ -258,10 +250,10 @@ validate_-_cinemachine_-_6000_0_-_macos:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -269,7 +261,7 @@ validate_-_cinemachine_-_6000_0_-_macos:
 validate_-_cinemachine_-_6000_0_-_ubuntu:
   name: Validate - cinemachine - 6000.0 - ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -277,7 +269,7 @@ validate_-_cinemachine_-_6000_0_-_ubuntu:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -285,16 +277,14 @@ validate_-_cinemachine_-_6000_0_-_ubuntu:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
@@ -324,10 +314,10 @@ validate_-_cinemachine_-_6000_0_-_ubuntu:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -343,7 +333,7 @@ validate_-_cinemachine_-_6000_0_-_windows:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -351,16 +341,14 @@ validate_-_cinemachine_-_6000_0_-_windows:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
@@ -390,406 +378,10 @@ validate_-_cinemachine_-_6000_0_-_windows:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
-  labels:
-  - Packages:cinemachine
-
-# PVP Editor and Playmode tests for Validate - cinemachine - 6000.1 - macos (6000.1 - MacOS).
-validate_-_cinemachine_-_6000_1_-_macos:
-  name: Validate - cinemachine - 6000.1 - macos
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.1/staging -c Editor --fast
-    timeout: 10
-    retries: 3
-  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
-    retries: 1
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-cinemachine/Logs/**
-      - test-cinemachine/Library/*.log
-      - test-cinemachine/*.log
-      - test-cinemachine/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  variables:
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
-  labels:
-  - Packages:cinemachine
-
-# PVP Editor and Playmode tests for Validate - cinemachine - 6000.1 - ubuntu (6000.1 - Ubuntu).
-validate_-_cinemachine_-_6000_1_-_ubuntu:
-  name: Validate - cinemachine - 6000.1 - ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.1/staging -c Editor --fast
-    timeout: 10
-    retries: 3
-  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
-    retries: 1
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-cinemachine/Logs/**
-      - test-cinemachine/Library/*.log
-      - test-cinemachine/*.log
-      - test-cinemachine/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  variables:
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
-  labels:
-  - Packages:cinemachine
-
-# PVP Editor and Playmode tests for Validate - cinemachine - 6000.1 - windows (6000.1 - Windows).
-validate_-_cinemachine_-_6000_1_-_windows:
-  name: Validate - cinemachine - 6000.1 - windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.1/staging -c Editor --fast
-    timeout: 10
-    retries: 3
-  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
-    retries: 1
-  after:
-  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-cinemachine/Logs/**
-      - test-cinemachine/Library/*.log
-      - test-cinemachine/*.log
-      - test-cinemachine/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  variables:
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
-  labels:
-  - Packages:cinemachine
-
-# PVP Editor and Playmode tests for Validate - cinemachine - 6000.2 - macos (6000.2 - MacOS).
-validate_-_cinemachine_-_6000_2_-_macos:
-  name: Validate - cinemachine - 6000.2 - macos
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.2/staging -c Editor --fast
-    timeout: 10
-    retries: 3
-  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
-    retries: 1
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-cinemachine/Logs/**
-      - test-cinemachine/Library/*.log
-      - test-cinemachine/*.log
-      - test-cinemachine/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  variables:
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
-  labels:
-  - Packages:cinemachine
-
-# PVP Editor and Playmode tests for Validate - cinemachine - 6000.2 - ubuntu (6000.2 - Ubuntu).
-validate_-_cinemachine_-_6000_2_-_ubuntu:
-  name: Validate - cinemachine - 6000.2 - ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.2/staging -c Editor --fast
-    timeout: 10
-    retries: 3
-  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
-    retries: 1
-  after:
-  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-cinemachine/Logs/**
-      - test-cinemachine/Library/*.log
-      - test-cinemachine/*.log
-      - test-cinemachine/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  variables:
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
-  labels:
-  - Packages:cinemachine
-
-# PVP Editor and Playmode tests for Validate - cinemachine - 6000.2 - windows (6000.2 - Windows).
-validate_-_cinemachine_-_6000_2_-_windows:
-  name: Validate - cinemachine - 6000.2 - windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
-  - command: 7z x -aoa wrench-localapv.zip
-  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
-  - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u 6000.2/staging -c Editor --fast
-    timeout: 10
-    retries: 3
-  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
-    timeout: 10
-    retries: 1
-  - command: echo No internal packages to add.
-  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
-    retries: 0
-  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 5
-    retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
-    retries: 1
-  after:
-  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
-  artifacts:
-    Crash Dumps:
-      paths:
-      - CrashDumps/**
-    packages:
-      paths:
-      - upm-ci~/packages/**/*
-    pvp-results:
-      paths:
-      - upm-ci~/pvp/**/*
-      browsable: onDemand
-    UTR:
-      paths:
-      - '*.log'
-      - '*.xml'
-      - artifacts/**/*
-      - test-cinemachine/Logs/**
-      - test-cinemachine/Library/*.log
-      - test-cinemachine/*.log
-      - test-cinemachine/Builds/*.log
-      - build/test-results/**
-      browsable: onDemand
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-  variables:
-    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
-  metadata:
-    Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -805,7 +397,7 @@ validate_-_cinemachine_-_6000_3_-_macos:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -813,16 +405,14 @@ validate_-_cinemachine_-_6000_3_-_macos:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
@@ -852,10 +442,10 @@ validate_-_cinemachine_-_6000_3_-_macos:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -863,7 +453,7 @@ validate_-_cinemachine_-_6000_3_-_macos:
 validate_-_cinemachine_-_6000_3_-_ubuntu:
   name: Validate - cinemachine - 6000.3 - ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -871,7 +461,7 @@ validate_-_cinemachine_-_6000_3_-_ubuntu:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -879,16 +469,14 @@ validate_-_cinemachine_-_6000_3_-_ubuntu:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
@@ -918,10 +506,10 @@ validate_-_cinemachine_-_6000_3_-_ubuntu:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 
@@ -937,7 +525,7 @@ validate_-_cinemachine_-_6000_3_-_windows:
   - command: 7z x -aoa wrench-localapv.zip
   - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
   - command: python PythonScripts/print_machine_info.py
-  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c editor --path .Editor --fast
     timeout: 10
     retries: 3
   - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
@@ -945,16 +533,14 @@ validate_-_cinemachine_-_6000_3_-_windows:
     retries: 1
   - command: echo No internal packages to add.
   - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
-    timeout: 40
+    timeout: 20
     retries: 0
   - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
     timeout: 5
     retries: 0
-  - command: upm-pvp require "rme PVP-160-1 PVP-20-1 .yamato/wrench/pvp-exemptions.json" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
-    timeout: 10
-    retries: 0
-  - command: UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}"
-    timeout: 40
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
     retries: 1
   after:
   - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
@@ -984,10 +570,586 @@ validate_-_cinemachine_-_6000_3_-_windows:
   - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
   variables:
     UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
-    UPMPVP_CONTEXT_WRENCH: 0.10.50.0
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 0.10.50.0
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.4 - macos (6000.4 - MacOS).
+validate_-_cinemachine_-_6000_4_-_macos:
+  name: Validate - cinemachine - 6000.4 - macos
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.4 - ubuntu (6000.4 - Ubuntu).
+validate_-_cinemachine_-_6000_4_-_ubuntu:
+  name: Validate - cinemachine - 6000.4 - ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.4 - windows (6000.4 - Windows).
+validate_-_cinemachine_-_6000_4_-_windows:
+  name: Validate - cinemachine - 6000.4 - windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u 6000.4/staging -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.5 - macos (6000.5 - MacOS).
+validate_-_cinemachine_-_6000_5_-_macos:
+  name: Validate - cinemachine - 6000.5 - macos
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u 6000.5/staging -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.5 - ubuntu (6000.5 - Ubuntu).
+validate_-_cinemachine_-_6000_5_-_ubuntu:
+  name: Validate - cinemachine - 6000.5 - ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u 6000.5/staging -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.5 - windows (6000.5 - Windows).
+validate_-_cinemachine_-_6000_5_-_windows:
+  name: Validate - cinemachine - 6000.5 - windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u 6000.5/staging -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.6 - macos (6000.6 - MacOS).
+validate_-_cinemachine_-_6000_6_-_macos:
+  name: Validate - cinemachine - 6000.6 - macos
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-mac.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.6 - ubuntu (6000.6 - Ubuntu).
+validate_-_cinemachine_-_6000_6_-_ubuntu:
+  name: Validate - cinemachine - 6000.6 - ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:v4
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: bash .yamato/generated-scripts/infrastructure-instability-detection-linux.sh
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
+  labels:
+  - Packages:cinemachine
+
+# PVP Editor and Playmode tests for Validate - cinemachine - 6000.6 - windows (6000.6 - Windows).
+validate_-_cinemachine_-_6000_6_-_windows:
+  name: Validate - cinemachine - 6000.6 - windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: curl https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-2-68_53c92d3b34ce3f4b652c9785dd1530bdc5885f6523465d6969c3be91f9ccaaf1.zip -o wrench-localapv.zip
+  - command: 7z x -aoa wrench-localapv.zip
+  - command: pip install semver requests --index-url https://artifactory-slo.bf.unity3d.com/artifactory/api/pypi/pypi/simple
+  - command: python PythonScripts/print_machine_info.py
+  - command: unity-downloader-cli -u trunk -c editor --path .Editor --fast
+    timeout: 10
+    retries: 3
+  - command: upm-pvp create-test-project test-cinemachine --packages "upm-ci~/packages/*.tgz" --unity .Editor
+    timeout: 10
+    retries: 1
+  - command: echo No internal packages to add.
+  - command: upm-pvp test --unity .Editor --packages "upm-ci~/packages/*.tgz" --results upm-ci~/pvp
+    timeout: 20
+    retries: 0
+  - command: upm-pvp require "pkgprom-promote -PVP-29-2 rme" --results upm-ci~/pvp --exemptions upm-ci~/pvp/failures.json
+    timeout: 5
+    retries: 0
+  - command: echo No additional PVP profiles to declared to check.
+  - command: 'UnifiedTestRunner.exe --testproject=test-cinemachine --editor-location=.Editor --clean-library --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=Editor --suite=Playmode "--ff={ops.upmpvpevidence.enable=true}" '
+    timeout: 20
+    retries: 1
+  after:
+  - command: .yamato\generated-scripts\infrastructure-instability-detection-win.cmd
+  artifacts:
+    Crash Dumps:
+      paths:
+      - CrashDumps/**
+    packages:
+      paths:
+      - upm-ci~/packages/**/*
+    pvp-results:
+      paths:
+      - upm-ci~/pvp/**/*
+      browsable: onDemand
+    UTR:
+      paths:
+      - '*.log'
+      - '*.xml'
+      - artifacts/**/*
+      - test-cinemachine/Logs/**
+      - test-cinemachine/Library/*.log
+      - test-cinemachine/*.log
+      - test-cinemachine/Builds/*.log
+      - build/test-results/**
+      browsable: onDemand
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+  variables:
+    UPMPVP_ACK_UPMPVP_DOES_NO_API_VALIDATION: 1
+    UPMPVP_CONTEXT_WRENCH: 1.1.2.0
+  metadata:
+    Job Maintainers: '#rm-packageworks'
+    Wrench: 1.1.2.0
   labels:
   - Packages:cinemachine
 

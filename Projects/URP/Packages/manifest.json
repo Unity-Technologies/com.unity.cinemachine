@@ -10,7 +10,6 @@
     "com.unity.test-framework": "1.1.30",
     "com.unity.timeline": "1.7.0-pre.1",
     "com.unity.ugui": "1.0.0",
-    "com.unity.xr.legacyinputhelpers": "2.1.8",
     "com.unity.modules.ai": "1.0.0",
     "com.unity.modules.androidjni": "1.0.0",
     "com.unity.modules.animation": "1.0.0",
@@ -39,7 +38,6 @@
     "com.unity.modules.unitywebrequestwww": "1.0.0",
     "com.unity.modules.vehicles": "1.0.0",
     "com.unity.modules.video": "1.0.0",
-    "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
     "com.unity.modules.xr": "1.0.0"
   },

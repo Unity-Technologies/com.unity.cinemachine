@@ -8,7 +8,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -22,11 +22,11 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos:
 test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -44,7 +44,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -62,7 +62,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -76,11 +76,11 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -98,115 +98,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run HDRP project tests for Cinemachine on MacOS
-test_project_-_cinemachine_-_hdrp_-_6000_1_-_macos:
-  name: Test Project - cinemachine - HDRP - 6000.1 - MacOS
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run HDRP project tests for Cinemachine on Ubuntu
-test_project_-_cinemachine_-_hdrp_-_6000_1_-_ubuntu:
-  name: Test Project - cinemachine - HDRP - 6000.1 - Ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run HDRP project tests for Cinemachine on Windows
-test_project_-_cinemachine_-_hdrp_-_6000_1_-_windows:
-  name: Test Project - cinemachine - HDRP - 6000.1 - Windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run HDRP project tests for Cinemachine on MacOS
-test_project_-_cinemachine_-_hdrp_-_6000_2_-_macos:
-  name: Test Project - cinemachine - HDRP - 6000.2 - MacOS
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run HDRP project tests for Cinemachine on Ubuntu
-test_project_-_cinemachine_-_hdrp_-_6000_2_-_ubuntu:
-  name: Test Project - cinemachine - HDRP - 6000.2 - Ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run HDRP project tests for Cinemachine on Windows
-test_project_-_cinemachine_-_hdrp_-_6000_2_-_windows:
-  name: Test Project - cinemachine - HDRP - 6000.2 - Windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -224,7 +116,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -238,11 +130,11 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -260,7 +152,169 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_hdrp_-_6000_4_-_macos:
+  name: Test Project - cinemachine - HDRP - 6000.4 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_hdrp_-_6000_4_-_ubuntu:
+  name: Test Project - cinemachine - HDRP - 6000.4 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_hdrp_-_6000_4_-_windows:
+  name: Test Project - cinemachine - HDRP - 6000.4 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_hdrp_-_6000_5_-_macos:
+  name: Test Project - cinemachine - HDRP - 6000.5 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_hdrp_-_6000_5_-_ubuntu:
+  name: Test Project - cinemachine - HDRP - 6000.5 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_hdrp_-_6000_5_-_windows:
+  name: Test Project - cinemachine - HDRP - 6000.5 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_hdrp_-_6000_6_-_macos:
+  name: Test Project - cinemachine - HDRP - 6000.6 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_hdrp_-_6000_6_-_ubuntu:
+  name: Test Project - cinemachine - HDRP - 6000.6 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run HDRP project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_hdrp_-_6000_6_-_windows:
+  name: Test Project - cinemachine - HDRP - 6000.6 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -278,7 +332,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -292,11 +346,11 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
 test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -314,7 +368,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -332,7 +386,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -346,11 +400,11 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -368,115 +422,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run Standalone project tests for Cinemachine on MacOS
-test_project_-_cinemachine_-_standalone_-_6000_1_-_macos:
-  name: Test Project - cinemachine - Standalone - 6000.1 - MacOS
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run Standalone project tests for Cinemachine on Ubuntu
-test_project_-_cinemachine_-_standalone_-_6000_1_-_ubuntu:
-  name: Test Project - cinemachine - Standalone - 6000.1 - Ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run Standalone project tests for Cinemachine on Windows
-test_project_-_cinemachine_-_standalone_-_6000_1_-_windows:
-  name: Test Project - cinemachine - Standalone - 6000.1 - Windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run Standalone project tests for Cinemachine on MacOS
-test_project_-_cinemachine_-_standalone_-_6000_2_-_macos:
-  name: Test Project - cinemachine - Standalone - 6000.2 - MacOS
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run Standalone project tests for Cinemachine on Ubuntu
-test_project_-_cinemachine_-_standalone_-_6000_2_-_ubuntu:
-  name: Test Project - cinemachine - Standalone - 6000.2 - Ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run Standalone project tests for Cinemachine on Windows
-test_project_-_cinemachine_-_standalone_-_6000_2_-_windows:
-  name: Test Project - cinemachine - Standalone - 6000.2 - Windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -494,7 +440,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -508,11 +454,11 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -530,7 +476,169 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_standalone_-_6000_4_-_macos:
+  name: Test Project - cinemachine - Standalone - 6000.4 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_standalone_-_6000_4_-_ubuntu:
+  name: Test Project - cinemachine - Standalone - 6000.4 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_standalone_-_6000_4_-_windows:
+  name: Test Project - cinemachine - Standalone - 6000.4 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_standalone_-_6000_5_-_macos:
+  name: Test Project - cinemachine - Standalone - 6000.5 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_standalone_-_6000_5_-_ubuntu:
+  name: Test Project - cinemachine - Standalone - 6000.5 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_standalone_-_6000_5_-_windows:
+  name: Test Project - cinemachine - Standalone - 6000.5 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_standalone_-_6000_6_-_macos:
+  name: Test Project - cinemachine - Standalone - 6000.6 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_standalone_-_6000_6_-_ubuntu:
+  name: Test Project - cinemachine - Standalone - 6000.6 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run Standalone project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_standalone_-_6000_6_-_windows:
+  name: Test Project - cinemachine - Standalone - 6000.6 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -548,7 +656,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -562,11 +670,11 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
 test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - URP - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -584,7 +692,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 2022.3 -c Editor --fast
+  - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -602,7 +710,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -616,11 +724,11 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -638,115 +746,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.0 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run URP project tests for Cinemachine on MacOS
-test_project_-_cinemachine_-_urp_-_6000_1_-_macos:
-  name: Test Project - cinemachine - URP - 6000.1 - MacOS
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run URP project tests for Cinemachine on Ubuntu
-test_project_-_cinemachine_-_urp_-_6000_1_-_ubuntu:
-  name: Test Project - cinemachine - URP - 6000.1 - Ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run URP project tests for Cinemachine on Windows
-test_project_-_cinemachine_-_urp_-_6000_1_-_windows:
-  name: Test Project - cinemachine - URP - 6000.1 - Windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.1 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run URP project tests for Cinemachine on MacOS
-test_project_-_cinemachine_-_urp_-_6000_2_-_macos:
-  name: Test Project - cinemachine - URP - 6000.2 - MacOS
-  agent:
-    image: package-ci/macos-13:default
-    type: Unity::VM::osx
-    flavor: b1.xlarge
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run URP project tests for Cinemachine on Ubuntu
-test_project_-_cinemachine_-_urp_-_6000_2_-_ubuntu:
-  name: Test Project - cinemachine - URP - 6000.2 - Ubuntu
-  agent:
-    image: package-ci/ubuntu-20.04:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
-  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
-  artifacts:
-    artifacts:
-      paths:
-      - artifacts/*
-  dependencies:
-  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
-
-# Run URP project tests for Cinemachine on Windows
-test_project_-_cinemachine_-_urp_-_6000_2_-_windows:
-  name: Test Project - cinemachine - URP - 6000.2 - Windows
-  agent:
-    image: package-ci/win10:default
-    type: Unity::VM
-    flavor: b1.large
-  commands:
-  - command: unity-downloader-cli -u 6000.2 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -764,7 +764,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_macos:
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -778,11 +778,11 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-20.04:default
+    image: package-ci/ubuntu-22.04:default
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:
@@ -800,7 +800,169 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_windows:
     type: Unity::VM
     flavor: b1.large
   commands:
-  - command: unity-downloader-cli -u 6000.3 -c Editor --fast
+  - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_urp_-_6000_4_-_macos:
+  name: Test Project - cinemachine - URP - 6000.4 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_urp_-_6000_4_-_ubuntu:
+  name: Test Project - cinemachine - URP - 6000.4 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_urp_-_6000_4_-_windows:
+  name: Test Project - cinemachine - URP - 6000.4 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_urp_-_6000_5_-_macos:
+  name: Test Project - cinemachine - URP - 6000.5 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_urp_-_6000_5_-_ubuntu:
+  name: Test Project - cinemachine - URP - 6000.5 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_urp_-_6000_5_-_windows:
+  name: Test Project - cinemachine - URP - 6000.5 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on MacOS
+test_project_-_cinemachine_-_urp_-_6000_6_-_macos:
+  name: Test Project - cinemachine - URP - 6000.6 - MacOS
+  agent:
+    image: package-ci/macos-13:default
+    type: Unity::VM::osx
+    flavor: b1.xlarge
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on Ubuntu
+test_project_-_cinemachine_-_urp_-_6000_6_-_ubuntu:
+  name: Test Project - cinemachine - URP - 6000.6 - Ubuntu
+  agent:
+    image: package-ci/ubuntu-22.04:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
+  - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
+  artifacts:
+    artifacts:
+      paths:
+      - artifacts/*
+  dependencies:
+  - path: .yamato/wrench/package-pack-jobs.yml#package_pack_-_cinemachine
+
+# Run URP project tests for Cinemachine on Windows
+test_project_-_cinemachine_-_urp_-_6000_6_-_windows:
+  name: Test Project - cinemachine - URP - 6000.6 - Windows
+  agent:
+    image: package-ci/win10:default
+    type: Unity::VM
+    flavor: b1.large
+  commands:
+  - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
   - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode
   artifacts:

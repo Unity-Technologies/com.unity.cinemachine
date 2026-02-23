@@ -36,8 +36,8 @@ public class ProjectTest : RecipeBase
             {
                 var supportedVersions = settings.Wrench.Packages[packageName].SupportedEditorVersions;
                 foreach (var editorVersion in supportedVersions)
-                    // foreach (var VARIABLE in _settings.Wrench.Packages[packageName].SupportedEditorVersions)
                 {
+                    var branch = settings.Wrench.EditorVersionToBranches[editorVersion];
                     foreach (var project in settings.ProjectNames)
                     {
                         if (!settings.ProjectAndEditorAreCompatible(project, editorVersion))
@@ -49,7 +49,7 @@ public class ProjectTest : RecipeBase
                             //    platform.Value.RunsOnLinux(), c => c
                             //        .Add("rm com.unity.cinemachine/Tests/.tests.json "))
                             .WithCommands(c => c
-                                .Add($"unity-downloader-cli -u {editorVersion} -c Editor --fast")
+                                .Add($"unity-downloader-cli -u {branch} -c Editor --fast")
                                 // Use the package tarball for testing.
                                 .Add($"upm-pvp create-test-project {settings.ProjectsDir}/{project} --packages \"{UpmPvpCommand.kDefaultPackagesGlob}\" --unity .Editor")
                                 .Add(UtrCommand.Run(platform.Value.System, b => b
