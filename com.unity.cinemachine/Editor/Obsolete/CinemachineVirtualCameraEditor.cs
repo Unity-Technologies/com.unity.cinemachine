@@ -217,7 +217,7 @@ namespace Unity.Cinemachine.Editor
         class EditorInitialize { static EditorInitialize() { ResetStaticsOnLoad(); } }
 
         /// <summary>
-        /// Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner
+        /// Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner.
         /// </summary>
         [RuntimeInitializeOnLoadMethod]
         private static void ResetStaticsOnLoad()

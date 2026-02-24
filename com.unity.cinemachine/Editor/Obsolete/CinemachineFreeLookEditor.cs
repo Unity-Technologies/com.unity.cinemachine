@@ -226,7 +226,7 @@ namespace Unity.Cinemachine
         class EditorInitialize { static EditorInitialize() { ResetStaticsOnLoad(); } }
 
         /// <summary>
-        /// Register with CinemachineFreeLook to create the pipeline in an undo-friendly manner
+        /// Register with CinemachineFreeLook to create the pipeline in an undo-friendly manner.
         /// </summary>
         [RuntimeInitializeOnLoadMethod]
         private static void ResetStaticsOnLoad()

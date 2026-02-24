@@ -111,7 +111,7 @@ namespace Unity.Cinemachine
 #endif
         
         /// <summary>Delegate for overriding Unity's default input system.
-        /// If you set this, then your delegate will be called instead of
+        /// This makes Unity call your delegate instead of
         /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
         public static AxisInputDelegate GetInputAxis = s_DefaultGetInputAxis;
 
