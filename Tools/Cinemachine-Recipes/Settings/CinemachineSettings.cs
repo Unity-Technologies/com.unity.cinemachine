@@ -30,7 +30,7 @@ public class CinemachineSettings
 
     public bool ProjectAndEditorAreCompatible(string project, string editorVersion) => true;
 
-    //ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
+    ISet<string> PvPprofilesToCheck = new HashSet<string>() { "supported" };
 
     public CinemachineSettings()
     {
@@ -40,7 +40,7 @@ public class CinemachineSettings
             useLocalPvpExemptions: true
         );
 
-        //Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
+        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
 
         var defaultUbuntuPlatform = WrenchPackage.DefaultEditorPlatforms[SystemType.Ubuntu];
         // Use Ubuntu image package-ci/ubuntu-22.04 which is required by 6000.0+ versions.
