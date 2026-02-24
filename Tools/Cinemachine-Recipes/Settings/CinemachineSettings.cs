@@ -36,8 +36,7 @@ public class CinemachineSettings
     {
         Wrench = new WrenchSettings(
             PackagesRootPaths,
-            PackageOptions,
-            useLocalPvpExemptions: true
+            PackageOptions
         );
 
         Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
