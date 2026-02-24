@@ -21,11 +21,15 @@ namespace Unity.Cinemachine.Editor
                 CinemachineDebug.GameViewGuidesEnabled = value;
             }
         }
-        
+       
+        [UnityEditor.InitializeOnLoad]
+        class EditorInitialize { static EditorInitialize() { InitializeModule(); } }
+
         [RuntimeInitializeOnLoadMethod]
-        private static void ResetStaticsOnLoad()
+        private static void InitializeModule()
         {
             CinemachineDebug.GameViewGuidesEnabled = ShowInGameGuides.Value;
+            CinemachineStoryboard.s_StoryboardGlobalMute = StoryboardGlobalMute.Value;
         }
 
         static CinemachineSettings.BoolItem s_SettingsFoldedOut = new("CNMCN_Core_Folded", true);

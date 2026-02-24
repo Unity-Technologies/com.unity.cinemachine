@@ -106,20 +106,14 @@ namespace Unity.Cinemachine
         public TerrainSettings TerrainResolution;
 
         const int kColliderBufferSize = 10;
+        
+#pragma warning disable UDR0001
+        // Scratch buffers. These buffers are never reused and don't need to be cleared.
         static Collider[] s_ColliderBuffer = new Collider[kColliderBufferSize];
         static float[] s_ColliderDistanceBuffer = new float[kColliderBufferSize];
         static int[] s_ColliderOrderBuffer = new int[kColliderBufferSize];
+#pragma warning restore UDR0001
 
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod]
-        private static void ResetStaticsOnLoad()
-        {
-            Array.Fill(s_ColliderBuffer, null);
-            Array.Fill(s_ColliderDistanceBuffer, 0f);
-            Array.Fill(s_ColliderOrderBuffer, 0);
-        }
-#endif 
-        
         // Farthest stuff comes first
         static readonly IComparer<int> s_ColliderBufferSorter = Comparer<int>.Create((a, b) =>
         {

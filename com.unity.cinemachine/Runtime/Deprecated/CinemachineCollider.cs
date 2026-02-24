@@ -126,17 +126,12 @@ namespace Unity.Cinemachine
         [Tooltip("If greater than zero, a higher score will be given to shots when the target is closer to this distance.  "
             + "Set this to zero to disable this feature.")]
         public float m_OptimalTargetDistance;
-        
+       
+#pragma warning disable UDR0001
+        // Scratch buffer. This buffer is never reused and doesn't need to be cleared.
         static Collider[] s_ColliderBuffer = new Collider[5];
+#pragma warning restore UDR0001
 
-#if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod]
-        private static void ResetStaticsOnLoad()
-        {
-            Array.Fill(s_ColliderBuffer, null);
-        }
-#endif
-        
         /// <summary>See whether an object is blocking the camera's view of the target</summary>
         /// <param name="vcam">The virtual camera in question.  This might be different from the
         /// virtual camera that owns the collider, in the event that the camera has children</param>

@@ -1,4 +1,4 @@
-#if CINEMACHINE_UGUI
+﻿#if CINEMACHINE_UGUI
 using UnityEngine;
 using System.Collections.Generic;
 using UnityEngine.Serialization;
@@ -20,7 +20,10 @@ namespace Unity.Cinemachine
         /// If checked, all storyboards are globally muted
         /// </summary>
         [Tooltip("If checked, all storyboards are globally muted")]
+#pragma warning disable UDR0001
+        // Option is set at initialization in the editor. Cannot be reset at runtime.
         public static bool s_StoryboardGlobalMute;
+#pragma warning restore UDR0001
 
         /// <summary>
         /// If checked, the specified image will be displayed as an overlay over the virtual camera's output
@@ -445,12 +448,6 @@ namespace Unity.Cinemachine
                 s_CanvasesAndTheirOwners ??= new ();
                 s_CanvasesAndTheirOwners.Add(canvas, owner);
             }
-        }
-
-        [RuntimeInitializeOnLoadMethod]
-        private static void ResetStaticsOnLoad()
-        {
-            s_StoryboardGlobalMute = false;
         }
 #endif
     }
