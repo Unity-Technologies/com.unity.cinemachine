@@ -557,7 +557,9 @@ namespace Unity.Cinemachine
         /// This needs to be done by the editor to support Undo.
         /// The override must do exactly the same thing as the CreatePipeline method in this class.
         /// </summary>
+#pragma warning disable UDR0001
         public static CreateRigDelegate CreateRigOverride;
+#pragma warning restore UDR0001
 
         /// <summary>
         /// Override component pipeline creation.
@@ -575,7 +577,9 @@ namespace Unity.Cinemachine
         /// Override component pipeline destruction.
         /// This needs to be done by the editor to support Undo.
         /// </summary>
+#pragma warning disable UDR0001
         public static DestroyRigDelegate DestroyRigOverride;
+#pragma warning restore UDR0001
 
         /// <summary>
         /// Override component pipeline destruction.

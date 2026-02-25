@@ -4,11 +4,13 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.7] - 2026-02-25
-### Unreleased
+## [3.1.7-pre.1] - 2026-02-24
 
 ### Bugfixes
 - Fixed stack frame snapshot not resetting when CameraBlendStack completed blend.
+
+### Changed
+- Added support for fast enter play mode.
 
 ## [3.1.6] - 2026-02-23
 

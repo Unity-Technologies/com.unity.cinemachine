@@ -162,66 +162,68 @@ namespace Unity.Cinemachine.Editor
                 (targets[i] as CinemachineVirtualCamera).InvalidateComponentPipeline();
         }
 
-        /// <summary>
-        /// Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner
-        /// </summary>
-        [InitializeOnLoad]
-        class CreatePipelineWithUndo
+        static Transform CreatePipelineOverride(CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom)
         {
-            static CreatePipelineWithUndo()
+            // Recycle existing pipeline child (if any)
+            GameObject go = null;
+            foreach (Transform child in vcam.transform)
             {
-                CinemachineVirtualCamera.CreatePipelineOverride =
-                    (CinemachineVirtualCamera vcam, string name, CinemachineComponentBase[] copyFrom) =>
+                if (child.GetComponent<CinemachinePipeline>() != null)
                 {
-                    // Recycle existing pipeline child (if any)
-                    GameObject go = null;
-                    foreach (Transform child in vcam.transform)
-                    {
-                        if (child.GetComponent<CinemachinePipeline>() != null)
-                        {
-                            go = child.gameObject;
-                            break;
-                        }
-                    }
-                    if (go == null)
-                    {
-                        // Create a new pipeline - can't do it if prefab instance
-                        if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject))
-                            return null;
-                        go =  ObjectFactory.CreateGameObject(name);
-                        Undo.RegisterCreatedObjectUndo(go, "created pipeline");
-                        Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
-                        Undo.AddComponent<CinemachinePipeline>(go);
-                    }
-
-                    var oldStuff = go.GetComponents<CinemachineComponentBase>();
-                    foreach (var c in oldStuff)
-                        Undo.DestroyObjectImmediate(c);
-
-                    // If copying, transfer the components
-                    if (copyFrom != null)
-                    {
-                        foreach (Component c in copyFrom)
-                        {
-                            Component copy = Undo.AddComponent(go, c.GetType());
-                            Undo.RecordObject(copy, "copying pipeline");
-                            ReflectionHelpers.CopyFields(c, copy);
-                        }
-                    }
-                    return go.transform;
-                };
-
-                CinemachineVirtualCamera.DestroyPipelineOverride = (GameObject pipeline) =>
-                {
-                    var oldStuff = pipeline.GetComponents<CinemachineComponentBase>();
-                    foreach (var c in oldStuff)
-                        Undo.DestroyObjectImmediate(c);
-                    // Cannot create or destroy child objects if prefab.
-                    // Just leave it there in that case, it will get discovered and recycled.
-                    if (!PrefabUtility.IsPartOfAnyPrefab(pipeline))
-                        Undo.DestroyObjectImmediate(pipeline);
-                };
+                    go = child.gameObject;
+                    break;
+                }
             }
+            if (go == null)
+            {
+                // Create a new pipeline - can't do it if prefab instance
+                if (PrefabUtility.IsPartOfAnyPrefab(vcam.gameObject))
+                    return null;
+                go =  ObjectFactory.CreateGameObject(name);
+                Undo.RegisterCreatedObjectUndo(go, "created pipeline");
+                Undo.SetTransformParent(go.transform, vcam.transform, "parenting pipeline");
+                Undo.AddComponent<CinemachinePipeline>(go);
+            }
+
+            var oldStuff = go.GetComponents<CinemachineComponentBase>();
+            foreach (var c in oldStuff)
+                Undo.DestroyObjectImmediate(c);
+
+            // If copying, transfer the components
+            if (copyFrom != null)
+            {
+                foreach (Component c in copyFrom)
+                {
+                    Component copy = Undo.AddComponent(go, c.GetType());
+                    Undo.RecordObject(copy, "copying pipeline");
+                    ReflectionHelpers.CopyFields(c, copy);
+                }
+            }
+            return go.transform;
+        }
+
+        static void DestroyPipelineOverride(GameObject pipeline)
+        {
+            var oldStuff = pipeline.GetComponents<CinemachineComponentBase>();
+            foreach (var c in oldStuff)
+                Undo.DestroyObjectImmediate(c);
+            // Cannot create or destroy child objects if prefab.
+            // Just leave it there in that case, it will get discovered and recycled.
+            if (!PrefabUtility.IsPartOfAnyPrefab(pipeline))
+                Undo.DestroyObjectImmediate(pipeline);
+        }
+
+        [UnityEditor.InitializeOnLoad]
+        class EditorInitialize { static EditorInitialize() { ResetStaticsOnLoad(); } }
+
+        /// <summary>
+        /// Register with CinemachineVirtualCamera to create the pipeline in an undo-friendly manner.
+        /// </summary>
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            CinemachineVirtualCamera.CreatePipelineOverride = CreatePipelineOverride;
+            CinemachineVirtualCamera.DestroyPipelineOverride = DestroyPipelineOverride;
         }
     }
 }

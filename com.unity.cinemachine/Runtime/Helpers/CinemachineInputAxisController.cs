@@ -48,6 +48,14 @@ namespace Unity.Cinemachine
             in IInputAxisOwner.AxisDescriptor axis, ref Controller controller);
         internal static SetControlDefaultsForAxis SetControlDefaults;
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            SetControlDefaults = null;
+        }
+#endif
+
 #if CINEMACHINE_UNITY_INPUTSYSTEM
         /// <summary>
         /// CinemachineInputAxisController.Reader can only handle float or Vector2 InputAction types.
