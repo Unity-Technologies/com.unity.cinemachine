@@ -222,5 +222,18 @@ namespace Unity.Cinemachine
                 return UpdateTracker.UpdateClock.Late;
             return status.lastUpdateMode;
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_RoundRobinIndex = 0;
+            s_RoundRobinSubIndex = 0;
+            s_LastFixedUpdateContext = null;
+            s_LastUpdateTime = 0f;
+            s_FixedFrameCount = 0;
+            s_CurrentUpdateFilter = default;
+        }
+#endif
     }
 }
