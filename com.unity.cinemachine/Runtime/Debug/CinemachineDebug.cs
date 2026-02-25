@@ -126,7 +126,10 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Tracks CinemachineCorePrefs.ShowInGameGuides.Value, so it can be accessed at runtime
         /// </summary>
-        public static bool GameViewGuidesEnabled;
+#pragma warning disable UDR0001
+        // Option is set at initialization in the editor. Cannot be reset at runtime.
+        public static bool GameViewGuidesEnabled = false;
+#pragma warning restore UDR0001
 
         /// <summary>Get a pre-allocated StringBuilder from the pool</summary>
         /// <returns>The pre-allocated StringBuilder from the pool.
@@ -148,5 +151,14 @@ namespace Unity.Cinemachine
             s_AvailableStringBuilders ??= new List<StringBuilder>();
             s_AvailableStringBuilders.Add(sb);
         }
+        
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_AvailableStringBuilders = null;
+            OnGUIHandlers = null;
+        }
+#endif 
     }
 }

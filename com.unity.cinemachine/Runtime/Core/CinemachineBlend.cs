@@ -232,6 +232,15 @@ namespace Unity.Cinemachine
         public AnimationCurve CustomCurve;
 
         static AnimationCurve[] s_StandardCurves;
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_StandardCurves = null;
+        }
+#endif
+
         void CreateStandardCurves()
         {
             s_StandardCurves = new AnimationCurve[(int)Styles.Custom];

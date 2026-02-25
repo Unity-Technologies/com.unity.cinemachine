@@ -39,7 +39,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// This constant represents "no point in space" or "no direction".
         /// </summary>
-        public static Vector3 kNoPoint = new Vector3(float.NaN, float.NaN, float.NaN);
+        public static readonly Vector3 kNoPoint = new Vector3(float.NaN, float.NaN, float.NaN);
 
         /// <summary>
         /// Raw (un-corrected) world space position of this camera

@@ -14,6 +14,14 @@ namespace Unity.Cinemachine
         public delegate PlayableDirector MasterDirectorDelegate();
         public static MasterDirectorDelegate GetMasterPlayableDirector;
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            GetMasterPlayableDirector = null;
+        }
+#endif
+
         // The brain that this track controls
         ICameraOverrideStack m_BrainOverrideStack;
         int m_BrainOverrideId = -1;

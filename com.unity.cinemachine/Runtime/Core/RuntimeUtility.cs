@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 namespace Unity.Cinemachine
@@ -42,8 +43,12 @@ namespace Unity.Cinemachine
         }
 
 #if CINEMACHINE_PHYSICS
+        
+#pragma warning disable UDR0001
+        // Scratch buffers. These buffers are never reused and don't need to be cleared. 
         static RaycastHit[] s_HitBuffer = new RaycastHit[16];
         static int[] s_PenetrationIndexBuffer = new int[16];
+#pragma warning restore UDR0001
 
         /// <summary>
         /// Perform a raycast, but pass through any objects that have a given tag
@@ -222,7 +227,18 @@ namespace Unity.Cinemachine
                 s_ScratchCollider = null;
             }
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_ScratchCollider = null;
+            s_ScratchColliderGameObject = null;
+            s_ScratchColliderRefCount = 0;
+        }
 #endif
+
+#endif // CINEMACHINE_PHYSICS
 
         /// <summary>
         /// Normalize a curve so that its X and Y axes range from 0 to 1

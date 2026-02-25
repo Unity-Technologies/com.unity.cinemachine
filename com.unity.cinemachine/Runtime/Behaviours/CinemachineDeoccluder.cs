@@ -825,8 +825,11 @@ namespace Unity.Cinemachine
             return distance;
         }
 
+#pragma warning disable UDR0001
+        // Scratch buffer. This buffer is never reused and doesn't need to be cleared.
         static Collider[] s_ColliderBuffer = new Collider[5];
-
+#pragma warning restore UDR0001
+        
         Vector3 RespectCameraRadius(Vector3 cameraPos, Vector3 lookAtPos)
         {
             var result = Vector3.zero;

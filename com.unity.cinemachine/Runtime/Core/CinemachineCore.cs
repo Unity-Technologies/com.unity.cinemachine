@@ -28,12 +28,14 @@ namespace Unity.Cinemachine
         /// </summary>
         public const string kPackageRoot = "Packages/com.unity.cinemachine";
 
+        const float k_DefaultCurrentUnscaledTimeTimeOverride = -1;
+
         /// <summary>
         /// Unit-test support:
         /// If non-negative, cinemachine will use this value whenever it wants current unscaled game time.
         /// Usage is for InputAxis in manual update mode, for deterministic behaviour.
         /// </summary>
-        internal static float CurrentUnscaledTimeTimeOverride = -1;
+        internal static float CurrentUnscaledTimeTimeOverride = k_DefaultCurrentUnscaledTimeTimeOverride;
 
         /// <summary>
         /// Unit-test support:
@@ -102,20 +104,24 @@ namespace Unity.Cinemachine
         /// <returns>The value of the axis.</returns>
         public delegate float AxisInputDelegate(string axisName);
 
-        /// <summary>Delegate for overriding Unity's default input system.
-        /// If you set this, then your delegate will be called instead of
-        /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
 #if ENABLE_LEGACY_INPUT_MANAGER
-        public static AxisInputDelegate GetInputAxis = UnityEngine.Input.GetAxis;
+        static readonly AxisInputDelegate s_DefaultGetInputAxis = UnityEngine.Input.GetAxis;
 #else
-        public static AxisInputDelegate GetInputAxis = delegate { return 0; };
+        static readonly AxisInputDelegate s_DefaultGetInputAxis = delegate { return 0; };
 #endif
+        
+        /// <summary>Delegate for overriding Unity's default input system.
+        /// This makes Unity call your delegate instead of
+        /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
+        public static AxisInputDelegate GetInputAxis = s_DefaultGetInputAxis;
 
+        const float k_DefaultUniformDeltaTimeOverride = -1;
+        
         /// <summary>
         /// If non-negative, cinemachine will update with this uniform delta time.
         /// Usage is for timelines in manual update mode.
         /// </summary>
-        public static float UniformDeltaTimeOverride = -1;
+        public static float UniformDeltaTimeOverride = k_DefaultUniformDeltaTimeOverride;
 
         /// <summary>
         /// Replacement for Time.deltaTime, taking UniformDeltaTimeOverride into account.
@@ -123,17 +129,21 @@ namespace Unity.Cinemachine
         public static float DeltaTime
             => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
 
+        const float k_DefaultCurrentTimeOverride = -1;
+        
         /// <summary>
         /// If non-negative, cinemachine will use this value whenever it wants current game time.
         /// Usage is for master timelines in manual update mode, for deterministic behaviour.
         /// </summary>
-        public static float CurrentTimeOverride = -1;
+        public static float CurrentTimeOverride = k_DefaultCurrentTimeOverride;
 
         /// <summary>
         /// Replacement for Time.time, taking CurrentTimeTimeOverride into account.
         /// </summary>
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
 
+        const int k_DefaultCurrentUpdateFrame = 0;
+        
         /// <summary>
         /// The current frame
         /// By default this is Time.frameCount.  If you are using ManualUpdate with a custom update frame, 
@@ -190,7 +200,9 @@ namespace Unity.Cinemachine
         public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         /// <summary>This event will fire after a brain updates its Camera</summary>
+#pragma warning disable UDR0001
         public static BrainEvent CameraUpdatedEvent = new ();
+#pragma warning restore UDR0001
 
         /// <summary>This is sent with BlendEvent</summary>
         public struct BlendEventParams
@@ -207,7 +219,9 @@ namespace Unity.Cinemachine
 
         /// <summary>This event will fire when the current camera changes,
         /// at the start of a blend</summary>
+#pragma warning disable UDR0001
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
+#pragma warning restore UDR0001
 
         /// <summary>This event will fire immediately after a camera that is
         /// live in some context stops being live.</summary>
@@ -368,5 +382,24 @@ namespace Unity.Cinemachine
             for (int i = 0; i < numBrains; ++i)
                 CinemachineBrain.GetActiveBrain(i).ResetState();
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            CurrentUnscaledTimeTimeOverride = k_DefaultCurrentUnscaledTimeTimeOverride;
+            UnitTestMode = false;
+            UniformDeltaTimeOverride = k_DefaultUniformDeltaTimeOverride;
+            CurrentTimeOverride = k_DefaultCurrentTimeOverride;
+            CurrentUpdateFrame = k_DefaultCurrentUpdateFrame;
+            GetInputAxis = s_DefaultGetInputAxis;
+            GetBlendOverride = null;
+            GetCustomBlender = null;
+            CameraDeactivatedEvent = new();
+            BlendCreatedEvent = new();
+            BlendFinishedEvent = new();
+            s_SoloCamera = null;
+        }
+#endif
     }
 }

@@ -308,5 +308,19 @@ namespace Unity.Cinemachine
             }
             return entry.Curve.Evaluate(CurrentTime).Rot;
         }
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            UseCache = false;
+            m_CacheMode = Mode.Disabled;
+            CurrentTime = 0f;
+            CurrentFrame = 0;
+            IsCameraCut = false;
+            m_Cache = null;
+            m_CacheTimeRange = default;
+        }
+#endif
     }
 }

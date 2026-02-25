@@ -31,12 +31,14 @@ namespace Unity.Cinemachine
     [HelpURL(Documentation.BaseURL + "manual/CinemachineVolumeSettings.html")]
     public class CinemachineVolumeSettings : CinemachineExtension
     {
+        private const float k_DefaultVolumePriority = 1000f;
+
         /// <summary>
         /// This is the priority for the vcam's PostProcessing volumes.  It's set to a high
         /// number in order to ensure that it overrides other volumes for the active vcam.
         /// You can change this value if necessary to work with other systems.
         /// </summary>
-        public static float s_VolumePriority = 1000f;
+        public static float s_VolumePriority = k_DefaultVolumePriority;
 
         /// <summary>
         /// This is the weight that the PostProcessing profile will have when the camera is fully active.
@@ -358,6 +360,14 @@ namespace Unity.Cinemachine
             CinemachineCore.CameraActivatedEvent.RemoveListener(OnCameraCut);
             CinemachineCore.CameraActivatedEvent.AddListener(OnCameraCut);
         }
+
+        [RuntimeInitializeOnLoadMethod]
+        static void ResetStaticsOnLoad()
+        {
+            s_VolumePriority = k_DefaultVolumePriority;
+            sVolumes = new();
+        }
+
     }
 }
 #endif

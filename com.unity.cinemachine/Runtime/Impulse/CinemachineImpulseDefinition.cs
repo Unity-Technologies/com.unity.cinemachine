@@ -222,6 +222,15 @@ namespace Unity.Cinemachine
         }
 
         static AnimationCurve[] s_StandardShapes;
+
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        private static void ResetStaticsOnLoad()
+        {
+            s_StandardShapes = null;
+        }
+#endif
+
         static void CreateStandardShapes()
         {
             int max = 0;

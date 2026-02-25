@@ -31,10 +31,10 @@ namespace Unity.Cinemachine
   static class Clipper
   {
 
-    public static Rect64 MaxInvalidRect64 = new Rect64(
+    public static readonly Rect64 MaxInvalidRect64 = new Rect64(
       long.MaxValue, long.MaxValue, long.MinValue, long.MinValue);
 
-    public static RectD MaxInvalidRectD = new RectD(
+    public static readonly RectD MaxInvalidRectD = new RectD(
       double.MaxValue, -double.MaxValue, -double.MaxValue, -double.MaxValue);
 
     public static Paths64 Intersect(Paths64 subject, Paths64 clip, FillRule fillRule)

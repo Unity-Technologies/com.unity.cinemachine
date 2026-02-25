@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -225,7 +226,10 @@ namespace Unity.Cinemachine
         {
             const int kBufferSize = 100;
 
+#pragma warning disable UDR0001
+            // Scratch buffer. This buffer is never reused and doesn't need to be cleared.
             static float[] s_Buffer = new float[kBufferSize];
+#pragma warning restore UDR0001
             static int s_NumItems = 0;
             static int s_Head = 0;
             static float s_Sum = 0;
@@ -295,6 +299,19 @@ namespace Unity.Cinemachine
                 // Valid only for kSubframeTime = 1.0f / 1024.0f
                 DampTimeScale = 2.0f - 1.81e-3f * fps + 7.9e-07f * fps * fps;
             }
+
+#if UNITY_EDITOR
+            [RuntimeInitializeOnLoadMethod]
+            private static void ResetStaticsOnLoad()
+            {
+                s_NumItems = 0;
+                s_Head = 0;
+                s_Sum = 0;
+
+                FPS = 0f;
+                DampTimeScale = 0f;
+            }
+#endif
         }
     }
 }

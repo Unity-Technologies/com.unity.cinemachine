@@ -31,12 +31,20 @@ namespace Unity.Cinemachine
             }
         }
 
+#if UNITY_EDITOR
+        [RuntimeInitializeOnLoadMethod]
+        static void ResetStaticsOnLoad()
+        {
+            s_Instance = null;
+        }
+#else
         [RuntimeInitializeOnLoadMethod]
         static void InitializeModule()
         {
             if (s_Instance != null)
                 s_Instance.Clear();
         }
+#endif
 
         const float Epsilon = UnityVectorExtensions.Epsilon;
 
