@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [3.1.7-pre.1] - 2026-02-24
 
+### Bugfixes
+ - Fixed blend cancellation not taking into account updates to "cancelled" camera state
+
 ### Changed
 - Added support for fast enter play mode.
 

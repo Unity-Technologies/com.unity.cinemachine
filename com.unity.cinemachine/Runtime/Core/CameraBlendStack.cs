@@ -294,7 +294,6 @@ namespace Unity.Cinemachine
                     // to cancel out the progress made in the opposite direction
                     if (backingOutOfBlend)
                     {
-                        snapshot = true; // always use a snapshot for this to prevent pops
                         duration = duration * normalizedBlendPosition; // skip first part of blend
                         normalizedBlendPosition = 1 - normalizedBlendPosition;
                     }
@@ -306,7 +305,11 @@ namespace Unity.Cinemachine
                     {
                         var blendCopy = new CinemachineBlend();
                         blendCopy.CopyFrom(frame.Blend);
-                        camA = new NestedBlendSource(blendCopy);
+
+                        if (backingOutOfBlend)
+                            camA = new FrozenBlendSource(blendCopy);
+                        else
+                            camA = new NestedBlendSource(blendCopy);
                     }
                 }
                 // For the event, we use the raw outgoing camera, not the actual blend source
@@ -328,27 +331,31 @@ namespace Unity.Cinemachine
             }
 
             // Advance the working blend
-            if (AdvanceBlend(frame.Blend, deltaTime))
+            if (AdvanceBlend(frame, deltaTime))
                 frame.Source.ClearBlend();
             frame.UpdateCameraState(up, deltaTime);
 
             // local function
-            static bool AdvanceBlend(CinemachineBlend blend, float deltaTime)
+            static bool AdvanceBlend(NestedBlendSource source, float deltaTime)
             {
-                bool blendCompleted = false;
-                if (blend.CamA != null)
-                {
+                var blend = source.Blend;
+                if (blend.CamA == null)
+                    return false;
+
+                if (source is not FrozenBlendSource)
                     blend.TimeInBlend += (deltaTime >= 0) ? deltaTime : blend.Duration;
-                    if (blend.IsComplete)
-                    {
-                        // No more blend
-                        blend.ClearBlend();
-                        blendCompleted = true;
-                    }
-                    else if (blend.CamA is NestedBlendSource bs)
-                        AdvanceBlend(bs.Blend, deltaTime);
+
+                if (blend.IsComplete)
+                {
+                    // No more blend
+                    blend.ClearBlend();
+                    return true;
                 }
-                return blendCompleted;
+
+                if (blend.CamA is NestedBlendSource bs)
+                    AdvanceBlend(bs, deltaTime);
+
+                return false;
             }
         }
 
@@ -470,6 +477,16 @@ namespace Unity.Cinemachine
                 m_State.BlendHint &= ~CameraState.BlendHints.FreezeWhenBlendingOut;
                 m_Name ??= source == null ? "(null)" : "*" + source.Name;
             }
+        }
+
+        /// <summary>
+        /// Source for a blend where the time is frozen. Used for cancelling blends where we want
+        /// the source of the cancelling blend to be at the point in time when the blend was cancelled,
+        /// but still update the undelying sources in case they move.
+        /// </summary>
+        class FrozenBlendSource : NestedBlendSource
+        {
+            public FrozenBlendSource(CinemachineBlend blend) : base(blend) {}
         }
     }
 }
