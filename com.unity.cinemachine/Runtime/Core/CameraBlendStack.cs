@@ -83,10 +83,8 @@ namespace Unity.Cinemachine
             {
                 if (cam == null || (cam.State.BlendHint & CameraState.BlendHints.FreezeWhenBlendingOut) == 0)
                 {
-                    // No snapshot required - reset it
-                    m_Snapshot.TakeSnapshot(null);
-                    m_SnapshotSource = null;
-                    m_SnapshotBlendWeight = 0;
+                    // No snapshot required - clear it
+                    ClearSnapshot();
                     return cam;
                 }
                 // A snapshot is needed
