@@ -30,7 +30,7 @@
   ],
   "category": "cinematography",
   "dependencies": {
-    "com.unity.splines": "2.0.0",
+    "com.unity.splines": "2.8.4",
     "com.unity.modules.imgui": "1.0.0"
   },
   "samples": [
