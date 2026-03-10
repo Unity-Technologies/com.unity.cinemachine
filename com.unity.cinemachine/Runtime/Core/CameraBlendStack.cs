@@ -83,10 +83,8 @@ namespace Unity.Cinemachine
             {
                 if (cam == null || (cam.State.BlendHint & CameraState.BlendHints.FreezeWhenBlendingOut) == 0)
                 {
-                    // No snapshot required - reset it
-                    m_Snapshot.TakeSnapshot(null);
-                    m_SnapshotSource = null;
-                    m_SnapshotBlendWeight = 0;
+                    // No snapshot required - clear it
+                    ClearSnapshot();
                     return cam;
                 }
                 // A snapshot is needed
@@ -100,6 +98,13 @@ namespace Unity.Cinemachine
                 }
                 // Use the most recent snapshot
                 return m_Snapshot;
+            }
+
+            public void ClearSnapshot()
+            {
+                m_Snapshot.TakeSnapshot(null);
+                m_SnapshotSource = null;
+                m_SnapshotBlendWeight = 0;
             }
         }
 
@@ -213,6 +218,7 @@ namespace Unity.Cinemachine
                 frame.Blend.CamB = null;
                 frame.Source.ClearBlend();
                 frame.Source.CamB = null;
+                frame.ClearSnapshot();
             }
         }
 
@@ -329,7 +335,10 @@ namespace Unity.Cinemachine
 
             // Advance the working blend
             if (AdvanceBlend(frame.Blend, deltaTime))
+            {
                 frame.Source.ClearBlend();
+                frame.ClearSnapshot();
+            }
             frame.UpdateCameraState(up, deltaTime);
 
             // local function
