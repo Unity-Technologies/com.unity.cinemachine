@@ -23,10 +23,9 @@ public class ProjectTest : RecipeBase
     public string GetJobName(string packageShortName, string project, string editorVersion, SystemType systemType)
         => $"Test Project - {packageShortName} - {project} - {editorVersion} - {systemType}";
 
-
     public IEnumerable<Dependency> AsDependencies()
     {
-        return this.Jobs.ToDependencies(this);
+        return Jobs.ToDependencies(this);
     }
 
     public IEnumerable<IJobBuilder> GetJobs()
@@ -46,9 +45,6 @@ public class ProjectTest : RecipeBase
                     {
                         IJobBuilder job = JobBuilder.Create(GetJobName(settings.Wrench.Packages[packageName].ShortName, project, editorVersion, platform.Key))
                             .WithPlatform(platform.Value)
-                            .WithOptionalCommands(
-                                platform.Value.RunsOnLinux(), c => c
-                                    .Add("rm com.unity.cinemachine/Tests/.tests.json "))
                             .WithCommands(c => c
                                 .Add($"unity-downloader-cli -u {branch} -c Editor --fast")
                                 // Use the package tarball for testing.
@@ -63,7 +59,6 @@ public class ProjectTest : RecipeBase
                             .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.Key}")
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
                             .WithArtifact(new Artifact("artifacts", "artifacts/*"));
-                            ;
 
                         builders.Add(job);
                     }
