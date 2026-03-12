@@ -12,7 +12,7 @@ namespace Cinemachine.Cookbook.Recipes;
 
 public class Triggers : RecipeBase
 {
-    private readonly CinemachineSettings config = new ();
+    private readonly CinemachineSettings config = new();
     private const string packageName = "com.unity.cinemachine";
     private const string branchName = "main";
 

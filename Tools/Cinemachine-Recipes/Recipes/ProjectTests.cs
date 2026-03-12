@@ -37,6 +37,7 @@ public class ProjectTests : RecipeBase
                 var version = unityEditor.Version.ToString();
                 foreach (var platform in unityEditor.EditorPlatforms)
                 {
+                    var yamatoSourceDir = platform.System == SystemType.Windows ? "%YAMATO_SOURCE_DIR%" : "$YAMATO_SOURCE_DIR";
                     var branch = settings.Wrench.EditorVersionToBranches[version];
                     foreach (var project in settings.ProjectNames)
                     {
@@ -55,7 +56,12 @@ public class ProjectTests : RecipeBase
                                     .WithRerun(1, true)
                                     .WithArtifacts("artifacts")
                                     .WithSuite(UtrTestSuiteType.Editor)
-                                    .WithExtraArgs("--suite=PlayMode"))))
+                                    .WithExtraArgs("--suite=PlayMode")
+                                    .WithExtraArgs("--enable-code-coverage", 
+                                        "--coverage-options=\"generateAdditionalMetrics;generateHtmlReport;" + 
+                                        $"assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:{yamatoSourceDir}/Packages;\"",
+                                        $"--coverage-results-path={yamatoSourceDir}/upm-ci~/CodeCoverage",
+                                        $"--coverage-upload-options=\"reportsDir:upm-ci~/CodeCoverage;name:inputsystem_{platform.System.ToString()}_{version}_project;flags:inputsystem_{platform.System.ToString()}_{version}_project\""))))
                             .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.System}")
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
                             .WithArtifact(new Artifact("artifacts", "artifacts/*"));
