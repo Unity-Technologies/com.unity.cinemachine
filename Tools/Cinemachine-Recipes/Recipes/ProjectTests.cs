@@ -22,7 +22,7 @@ public class ProjectTests : RecipeBase
 
     public IEnumerable<Dependency> AsDependencies()
     {
-        return this.Jobs.ToDependencies(this);
+        return Jobs.ToDependencies(this);
     }
 
     public IEnumerable<IJobBuilder> GetJobs()
