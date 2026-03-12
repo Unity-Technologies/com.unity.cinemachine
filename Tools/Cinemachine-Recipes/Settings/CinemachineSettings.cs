@@ -31,7 +31,7 @@ public class CinemachineSettings
     public readonly string[] ProjectNames = new[]
         { "HDRP", "HDRPInputSystem", "Standalone", "StandaloneInputSystem", "URP", "URPInputSystem" };
 
-    //ISet<string> PvPprofilesToCheck = new HashSet<string>() { "PVP-20-1" };
+    ISet<string> PvPprofilesToCheck = new HashSet<string>() { "supported" };
 
     public CinemachineSettings()
     {
@@ -47,12 +47,7 @@ public class CinemachineSettings
         Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Unity.Cinemachine$");
         Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Unity.Cinemachine.Editor$");
 
-        var defaultUbuntuPlatform = WrenchPackage.DefaultEditorPlatforms[SystemType.Ubuntu];
-        // Use Ubuntu image package-ci/ubuntu-22.04 which is required by 6000.0+ versions.
-        Wrench.Packages[packageName].EditorPlatforms[SystemType.Ubuntu] = new Platform(new Agent("package-ci/ubuntu-22.04:default",
-            defaultUbuntuPlatform.Agent.Flavor, defaultUbuntuPlatform.Agent.Resource), defaultUbuntuPlatform.System);
-
-        //Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
+        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }
 
     public WrenchSettings Wrench { get; set; }

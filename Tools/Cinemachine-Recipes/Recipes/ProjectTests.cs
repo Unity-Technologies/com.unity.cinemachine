@@ -10,19 +10,15 @@ using RecipeEngine.Modules.Wrench.Models;
 using RecipeEngine.Platforms;
 using RecipeEngine.Api.Dependencies;
 
-
 namespace Cinemachine.Cookbook.Recipes;
 
-public class ProjectTest : RecipeBase
+public class ProjectTests : RecipeBase
 {
-
-
     protected override ISet<Job> LoadJobs()
         => Combine.Collections(GetJobs()).SelectJobs();
 
     public string GetJobName(string packageShortName, string project, string editorVersion, SystemType systemType)
         => $"Test Project - {packageShortName} - {project} - {editorVersion} - {systemType}";
-
 
     public IEnumerable<Dependency> AsDependencies()
     {
@@ -35,42 +31,39 @@ public class ProjectTest : RecipeBase
         CinemachineSettings settings = new();
         foreach (var packageName in settings.Wrench.PackagesToRelease)
         {
-            var platforms = settings.Wrench.Packages[packageName].EditorPlatforms;
-            foreach (var platform in platforms)
+            var supportedEditors = settings.Wrench.Packages[packageName].UnityEditors;
+            foreach (var unityEditor in supportedEditors)
             {
-                var supportedVersions = settings.Wrench.Packages[packageName].SupportedEditorVersions;
-                foreach (var editorVersion in supportedVersions)
+                var version = unityEditor.Version.ToString();
+                foreach (var platform in unityEditor.EditorPlatforms)
                 {
-                    var branch = settings.Wrench.EditorVersionToBranches[editorVersion];
+                    var branch = settings.Wrench.EditorVersionToBranches[version];
                     foreach (var project in settings.ProjectNames)
                     {
-                        IJobBuilder job = JobBuilder.Create(GetJobName(settings.Wrench.Packages[packageName].ShortName, project, editorVersion, platform.Key))
-                            .WithPlatform(platform.Value)
+                        IJobBuilder job = JobBuilder.Create(GetJobName(settings.Wrench.Packages[packageName].ShortName, project, version, platform.System))
+                            .WithPlatform(platform)
                             .WithOptionalCommands(
-                                platform.Value.RunsOnLinux(), c => c
+                                platform.RunsOnLinux(), c => c
                                     .Add("rm com.unity.cinemachine/Tests/.tests.json "))
                             .WithCommands(c => c
                                 .Add($"unity-downloader-cli -u {branch} -c Editor --fast")
                                 // Use the package tarball for testing.
                                 .Add($"upm-pvp create-test-project {settings.ProjectsDir}/{project} --packages \"{UpmPvpCommand.kDefaultPackagesGlob}\" --unity .Editor")
-                                .Add(UtrCommand.Run(platform.Value.System, b => b
+                                .Add(UtrCommand.Run(platform.System, b => b
                                     .WithTestProject($"{settings.ProjectsDir}/{project}")
                                     .WithEditor(".Editor")
                                     .WithRerun(1, true)
                                     .WithArtifacts("artifacts")
                                     .WithSuite(UtrTestSuiteType.Editor)
                                     .WithExtraArgs("--suite=PlayMode"))))
-                            .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.Key}")
+                            .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.System}")
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
                             .WithArtifact(new Artifact("artifacts", "artifacts/*"));
-                            ;
-
                         builders.Add(job);
                     }
                 }
             }
         }
-
         return builders;
     }
 }

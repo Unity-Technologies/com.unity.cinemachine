@@ -4,7 +4,7 @@
 test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos:
   name: Test Project - cinemachine - HDRP - 2022.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -22,7 +22,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos:
 test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-18.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -41,7 +41,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
 test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows:
   name: Test Project - cinemachine - HDRP - 2022.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -59,7 +59,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows:
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
   name: Test Project - cinemachine - HDRP - 6000.0 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -77,7 +77,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -96,7 +96,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
 test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows:
   name: Test Project - cinemachine - HDRP - 6000.0 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -114,7 +114,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows:
 test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos:
   name: Test Project - cinemachine - HDRP - 6000.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -132,7 +132,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -151,7 +151,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu:
 test_project_-_cinemachine_-_hdrp_-_6000_3_-_windows:
   name: Test Project - cinemachine - HDRP - 6000.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -169,7 +169,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_windows:
 test_project_-_cinemachine_-_hdrp_-_6000_4_-_macos:
   name: Test Project - cinemachine - HDRP - 6000.4 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -187,7 +187,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -206,7 +206,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_ubuntu:
 test_project_-_cinemachine_-_hdrp_-_6000_4_-_windows:
   name: Test Project - cinemachine - HDRP - 6000.4 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -224,7 +224,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_windows:
 test_project_-_cinemachine_-_hdrp_-_6000_5_-_macos:
   name: Test Project - cinemachine - HDRP - 6000.5 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -242,7 +242,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_5_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_5_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.5 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -261,7 +261,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_5_-_ubuntu:
 test_project_-_cinemachine_-_hdrp_-_6000_5_-_windows:
   name: Test Project - cinemachine - HDRP - 6000.5 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -279,7 +279,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_5_-_windows:
 test_project_-_cinemachine_-_hdrp_-_6000_6_-_macos:
   name: Test Project - cinemachine - HDRP - 6000.6 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -297,7 +297,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_6_-_macos:
 test_project_-_cinemachine_-_hdrp_-_6000_6_-_ubuntu:
   name: Test Project - cinemachine - HDRP - 6000.6 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -316,7 +316,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_6_-_ubuntu:
 test_project_-_cinemachine_-_hdrp_-_6000_6_-_windows:
   name: Test Project - cinemachine - HDRP - 6000.6 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -334,7 +334,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_6_-_windows:
 test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos:
   name: Test Project - cinemachine - HDRPInputSystem - 2022.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -352,7 +352,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-18.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -371,7 +371,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu:
 test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows:
   name: Test Project - cinemachine - HDRPInputSystem - 2022.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -389,7 +389,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.0 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -407,7 +407,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -426,7 +426,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.0 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -444,7 +444,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_macos:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -462,7 +462,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -481,7 +481,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_ubuntu:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_windows:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -499,7 +499,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_windows:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_macos:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.4 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -517,7 +517,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -536,7 +536,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_ubuntu:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_windows:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.4 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -554,7 +554,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_windows:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_macos:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.5 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -572,7 +572,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.5 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -591,7 +591,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_ubuntu:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_windows:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.5 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -609,7 +609,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_windows:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_macos:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.6 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -627,7 +627,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_macos:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_ubuntu:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.6 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -646,7 +646,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_ubuntu:
 test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_windows:
   name: Test Project - cinemachine - HDRPInputSystem - 6000.6 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -664,7 +664,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_windows:
 test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
   name: Test Project - cinemachine - Standalone - 2022.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -682,7 +682,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
 test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-18.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -701,7 +701,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
 test_project_-_cinemachine_-_standalone_-_2022_3_-_windows:
   name: Test Project - cinemachine - Standalone - 2022.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -719,7 +719,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_windows:
 test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
   name: Test Project - cinemachine - Standalone - 6000.0 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -737,7 +737,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -756,7 +756,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
 test_project_-_cinemachine_-_standalone_-_6000_0_-_windows:
   name: Test Project - cinemachine - Standalone - 6000.0 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -774,7 +774,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_windows:
 test_project_-_cinemachine_-_standalone_-_6000_3_-_macos:
   name: Test Project - cinemachine - Standalone - 6000.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -792,7 +792,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -811,7 +811,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu:
 test_project_-_cinemachine_-_standalone_-_6000_3_-_windows:
   name: Test Project - cinemachine - Standalone - 6000.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -829,7 +829,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_windows:
 test_project_-_cinemachine_-_standalone_-_6000_4_-_macos:
   name: Test Project - cinemachine - Standalone - 6000.4 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -847,7 +847,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -866,7 +866,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_ubuntu:
 test_project_-_cinemachine_-_standalone_-_6000_4_-_windows:
   name: Test Project - cinemachine - Standalone - 6000.4 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -884,7 +884,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_windows:
 test_project_-_cinemachine_-_standalone_-_6000_5_-_macos:
   name: Test Project - cinemachine - Standalone - 6000.5 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -902,7 +902,7 @@ test_project_-_cinemachine_-_standalone_-_6000_5_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_5_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.5 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -921,7 +921,7 @@ test_project_-_cinemachine_-_standalone_-_6000_5_-_ubuntu:
 test_project_-_cinemachine_-_standalone_-_6000_5_-_windows:
   name: Test Project - cinemachine - Standalone - 6000.5 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -939,7 +939,7 @@ test_project_-_cinemachine_-_standalone_-_6000_5_-_windows:
 test_project_-_cinemachine_-_standalone_-_6000_6_-_macos:
   name: Test Project - cinemachine - Standalone - 6000.6 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -957,7 +957,7 @@ test_project_-_cinemachine_-_standalone_-_6000_6_-_macos:
 test_project_-_cinemachine_-_standalone_-_6000_6_-_ubuntu:
   name: Test Project - cinemachine - Standalone - 6000.6 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -976,7 +976,7 @@ test_project_-_cinemachine_-_standalone_-_6000_6_-_ubuntu:
 test_project_-_cinemachine_-_standalone_-_6000_6_-_windows:
   name: Test Project - cinemachine - Standalone - 6000.6 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -994,7 +994,7 @@ test_project_-_cinemachine_-_standalone_-_6000_6_-_windows:
 test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos:
   name: Test Project - cinemachine - StandaloneInputSystem - 2022.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1012,7 +1012,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-18.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1031,7 +1031,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu:
 test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows:
   name: Test Project - cinemachine - StandaloneInputSystem - 2022.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1049,7 +1049,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.0 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1067,7 +1067,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1086,7 +1086,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.0 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1104,7 +1104,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_macos:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1122,7 +1122,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1141,7 +1141,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_ubuntu:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_windows:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1159,7 +1159,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_windows:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_macos:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.4 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1177,7 +1177,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1196,7 +1196,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_ubuntu:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_windows:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.4 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1214,7 +1214,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_windows:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_macos:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.5 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1232,7 +1232,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.5 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1251,7 +1251,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_ubuntu:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_windows:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.5 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1269,7 +1269,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_windows:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_macos:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.6 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1287,7 +1287,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_macos:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_ubuntu:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.6 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1306,7 +1306,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_ubuntu:
 test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_windows:
   name: Test Project - cinemachine - StandaloneInputSystem - 6000.6 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1324,7 +1324,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_windows:
 test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
   name: Test Project - cinemachine - URP - 2022.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1342,7 +1342,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
 test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - URP - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-18.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1361,7 +1361,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
 test_project_-_cinemachine_-_urp_-_2022_3_-_windows:
   name: Test Project - cinemachine - URP - 2022.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1379,7 +1379,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_windows:
 test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
   name: Test Project - cinemachine - URP - 6000.0 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1397,7 +1397,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1416,7 +1416,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
 test_project_-_cinemachine_-_urp_-_6000_0_-_windows:
   name: Test Project - cinemachine - URP - 6000.0 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1434,7 +1434,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_windows:
 test_project_-_cinemachine_-_urp_-_6000_3_-_macos:
   name: Test Project - cinemachine - URP - 6000.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1452,7 +1452,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1471,7 +1471,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu:
 test_project_-_cinemachine_-_urp_-_6000_3_-_windows:
   name: Test Project - cinemachine - URP - 6000.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1489,7 +1489,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_windows:
 test_project_-_cinemachine_-_urp_-_6000_4_-_macos:
   name: Test Project - cinemachine - URP - 6000.4 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1507,7 +1507,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1526,7 +1526,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_ubuntu:
 test_project_-_cinemachine_-_urp_-_6000_4_-_windows:
   name: Test Project - cinemachine - URP - 6000.4 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1544,7 +1544,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_windows:
 test_project_-_cinemachine_-_urp_-_6000_5_-_macos:
   name: Test Project - cinemachine - URP - 6000.5 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1562,7 +1562,7 @@ test_project_-_cinemachine_-_urp_-_6000_5_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_5_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.5 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1581,7 +1581,7 @@ test_project_-_cinemachine_-_urp_-_6000_5_-_ubuntu:
 test_project_-_cinemachine_-_urp_-_6000_5_-_windows:
   name: Test Project - cinemachine - URP - 6000.5 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1599,7 +1599,7 @@ test_project_-_cinemachine_-_urp_-_6000_5_-_windows:
 test_project_-_cinemachine_-_urp_-_6000_6_-_macos:
   name: Test Project - cinemachine - URP - 6000.6 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1617,7 +1617,7 @@ test_project_-_cinemachine_-_urp_-_6000_6_-_macos:
 test_project_-_cinemachine_-_urp_-_6000_6_-_ubuntu:
   name: Test Project - cinemachine - URP - 6000.6 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1636,7 +1636,7 @@ test_project_-_cinemachine_-_urp_-_6000_6_-_ubuntu:
 test_project_-_cinemachine_-_urp_-_6000_6_-_windows:
   name: Test Project - cinemachine - URP - 6000.6 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1654,7 +1654,7 @@ test_project_-_cinemachine_-_urp_-_6000_6_-_windows:
 test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos:
   name: Test Project - cinemachine - URPInputSystem - 2022.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1672,7 +1672,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 2022.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-18.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1691,7 +1691,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu:
 test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows:
   name: Test Project - cinemachine - URPInputSystem - 2022.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1709,7 +1709,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos:
   name: Test Project - cinemachine - URPInputSystem - 6000.0 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1727,7 +1727,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.0 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1746,7 +1746,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows:
   name: Test Project - cinemachine - URPInputSystem - 6000.0 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1764,7 +1764,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_macos:
   name: Test Project - cinemachine - URPInputSystem - 6000.3 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1782,7 +1782,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.3 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1801,7 +1801,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_ubuntu:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_windows:
   name: Test Project - cinemachine - URPInputSystem - 6000.3 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1819,7 +1819,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_windows:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_macos:
   name: Test Project - cinemachine - URPInputSystem - 6000.4 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1837,7 +1837,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.4 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1856,7 +1856,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_ubuntu:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_windows:
   name: Test Project - cinemachine - URPInputSystem - 6000.4 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1874,7 +1874,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_windows:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_macos:
   name: Test Project - cinemachine - URPInputSystem - 6000.5 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1892,7 +1892,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.5 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1911,7 +1911,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_ubuntu:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_windows:
   name: Test Project - cinemachine - URPInputSystem - 6000.5 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1929,7 +1929,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_windows:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_macos:
   name: Test Project - cinemachine - URPInputSystem - 6000.6 - MacOS
   agent:
-    image: package-ci/macos-13:default
+    image: package-ci/macos-13:v4
     type: Unity::VM::osx
     flavor: b1.xlarge
   commands:
@@ -1947,7 +1947,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_macos:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_ubuntu:
   name: Test Project - cinemachine - URPInputSystem - 6000.6 - Ubuntu
   agent:
-    image: package-ci/ubuntu-22.04:default
+    image: package-ci/ubuntu-22.04:v4
     type: Unity::VM
     flavor: b1.large
   commands:
@@ -1966,7 +1966,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_ubuntu:
 test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_windows:
   name: Test Project - cinemachine - URPInputSystem - 6000.6 - Windows
   agent:
-    image: package-ci/win10:default
+    image: package-ci/win10:v4
     type: Unity::VM
     flavor: b1.large
   commands:
