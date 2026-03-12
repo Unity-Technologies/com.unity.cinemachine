@@ -11,7 +11,7 @@ public class CinemachineSettings
     string[] PackagesRootPaths = { "." };
     
     // Environment variables
-    private const string packageName = "com.unity.cinemachine";
+    public const string packageName = "com.unity.cinemachine";
 
 
     // update this to list all packages in this repo that you want to release.
