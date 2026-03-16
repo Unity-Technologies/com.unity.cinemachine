@@ -10,7 +10,7 @@ public class CinemachineSettings
     // Path from the root of the repository where packages are located.
     string[] PackagesRootPaths = { "." };
 
-    public static readonly string CinemachinePackageName = "com.unity.cinemachine";
+    public static readonly string packageName = "com.unity.cinemachine";
 
     // update this to list all packages in this repo that you want to release.
     Dictionary<string, PackageOptions> PackageOptions = new()
@@ -38,6 +38,10 @@ public class CinemachineSettings
             PackagesRootPaths,
             PackageOptions
         );
+
+        Wrench.Packages[packageName].CoverageCommands.Enabled = true;
+        Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Cinemachine$");
+        Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^com.unity.cinemachine.editor$");
 
         Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }

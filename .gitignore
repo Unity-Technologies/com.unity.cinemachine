@@ -8,14 +8,14 @@ npm-debug.log.meta
 .idea
 .yamato/expectations/*
 
-/projects/**/.idea
-/projects/**/.vs
-/projects/**/Builds
-/projects/**/Library
-/projects/**/Logs
-/projects/**/obj
-/projects/**/Tests_ProRes
-/projects/**/Temp
+/Projects/**/.idea
+/Projects/**/.vs
+/Projects/**/Builds
+/Projects/**/Library
+/Projects/**/Logs
+/Projects/**/obj
+/Projects/**/Tests_ProRes
+/Projects/**/Temp
 *.csproj
 *.sln
 !Tools/**/*sln

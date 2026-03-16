@@ -19,7 +19,7 @@
       "InternalOnly": false,
       "NeverPublish": false,
       "MaxEditorVersion": "",
-      "coverageEnabled": false,
+      "coverageEnabled": true,
       "coverageCommands": [
         "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:ASSEMBLY_NAME;"
       ],
