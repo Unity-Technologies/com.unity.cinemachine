@@ -22,6 +22,12 @@ public class CinemachineSettings
             new PackageOptions()
             {
                 ReleaseOptions = new ReleaseOptions() { IsReleasing = true }, // Will generate jobs for this packages.
+                ValidationOptions = new ValidationOptions()
+                {
+                    // Pin code coverage package to 1.3.0 temporarily
+                    // See https://unity.slack.com/archives/C18KJF78T/p1773654217935869 for details
+                    AdditionalUtrArguments = ["--coverage-pkg-version=1.3.0"] 
+                }
             }
         },
     };
