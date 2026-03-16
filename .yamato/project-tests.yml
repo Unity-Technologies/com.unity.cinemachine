@@ -10,7 +10,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_2022.3_project;flags:inputsystem_MacOS_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_2022.3_project;flags:cinemachine_MacOS_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -28,7 +28,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_2022.3_project;flags:inputsystem_Ubuntu_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_2022.3_project;flags:cinemachine_Ubuntu_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -46,7 +46,7 @@ test_project_-_cinemachine_-_hdrp_-_2022_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_2022.3_project;flags:inputsystem_Windows_2022.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_2022.3_project;flags:cinemachine_Windows_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -64,7 +64,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.0_project;flags:inputsystem_MacOS_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.0_project;flags:cinemachine_MacOS_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -82,7 +82,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.0_project;flags:inputsystem_Ubuntu_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.0_project;flags:cinemachine_Ubuntu_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -100,7 +100,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_0_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.0_project;flags:inputsystem_Windows_6000.0_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.0_project;flags:cinemachine_Windows_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -118,7 +118,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.3_project;flags:inputsystem_MacOS_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.3_project;flags:cinemachine_MacOS_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -136,7 +136,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.3_project;flags:inputsystem_Ubuntu_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.3_project;flags:cinemachine_Ubuntu_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -154,7 +154,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.3_project;flags:inputsystem_Windows_6000.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.3_project;flags:cinemachine_Windows_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -172,7 +172,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.4_project;flags:inputsystem_MacOS_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.4_project;flags:cinemachine_MacOS_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -190,7 +190,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.4_project;flags:inputsystem_Ubuntu_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.4_project;flags:cinemachine_Ubuntu_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -208,7 +208,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_4_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.4_project;flags:inputsystem_Windows_6000.4_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.4_project;flags:cinemachine_Windows_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -226,7 +226,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_5_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.5_project;flags:inputsystem_MacOS_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.5_project;flags:cinemachine_MacOS_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -244,7 +244,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_5_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.5_project;flags:inputsystem_Ubuntu_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.5_project;flags:cinemachine_Ubuntu_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -262,7 +262,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_5_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.5_project;flags:inputsystem_Windows_6000.5_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.5_project;flags:cinemachine_Windows_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -280,7 +280,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_6_-_macos:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.6_project;flags:inputsystem_MacOS_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.6_project;flags:cinemachine_MacOS_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -298,7 +298,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_6_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.6_project;flags:inputsystem_Ubuntu_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.6_project;flags:cinemachine_Ubuntu_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -316,7 +316,7 @@ test_project_-_cinemachine_-_hdrp_-_6000_6_-_windows:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.6_project;flags:inputsystem_Windows_6000.6_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.6_project;flags:cinemachine_Windows_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -334,7 +334,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_2022.3_project;flags:inputsystem_MacOS_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_2022.3_project;flags:cinemachine_MacOS_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -352,7 +352,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_2022.3_project;flags:inputsystem_Ubuntu_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_2022.3_project;flags:cinemachine_Ubuntu_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -370,7 +370,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_2022_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_2022.3_project;flags:inputsystem_Windows_2022.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_2022.3_project;flags:cinemachine_Windows_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -388,7 +388,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.0_project;flags:inputsystem_MacOS_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.0_project;flags:cinemachine_MacOS_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -406,7 +406,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.0_project;flags:inputsystem_Ubuntu_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.0_project;flags:cinemachine_Ubuntu_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -424,7 +424,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_0_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.0_project;flags:inputsystem_Windows_6000.0_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.0_project;flags:cinemachine_Windows_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -442,7 +442,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.3_project;flags:inputsystem_MacOS_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.3_project;flags:cinemachine_MacOS_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -460,7 +460,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.3_project;flags:inputsystem_Ubuntu_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.3_project;flags:cinemachine_Ubuntu_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -478,7 +478,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.3_project;flags:inputsystem_Windows_6000.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.3_project;flags:cinemachine_Windows_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -496,7 +496,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.4_project;flags:inputsystem_MacOS_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.4_project;flags:cinemachine_MacOS_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -514,7 +514,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.4_project;flags:inputsystem_Ubuntu_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.4_project;flags:cinemachine_Ubuntu_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -532,7 +532,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_4_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.4_project;flags:inputsystem_Windows_6000.4_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.4_project;flags:cinemachine_Windows_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -550,7 +550,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.5_project;flags:inputsystem_MacOS_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.5_project;flags:cinemachine_MacOS_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -568,7 +568,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.5_project;flags:inputsystem_Ubuntu_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.5_project;flags:cinemachine_Ubuntu_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -586,7 +586,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_5_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.5_project;flags:inputsystem_Windows_6000.5_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.5_project;flags:cinemachine_Windows_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -604,7 +604,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_macos:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.6_project;flags:inputsystem_MacOS_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.6_project;flags:cinemachine_MacOS_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -622,7 +622,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.6_project;flags:inputsystem_Ubuntu_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.6_project;flags:cinemachine_Ubuntu_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -640,7 +640,7 @@ test_project_-_cinemachine_-_hdrpinputsystem_-_6000_6_-_windows:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/HDRPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.6_project;flags:inputsystem_Windows_6000.6_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/HDRPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.6_project;flags:cinemachine_Windows_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -658,7 +658,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_2022.3_project;flags:inputsystem_MacOS_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_2022.3_project;flags:cinemachine_MacOS_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -676,7 +676,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_2022.3_project;flags:inputsystem_Ubuntu_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_2022.3_project;flags:cinemachine_Ubuntu_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -694,7 +694,7 @@ test_project_-_cinemachine_-_standalone_-_2022_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_2022.3_project;flags:inputsystem_Windows_2022.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_2022.3_project;flags:cinemachine_Windows_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -712,7 +712,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.0_project;flags:inputsystem_MacOS_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.0_project;flags:cinemachine_MacOS_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -730,7 +730,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.0_project;flags:inputsystem_Ubuntu_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.0_project;flags:cinemachine_Ubuntu_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -748,7 +748,7 @@ test_project_-_cinemachine_-_standalone_-_6000_0_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.0_project;flags:inputsystem_Windows_6000.0_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.0_project;flags:cinemachine_Windows_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -766,7 +766,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.3_project;flags:inputsystem_MacOS_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.3_project;flags:cinemachine_MacOS_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -784,7 +784,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.3_project;flags:inputsystem_Ubuntu_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.3_project;flags:cinemachine_Ubuntu_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -802,7 +802,7 @@ test_project_-_cinemachine_-_standalone_-_6000_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.3_project;flags:inputsystem_Windows_6000.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.3_project;flags:cinemachine_Windows_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -820,7 +820,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.4_project;flags:inputsystem_MacOS_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.4_project;flags:cinemachine_MacOS_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -838,7 +838,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.4_project;flags:inputsystem_Ubuntu_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.4_project;flags:cinemachine_Ubuntu_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -856,7 +856,7 @@ test_project_-_cinemachine_-_standalone_-_6000_4_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.4_project;flags:inputsystem_Windows_6000.4_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.4_project;flags:cinemachine_Windows_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -874,7 +874,7 @@ test_project_-_cinemachine_-_standalone_-_6000_5_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.5_project;flags:inputsystem_MacOS_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.5_project;flags:cinemachine_MacOS_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -892,7 +892,7 @@ test_project_-_cinemachine_-_standalone_-_6000_5_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.5_project;flags:inputsystem_Ubuntu_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.5_project;flags:cinemachine_Ubuntu_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -910,7 +910,7 @@ test_project_-_cinemachine_-_standalone_-_6000_5_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.5_project;flags:inputsystem_Windows_6000.5_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.5_project;flags:cinemachine_Windows_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -928,7 +928,7 @@ test_project_-_cinemachine_-_standalone_-_6000_6_-_macos:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.6_project;flags:inputsystem_MacOS_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.6_project;flags:cinemachine_MacOS_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -946,7 +946,7 @@ test_project_-_cinemachine_-_standalone_-_6000_6_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.6_project;flags:inputsystem_Ubuntu_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.6_project;flags:cinemachine_Ubuntu_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -964,7 +964,7 @@ test_project_-_cinemachine_-_standalone_-_6000_6_-_windows:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/Standalone --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.6_project;flags:inputsystem_Windows_6000.6_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/Standalone --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.6_project;flags:cinemachine_Windows_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -982,7 +982,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_2022.3_project;flags:inputsystem_MacOS_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_2022.3_project;flags:cinemachine_MacOS_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1000,7 +1000,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_2022.3_project;flags:inputsystem_Ubuntu_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_2022.3_project;flags:cinemachine_Ubuntu_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1018,7 +1018,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_2022_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_2022.3_project;flags:inputsystem_Windows_2022.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_2022.3_project;flags:cinemachine_Windows_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1036,7 +1036,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.0_project;flags:inputsystem_MacOS_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.0_project;flags:cinemachine_MacOS_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1054,7 +1054,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.0_project;flags:inputsystem_Ubuntu_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.0_project;flags:cinemachine_Ubuntu_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1072,7 +1072,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_0_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.0_project;flags:inputsystem_Windows_6000.0_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.0_project;flags:cinemachine_Windows_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1090,7 +1090,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.3_project;flags:inputsystem_MacOS_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.3_project;flags:cinemachine_MacOS_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1108,7 +1108,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.3_project;flags:inputsystem_Ubuntu_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.3_project;flags:cinemachine_Ubuntu_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1126,7 +1126,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.3_project;flags:inputsystem_Windows_6000.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.3_project;flags:cinemachine_Windows_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1144,7 +1144,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.4_project;flags:inputsystem_MacOS_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.4_project;flags:cinemachine_MacOS_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1162,7 +1162,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.4_project;flags:inputsystem_Ubuntu_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.4_project;flags:cinemachine_Ubuntu_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1180,7 +1180,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_4_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.4_project;flags:inputsystem_Windows_6000.4_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.4_project;flags:cinemachine_Windows_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1198,7 +1198,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.5_project;flags:inputsystem_MacOS_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.5_project;flags:cinemachine_MacOS_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1216,7 +1216,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.5_project;flags:inputsystem_Ubuntu_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.5_project;flags:cinemachine_Ubuntu_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1234,7 +1234,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_5_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.5_project;flags:inputsystem_Windows_6000.5_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.5_project;flags:cinemachine_Windows_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1252,7 +1252,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_macos:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.6_project;flags:inputsystem_MacOS_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.6_project;flags:cinemachine_MacOS_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1270,7 +1270,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.6_project;flags:inputsystem_Ubuntu_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.6_project;flags:cinemachine_Ubuntu_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1288,7 +1288,7 @@ test_project_-_cinemachine_-_standaloneinputsystem_-_6000_6_-_windows:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/StandaloneInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.6_project;flags:inputsystem_Windows_6000.6_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/StandaloneInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.6_project;flags:cinemachine_Windows_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1306,7 +1306,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_2022.3_project;flags:inputsystem_MacOS_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_2022.3_project;flags:cinemachine_MacOS_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1324,7 +1324,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_2022.3_project;flags:inputsystem_Ubuntu_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_2022.3_project;flags:cinemachine_Ubuntu_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1342,7 +1342,7 @@ test_project_-_cinemachine_-_urp_-_2022_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_2022.3_project;flags:inputsystem_Windows_2022.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_2022.3_project;flags:cinemachine_Windows_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1360,7 +1360,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.0_project;flags:inputsystem_MacOS_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.0_project;flags:cinemachine_MacOS_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1378,7 +1378,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.0_project;flags:inputsystem_Ubuntu_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.0_project;flags:cinemachine_Ubuntu_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1396,7 +1396,7 @@ test_project_-_cinemachine_-_urp_-_6000_0_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.0_project;flags:inputsystem_Windows_6000.0_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.0_project;flags:cinemachine_Windows_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1414,7 +1414,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.3_project;flags:inputsystem_MacOS_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.3_project;flags:cinemachine_MacOS_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1432,7 +1432,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.3_project;flags:inputsystem_Ubuntu_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.3_project;flags:cinemachine_Ubuntu_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1450,7 +1450,7 @@ test_project_-_cinemachine_-_urp_-_6000_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.3_project;flags:inputsystem_Windows_6000.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.3_project;flags:cinemachine_Windows_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1468,7 +1468,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.4_project;flags:inputsystem_MacOS_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.4_project;flags:cinemachine_MacOS_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1486,7 +1486,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.4_project;flags:inputsystem_Ubuntu_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.4_project;flags:cinemachine_Ubuntu_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1504,7 +1504,7 @@ test_project_-_cinemachine_-_urp_-_6000_4_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.4_project;flags:inputsystem_Windows_6000.4_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.4_project;flags:cinemachine_Windows_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1522,7 +1522,7 @@ test_project_-_cinemachine_-_urp_-_6000_5_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.5_project;flags:inputsystem_MacOS_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.5_project;flags:cinemachine_MacOS_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1540,7 +1540,7 @@ test_project_-_cinemachine_-_urp_-_6000_5_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.5_project;flags:inputsystem_Ubuntu_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.5_project;flags:cinemachine_Ubuntu_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1558,7 +1558,7 @@ test_project_-_cinemachine_-_urp_-_6000_5_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.5_project;flags:inputsystem_Windows_6000.5_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.5_project;flags:cinemachine_Windows_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1576,7 +1576,7 @@ test_project_-_cinemachine_-_urp_-_6000_6_-_macos:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.6_project;flags:inputsystem_MacOS_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.6_project;flags:cinemachine_MacOS_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1594,7 +1594,7 @@ test_project_-_cinemachine_-_urp_-_6000_6_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.6_project;flags:inputsystem_Ubuntu_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.6_project;flags:cinemachine_Ubuntu_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1612,7 +1612,7 @@ test_project_-_cinemachine_-_urp_-_6000_6_-_windows:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URP --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.6_project;flags:inputsystem_Windows_6000.6_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URP --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.6_project;flags:cinemachine_Windows_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1630,7 +1630,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_2022.3_project;flags:inputsystem_MacOS_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_2022.3_project;flags:cinemachine_MacOS_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1648,7 +1648,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_2022.3_project;flags:inputsystem_Ubuntu_2022.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_2022.3_project;flags:cinemachine_Ubuntu_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1666,7 +1666,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_2022_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 2022.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_2022.3_project;flags:inputsystem_Windows_2022.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_2022.3_project;flags:cinemachine_Windows_2022.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1684,7 +1684,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.0_project;flags:inputsystem_MacOS_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.0_project;flags:cinemachine_MacOS_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1702,7 +1702,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.0_project;flags:inputsystem_Ubuntu_6000.0_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.0_project;flags:cinemachine_Ubuntu_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1720,7 +1720,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_0_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.0/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.0_project;flags:inputsystem_Windows_6000.0_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.0_project;flags:cinemachine_Windows_6000.0_project"
   artifacts:
     artifacts:
       paths:
@@ -1738,7 +1738,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.3_project;flags:inputsystem_MacOS_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.3_project;flags:cinemachine_MacOS_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1756,7 +1756,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.3_project;flags:inputsystem_Ubuntu_6000.3_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.3_project;flags:cinemachine_Ubuntu_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1774,7 +1774,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_3_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.3/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.3_project;flags:inputsystem_Windows_6000.3_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.3_project;flags:cinemachine_Windows_6000.3_project"
   artifacts:
     artifacts:
       paths:
@@ -1792,7 +1792,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.4_project;flags:inputsystem_MacOS_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.4_project;flags:cinemachine_MacOS_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1810,7 +1810,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.4_project;flags:inputsystem_Ubuntu_6000.4_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.4_project;flags:cinemachine_Ubuntu_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1828,7 +1828,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.4/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.4_project;flags:inputsystem_Windows_6000.4_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.4_project;flags:cinemachine_Windows_6000.4_project"
   artifacts:
     artifacts:
       paths:
@@ -1846,7 +1846,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_macos:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.5_project;flags:inputsystem_MacOS_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.5_project;flags:cinemachine_MacOS_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1864,7 +1864,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.5_project;flags:inputsystem_Ubuntu_6000.5_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.5_project;flags:cinemachine_Ubuntu_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1882,7 +1882,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_windows:
   commands:
   - command: unity-downloader-cli -u 6000.5/staging -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.5_project;flags:inputsystem_Windows_6000.5_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.5_project;flags:cinemachine_Windows_6000.5_project"
   artifacts:
     artifacts:
       paths:
@@ -1900,7 +1900,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_macos:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_MacOS_6000.6_project;flags:inputsystem_MacOS_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_MacOS_6000.6_project;flags:cinemachine_MacOS_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1918,7 +1918,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_ubuntu:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Ubuntu_6000.6_project;flags:inputsystem_Ubuntu_6000.6_project"
+  - command: UnifiedTestRunner --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:$YAMATO_SOURCE_DIR/Packages;" --coverage-results-path=$YAMATO_SOURCE_DIR/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Ubuntu_6000.6_project;flags:cinemachine_Ubuntu_6000.6_project"
   artifacts:
     artifacts:
       paths:
@@ -1936,7 +1936,7 @@ test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_windows:
   commands:
   - command: unity-downloader-cli -u trunk -c Editor --fast
   - command: upm-pvp create-test-project Projects/URPInputSystem --packages "upm-ci~/packages/*.tgz" --unity .Editor
-  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:inputsystem_Windows_6000.6_project;flags:inputsystem_Windows_6000.6_project"
+  - command: UnifiedTestRunner.exe --testproject=Projects/URPInputSystem --editor-location=.Editor --reruncount=1 --clean-library-on-rerun --artifacts-path=artifacts --suite=editor --suite=PlayMode --enable-code-coverage --coverage-options="generateAdditionalMetrics;generateHtmlReport;assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:%YAMATO_SOURCE_DIR%/Packages;" --coverage-results-path=%YAMATO_SOURCE_DIR%/upm-ci~/CodeCoverage --coverage-upload-options="reportsDir:upm-ci~/CodeCoverage;name:cinemachine_Windows_6000.6_project;flags:cinemachine_Windows_6000.6_project"
   artifacts:
     artifacts:
       paths:

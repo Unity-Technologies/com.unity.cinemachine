@@ -3,10 +3,7 @@ using RecipeEngine.Api.Extensions;
 using RecipeEngine.Api.Jobs;
 using RecipeEngine.Api.Recipes;
 using RecipeEngine.Modules.Wrench.Models;
-using Timeline.Cookbook.Recipes;
-using Unity.Yamato.JobDefinition;
 using CancelLeftoverJobs = RecipeEngine.Api.Triggers.CancelLeftoverJobs;
-using Dependency = RecipeEngine.Api.Dependencies.Dependency;
 using Schedule = RecipeEngine.Api.Triggers.Recurring.Schedule;
 
 namespace Cinemachine.Cookbook.Recipes;

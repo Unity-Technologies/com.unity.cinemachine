@@ -7,7 +7,7 @@ using RecipeEngine.Api.Platforms;
 using RecipeEngine.Modules.Wrench.Platforms;
 using RecipeEngine.Platforms;
 
-namespace Timeline.Cookbook.Recipes;
+namespace Cinemachine.Cookbook.Recipes;
 
 public class CleanConsoleTests: RecipeBase
 {

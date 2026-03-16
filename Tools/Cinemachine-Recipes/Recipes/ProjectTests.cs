@@ -58,7 +58,7 @@ public class ProjectTests : RecipeBase
                                         "--coverage-options=\"generateAdditionalMetrics;generateHtmlReport;" + 
                                         $"assemblyFilters:+Unity.Cinemachine,+Unity.Cinemachine.Editor;pathReplacePatterns:@*,,**/PackageCache/,;sourcePaths:{yamatoSourceDir}/Packages;\"",
                                         $"--coverage-results-path={yamatoSourceDir}/upm-ci~/CodeCoverage",
-                                        $"--coverage-upload-options=\"reportsDir:upm-ci~/CodeCoverage;name:inputsystem_{platform.System.ToString()}_{version}_project;flags:inputsystem_{platform.System.ToString()}_{version}_project\""))))
+                                        $"--coverage-upload-options=\"reportsDir:upm-ci~/CodeCoverage;name:cinemachine_{platform.System.ToString()}_{version}_project;flags:cinemachine_{platform.System.ToString()}_{version}_project\""))))
                             .WithDescription($"Run {project} project tests for {settings.Wrench.Packages[packageName].DisplayName} on {platform.System}")
                             .WithDependencies(settings.Wrench.WrenchJobs[packageName][JobTypes.Pack])
                             .WithArtifact(new Artifact("artifacts", "artifacts/*"));
