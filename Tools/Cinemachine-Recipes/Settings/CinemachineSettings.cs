@@ -10,7 +10,7 @@ public class CinemachineSettings
     // Path from the root of the repository where packages are located.
     string[] PackagesRootPaths = { "." };
 
-    public static readonly string CinemachinePackageName = "com.unity.cinemachine";
+    public static readonly string packageName = "com.unity.cinemachine";
 
     // update this to list all packages in this repo that you want to release.
     Dictionary<string, PackageOptions> PackageOptions = new()
@@ -20,6 +20,10 @@ public class CinemachineSettings
             new PackageOptions()
             {
                 ReleaseOptions = new ReleaseOptions() { IsReleasing = true }, // Will generate jobs for this packages.
+                ValidationOptions = new ValidationOptions()
+                {
+                    AdditionalUtrArguments = ["--coverage-pkg-version=1.3.0"]
+                }
             }
         },
     };
@@ -39,12 +43,11 @@ public class CinemachineSettings
             PackageOptions
         );
 
-        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
+        Wrench.Packages[packageName].CoverageCommands.Enabled = true;
+        Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^Cinemachine$");
+        Wrench.Packages[packageName].CoverageCommands.AssemblyAllowList.Add("^com.unity.cinemachine.editor$");
 
-        var defaultUbuntuPlatform = WrenchPackage.DefaultEditorPlatforms[SystemType.Ubuntu];
-        // Use Ubuntu image package-ci/ubuntu-22.04 which is required by 6000.0+ versions.
-        Wrench.Packages[CinemachinePackageName].EditorPlatforms[SystemType.Ubuntu] = new Platform(new Agent("package-ci/ubuntu-22.04:default",
-            defaultUbuntuPlatform.Agent.Flavor, defaultUbuntuPlatform.Agent.Resource), defaultUbuntuPlatform.System);
+        Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
     }
 
     public WrenchSettings Wrench { get; set; }
