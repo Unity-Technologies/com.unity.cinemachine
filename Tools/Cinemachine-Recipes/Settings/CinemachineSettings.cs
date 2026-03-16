@@ -40,11 +40,6 @@ public class CinemachineSettings
         );
 
         Wrench.PvpProfilesToCheck = PvPprofilesToCheck;
-
-        var defaultUbuntuPlatform = WrenchPackage.DefaultEditorPlatforms[SystemType.Ubuntu];
-        // Use Ubuntu image package-ci/ubuntu-22.04 which is required by 6000.0+ versions.
-        Wrench.Packages[CinemachinePackageName].EditorPlatforms[SystemType.Ubuntu] = new Platform(new Agent("package-ci/ubuntu-22.04:default",
-            defaultUbuntuPlatform.Agent.Flavor, defaultUbuntuPlatform.Agent.Resource), defaultUbuntuPlatform.System);
     }
 
     public WrenchSettings Wrench { get; set; }

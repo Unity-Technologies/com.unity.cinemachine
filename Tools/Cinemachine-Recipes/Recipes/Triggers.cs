@@ -21,7 +21,6 @@ public class Triggers : RecipeBase
         HashSet<IJobBuilder> builders = new();
         var validationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation];
         var projectTests = new ProjectTest().AsDependencies();
-        var codeCoverage = new CodeCoverage().AsDependencies();
         builders.Add(JobBuilder.Create($"Nightly Trigger")
             .WithDependencies(projectTests)
             .WithDependencies(validationTests)
@@ -31,7 +30,6 @@ public class Triggers : RecipeBase
         builders.Add(JobBuilder.Create($"All Trigger")
             .WithDependencies(projectTests)
             .WithDependencies(validationTests)
-            .WithDependencies(codeCoverage)
             .WithPullRequestTrigger(pr => pr.ExcludeDraft())
             .WithDescription("All tests defined in recipes.")
         );

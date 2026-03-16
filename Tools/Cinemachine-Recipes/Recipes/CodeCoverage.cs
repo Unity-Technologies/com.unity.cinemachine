@@ -8,6 +8,7 @@ using RecipeEngine.Modules.UnifiedTestRunner;
 using RecipeEngine.Modules.UpmCi;
 using RecipeEngine.Modules.UpmPvp;
 using RecipeEngine.Modules.Wrench.Models;
+using RecipeEngine.Modules.Wrench.Platforms;
 using RecipeEngine.Platforms;
 
 namespace Cinemachine.Cookbook.Recipes;
@@ -19,7 +20,7 @@ public class CodeCoverage :RecipeBase
 
     private static readonly CinemachineSettings settings = new();
     private const string PackageName = "com.unity.cinemachine";
-    private static readonly Platform Platform = settings.Wrench.Packages[PackageName].EditorPlatforms[SystemType.Ubuntu];
+    private static readonly Platform Platform = settings.Wrench.Packages[PackageName].UnityEditors.First().AllEditorPlatforms[EditorPlatformType.Ubuntu2204];
     private const string EditorVersion = "trunk";
 
 
