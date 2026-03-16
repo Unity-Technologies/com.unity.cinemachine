@@ -20,6 +20,10 @@ public class CinemachineSettings
             new PackageOptions()
             {
                 ReleaseOptions = new ReleaseOptions() { IsReleasing = true }, // Will generate jobs for this packages.
+                ValidationOptions = new ValidationOptions()
+                {
+                    AdditionalUtrArguments = ["--coverage-pkg-version=1.3.0"]
+                }
             }
         },
     };
