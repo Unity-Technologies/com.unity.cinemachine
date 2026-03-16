@@ -3,6 +3,7 @@ using RecipeEngine.Api.Extensions;
 using RecipeEngine.Api.Jobs;
 using RecipeEngine.Api.Recipes;
 using RecipeEngine.Modules.Wrench.Models;
+using Timeline.Cookbook.Recipes;
 using Unity.Yamato.JobDefinition;
 using CancelLeftoverJobs = RecipeEngine.Api.Triggers.CancelLeftoverJobs;
 using Dependency = RecipeEngine.Api.Dependencies.Dependency;
@@ -24,11 +25,13 @@ public class Triggers : RecipeBase
         HashSet<IJobBuilder> builders = new();
         var validationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation];
         var projectTests = new ProjectTests().AsDependencies();
+        var cleanConsoleTests = new CleanConsoleTests().AsDependencies();
         
         builders.Add(JobBuilder.Create($"Nightly Trigger")
             .WithDescription("Nightly check on main")
             .WithDependencies(projectTests)
             .WithDependencies(validationTests)
+            .WithDependencies(cleanConsoleTests)
             .WithScheduleTrigger(Schedule.RunDaily(branchName))
         );
         
