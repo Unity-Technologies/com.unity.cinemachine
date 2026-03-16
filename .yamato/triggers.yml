@@ -329,6 +329,12 @@ pull_request_tests_trigger:
   - path: .yamato/project-tests.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_4_-_windows
   - path: .yamato/project-tests.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_5_-_windows
   - path: .yamato/project-tests.yml#test_project_-_cinemachine_-_urpinputsystem_-_6000_6_-_windows
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_2022_3_-_win10
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_0_-_win10
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_3_-_win10
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_4_-_win10
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_5_-_win10
+  - path: .yamato/wrench/validation-jobs.yml#validate_-_cinemachine_-_6000_6_-_win10
   triggers:
     expression: NOT pull_request.draft
     cancel_old_ci: true

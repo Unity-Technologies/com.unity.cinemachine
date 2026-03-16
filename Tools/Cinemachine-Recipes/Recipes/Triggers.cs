@@ -40,7 +40,7 @@ public class Triggers : RecipeBase
         );
 
         var prProjectTests = projectTests.Where(job => job.JobId.Contains("Windows"));
-        var prValidationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("windows"));
+        var prValidationTests = config.Wrench.WrenchJobs[packageName][JobTypes.Validation].Where(job => job.JobId.Contains("win"));
 
         builders.Add(JobBuilder.Create("Pull Request Tests Trigger")
             .WithDependencies(prProjectTests)
