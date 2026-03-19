@@ -45,5 +45,6 @@
   },
   "testables": [
     "com.unity.cinemachine"
-  ]
+  ],
+  "disableProjectUpdate": false
 }

@@ -2,9 +2,8 @@ using Cinemachine.Cookbook.Settings;
 using RecipeEngine.Api.Dependencies;
 using RecipeEngine.Api.Extensions;
 using RecipeEngine.Api.Jobs;
-using RecipeEngine.Api.Platforms;
 using RecipeEngine.Api.Recipes;
-using RecipeEngine.Modules.UpmCi;
+using RecipeEngine.Modules.Wrench.Platforms;
 using RecipeEngine.Platforms;
 
 namespace Cinemachine.Cookbook.Recipes;
@@ -18,7 +17,7 @@ public class BuildDocs : RecipeBase
     private const string PackageName = "com.unity.cinemachine";
 
     private static readonly Platform
-        Platform = Settings.Wrench.Packages[PackageName].EditorPlatforms[SystemType.MacOS];
+        Platform = Settings.Wrench.Packages[PackageName].UnityEditors.First().AllEditorPlatforms[EditorPlatformType.MacOs13];
 
     private const string EditorVersion = "trunk";
 
@@ -30,15 +29,16 @@ public class BuildDocs : RecipeBase
     private List<IJobBuilder> GetJobs()
     {
         List<IJobBuilder> builders = new();
-        IJobBuilder job = JobBuilder.Create($"Code coverage - {Platform.System}  - {EditorVersion}")
+        IJobBuilder job = JobBuilder.Create($"Build Documentation - {Platform.System}  - {EditorVersion}")
             .WithPlatform(Platform)
             .WithCommands(c => c
-                .AddBrick("git@github.cds.internal.unity3d.com:wind-xu/virtual_production_doc_generation.git@v0.3.0",
-                    ("EDITOR_VERSION", "trunk"), ("PACKAGE_NAME", PackageName), ("PACKAGE_PATH", PackageName))
+                .AddBrick("git@github.cds.internal.unity3d.com:wind-xu/virtual_production_doc_generation.git@v0.5.3", 
+                    ("EDITOR_VERSION", "trunk"), 
+                    ("PACKAGE_NAME", PackageName), 
+                    ("PACKAGE_PATH", PackageName))
             )
             .WithDescription(
-                $"Generate codecov data for {Settings.Wrench.Packages[PackageName].DisplayName} on {Platform.System}");
-
+                $"Build documentation for {Settings.Wrench.Packages[PackageName].DisplayName} on {Platform.System}");
 
         builders.Add(job);
         return builders;

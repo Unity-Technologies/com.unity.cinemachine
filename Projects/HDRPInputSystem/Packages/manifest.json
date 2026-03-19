@@ -45,5 +45,6 @@
   "testables": [
     "com.unity.cinemachine",
     "com.unity.cinemachine.hdrptests"
-  ]
+  ],
+  "disableProjectUpdate": false
 }
