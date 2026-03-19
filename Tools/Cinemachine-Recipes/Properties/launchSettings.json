@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "Cinemachine.Cookbook": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)/../../"
+    }
+  }
+}
