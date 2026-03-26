@@ -36,8 +36,8 @@ The Deoccluder uses a [Physics Raycaster](https://docs.unity3d.com/ScriptReferen
 | **Ignore Tag** || Obstacles with this tag will be ignored. It is recommended to set this field to the target's tag. |
 | __Shot Quality Evaluation__ || If enabled, gives a higher score to shots when the target is closer to an optimal distance. |
 | | _Optimal Distance_ | Maximum quality boost will be given to the shot when the target is near this distance from the camera. |
-| | _Near Limit_ | Quality boost drops off as the target distance gets smaller than the optimal distance.  When thie near limit is reached, quality is no longer boosted. |
-| | _Far Limit_ | Quality boost drops off as the target distance gets larger than the optimal distance.  When thie far limit is reached, quality is no longer boosted. |
+| | _Near Limit_ | Quality boost drops off as the target distance gets smaller than the optimal distance.  When the near limit is reached, quality is no longer boosted. |
+| | _Far Limit_ | Quality boost drops off as the target distance gets larger than the optimal distance.  When the far limit is reached, quality is no longer boosted. |
 | | _Max Quality Boost_ | This is the quality boost that will be given when the target is at the optimal distance.  It is expresses as the fraction of the default quality that will get added in.  For example, when this value is 0.5, the shot quality will be multiplied by 1.5. |
 
 
