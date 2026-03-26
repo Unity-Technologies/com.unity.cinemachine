@@ -1,6 +1,6 @@
 # Spline Dolly
 
-This CinemachineCamera __Position Control__ behavior restricts the CinemachineCamera to move along a predefined spline. Use the __Camera Position__ property to specify where to put the Camera on the spline.
+This CinemachineCamera __Position Control__ behavior restricts the CinemachineCamera to move along a predefined spline. Use the __Position__ property to specify where to put the Camera on the spline.
 
 Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards a point on the spline that is closest to the __Tracking Target__, or in some custom way that you devise.
 
@@ -13,7 +13,7 @@ Enable __Automatic Dolly__ to move the camera to a position on the spline in an 
 | **Property:** || **Function:** |
 |:---|:---|:---|
 | __Spline__ || The spline that the camera moves along.  |
-| __Camera Position__ || The position along the spline at which to place the camera. Animate this property directly or enable Automatic Dolly. The value is in the units specified by Position Units. |
+| __Position__ || The position along the spline at which to place the camera. Animate this property directly or enable Automatic Dolly. The value is in the units specified by Position Units. |
 | __Position Units__ || The unit of measure for Path Position.  |
 | | _Knot_ | The value is the knot index. The value 0 represents the first knot on the spline, 1 is the second knot, and so on. Non-integer values represent points in between the knots |
 | | _Distance_ | Distance along the spline, in normal distance units. 0 is the beginning of the spline. |
