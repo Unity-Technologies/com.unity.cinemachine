@@ -22,7 +22,7 @@ The CinemachineCamera is a component that you add to an empty GameObject. It rep
 | | _Screen Space Aim When Targets Differ_ | During a blend, Tracking target position will interpolate in screen space instead of world space. |
 | | _Inherit Position_ | When this CinemachineCamera goes live, force the initial position to be the same as the current position of the Unity Camera, if possible. |
 | | _Ignore Target_ | Don't consider the Tracking Target when blending rotations, just do a spherical interpolation. |
-| | _Freeze When Blending Out_ | Normally the camera remain live when blending, because it creates the smoothest transitions.  If this hint is enabled, then the camera will not update while blending out; instead it will create a snapshot of its state and blending will be done from that. |
+| | _Freeze When Blending Out_ | Normally the camera remains live when blending, because it creates the smoothest transitions.  If this hint is enabled, then the camera will not update while blending out; instead it will create a snapshot of its state and blending will be done from that. |
 
 ### Targets
 
