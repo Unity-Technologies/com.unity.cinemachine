@@ -7,12 +7,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [3.1.7-pre.2] - 2026-03-26
 
 ### Bugfixes
-- Fixed blend cancellation not taking into account updates to "cancelled" camera state
-
-## [3.1.7-pre.1] - 2026-02-24
-
-### Bugfixes
 - Fixed stack frame snapshot not resetting when CameraBlendStack completed blend.
+- Fixed blend cancellation not taking into account updates to "cancelled" camera state
 
 ### Changed
 - Added support for fast enter play mode.
