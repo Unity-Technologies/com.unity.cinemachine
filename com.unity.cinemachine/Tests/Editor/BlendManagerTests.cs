@@ -279,5 +279,34 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.That(m_BlendManager.IsBlending, Is.False);
             Assert.AreEqual(1.0f, m_BlendManager.CameraState.RawPosition.x, 0.001f);
         }
+
+        [Test]
+        public void TestBlendCancellationKeepsOutgoingCameraUpdating()
+        {
+            void MoveCameras() {
+                m_Cam1.Position += Vector3.forward;
+                m_Cam2.Position += Vector3.forward;
+            }
+
+            Reset(1); // constant blend time of 1
+            m_Cam1.Position = new Vector3(0, 0, 0);
+            m_Cam2.Position = new Vector3(1, 0, 0);
+
+            // Start with cam1, then blend towards cam2.
+            ProcessFrame(m_Cam1, 0.1f);
+            MoveCameras();
+            ProcessFrame(m_Cam2, 0.5f);
+            MoveCameras();
+            Assume.That(m_BlendManager.IsBlending, Is.True);
+
+            // Cancel/reverse the blend back to cam1 and advance a couple of frames.
+            ProcessFrame(m_Cam1, 0.1f);
+            MoveCameras();
+            ProcessFrame(m_Cam1, 0.1f);
+            Assume.That(m_BlendManager.IsBlending, Is.True);
+
+            // Z coordinate should be the same for both cameras and blend result
+            Assert.AreEqual(m_Cam1.Position.z, m_BlendManager.CameraState.RawPosition.z, 0.001f);
+        }
     }
 }
