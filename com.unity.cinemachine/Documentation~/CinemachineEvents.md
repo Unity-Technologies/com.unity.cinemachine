@@ -12,11 +12,11 @@ Cinemachine generates events in the following contexts:
 
 When Cinemachine sends an event, it sends it globally via CinemachineCore. Scripts can add listeners to those events and take action based on them. Listeners receive events for all cameras and all brains.
 
-Events are generated in every context that manages blends. This includes the CinemachineBrain, which handles blends at the highest level, but it also applies to Cinemachine Manager Cameras, which thenselves manage blends between their child cameras.
+Events are generated in every context that manages blends. This includes the Cinemachine Brain, which handles blends at the highest level, but it also applies to Cinemachine Camera Managers, which themselves manage blends between their child cameras.
 
 ## Filter Cinemachine events
 
-Sometimes it's desirable to have events sent only for a specific Cinemachine Camera, a specific Cinemachine Camera Manager, or a specific Cinemachine Brain, so that scripts can be notified based on this specific object's activity without having to provide code to filter the events.
+Sometimes it's desirable to handle events sent for a specific Cinemachine Camera, a specific Cinemachine Camera Manager, or a specific Cinemachine Brain, so that scripts can be notified based on this specific object's activity without having to provide code to filter the events.
 
 Cinemachine provides the following components to execute this filtering logic:
 

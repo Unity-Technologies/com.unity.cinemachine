@@ -1,6 +1,6 @@
 # Cinemachine Camera Events
 
-Use the Cinemachine Camera Events component to  have events sent only for a specific camera.
+Use the Cinemachine Camera Events component to handle events sent for a specific Cinemachine Camera.
 
 For more information, refer to [Cinemachine Events](CinemachineEvents.md).
 
