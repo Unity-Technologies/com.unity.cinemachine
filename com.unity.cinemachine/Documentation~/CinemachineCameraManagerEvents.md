@@ -1,14 +1,8 @@
 # Cinemachine Camera Manager Events
 
-When Cinemachine Cameras are activated, global events are sent via CinemachineCore.  Scripts can add listeners to those events and take action based on them.  Listeners will receive events for all cameras and all brains.
+Use the Cinemachine Camera Manager Events component to have events sent only for a specific Cinemachine Camera Manager.
 
-Sometimes it's desirable to have events sent only for a specific Cinemachine Camera Manager, so that scripts can be notified based on this specific objects's activity without having to provide code to filter the events.  The Cinemachine Brain Events component fills this need.
-
-It will expose events that will be fired based on the target objects's activity.  Any listeners you add will be called when the events happen for that object.  The target object can be specified explicitly in the **Camera Manager** field, or you can leave that null and add this script directly to the object with the CinemachineBrain component
-
-If you are looking for events that fire for a specific CinemachineCamera, see [Cinemachine Camera Events](CinemachineCameraEvents.md).
-
-If you are looking for events that fire for a specific CinemachineBrain, see [Cinemachine Brain Events](CinemachineBrainEvents.md).
+For more information, refer to [Cinemachine Events](CinemachineEvents.md).
 
 ## Properties:
 
@@ -21,3 +15,7 @@ If you are looking for events that fire for a specific CinemachineBrain, see [Ci
 | __Blend Finished Event__ | This event will fire whenever a Cinemachine Camera finishes blending in.  It will not fire if the blend length is zero. |
 | __Camera Cut Event__ | This is called when a zero-length blend happens. |
 
+## Additional resources
+
+* [Cinemachine Camera Events](CinemachineCameraEvents.md)
+* [Cinemachine Brain Events](CinemachineBrainEvents.md)

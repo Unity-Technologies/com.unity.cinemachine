@@ -1,14 +1,8 @@
 # Cinemachine Camera Events
 
-When Cinemachine Cameras are activated, global events are sent via CinemachineCore.  Scripts can add listeners to those events and take action based on them.  Listeners will receive events for all cameras.
+Use the Cinemachine Camera Events component to  have events sent only for a specific camera.
 
-Sometimes it's desirable to have events sent only for a specific camera, so that scripts can be notified based on this specific camera's activity without having to provide code to filter the events.  The Cinemachine Camera Events component fills this need.
-
-If you add it to a CinemachineCamera, it will expose events that will be fired based on that camera's activity.  Any listeners you add will be called when the events happen for that camera.
-
-If you are looking for events that fire for a specific CinemachineBrain, please see [Cinemachine Brain Events](CinemachineBrainEvents.md).
-
-If you are looking for events that fire for a specific CinemachineCameraManager, see [Cinemachine Camera Manager Events](CinemachineCameraManagerEvents.md).
+For more information, refer to [Cinemachine Events](CinemachineEvents.md).
 
 ## Properties:
 
@@ -20,3 +14,7 @@ If you are looking for events that fire for a specific CinemachineCameraManager,
 | __Blend Created Event__ | This event will fire whenever a new Cinemachine blend is created. Handlers can modify the settings of the blend (but not the cameras).  Note: BlendCreatedEvents are NOT sent for timeline blends, as those are expected to be controlled 100% by timeline. To modify the blend algorithm for timeline blends, you can install a handler for CinemachineCore.GetCustomBlender. |
 | __Blend Finished Event__ | This event will fire whenever a Cinemachine Camera finishes blending in.  It will not fire if the blend length is zero. |
 
+## Additional resources
+
+* [Cinemachine Camera Manager Events](CinemachineCameraManagerEvents.md)
+* [Cinemachine Brain Events](CinemachineBrainEvents.md)
