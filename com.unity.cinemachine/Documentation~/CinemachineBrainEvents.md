@@ -1,6 +1,6 @@
 # Cinemachine Brain Events
 
-Use the Cinemachine Camera Manager Events component to have events sent only for a specific Cinemachine Camera Manager.
+Use the Cinemachine Brain Events component to have events sent only for a specific Cinemachine Brain.
 
 For more information, refer to [Cinemachine Events](CinemachineEvents.md).
 
