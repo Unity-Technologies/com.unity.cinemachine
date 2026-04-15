@@ -59,7 +59,7 @@ To experiment with a Third Person Follow set up that includes camera control, sh
 |**Property:**|**Function:**|
 |:---|:---|
 | Damping                 | The responsiveness of the camera in tracking the target. Each axis can have its own setting. The value is the approximate time it takes the camera to catch up to the target's new position. Small numbers make the camera more responsive. Larger numbers make the camera respond more slowly. |
-| Shoulder Offset         | Position of the shoulder pivot relative to the tracking target origin. This offset is in target-local space. |
+| Shoulder Offset         | Position of the shoulder pivot relative to the tracking target origin. This offset is in target-local space. Only the target position and rotation are considered. The target scale is ignored. |
 | Vertical Arm Length     | Vertical offset of the hand in relation to the shoulder. Arm length affects the tracking target's screen position when the camera rotates vertically. |
 | Camera Side             | Specifies which shoulder the camera is on (left, right, or somewhere in-between). |
 | Camera Distance         | Specifies the distance from the hand to the camera.                |
