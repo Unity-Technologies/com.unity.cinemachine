@@ -63,8 +63,8 @@
             "define": "CINEMACHINE_PIXEL_PERFECT_2_0_3"
         },
         {
-            "name": "com.unity.inputsystem",
-            "expression": "1.0.0-preview",
+            "name": "com.unity.modules.inputsystem",
+            "expression": "1.0.0",
             "define": "CINEMACHINE_UNITY_INPUTSYSTEM"
         },
         {
