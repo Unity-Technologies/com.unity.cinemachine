@@ -23,7 +23,7 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() =>
             {
-	        var pp = target as CinemachinePixelPerfect;
+	            var pp = target as CinemachinePixelPerfect;
                 if (pp != null)
                 {
                     bool isValid = pp.HasValidPixelPerfectCamera();
