@@ -23,7 +23,8 @@ namespace Unity.Cinemachine.Editor
 
             ux.TrackAnyUserActivity(() =>
             {
-                if (target is CinemachinePixelPerfect pp)
+	        var pp = target as CinemachinePixelPerfect;
+                if (pp != null)
                 {
                     bool isValid = pp.HasValidPixelPerfectCamera();
                     infoBox.SetVisible(isValid && pp.enabled);
