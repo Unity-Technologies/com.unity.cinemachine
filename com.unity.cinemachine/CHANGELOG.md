@@ -4,11 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.7-pre.2] - 2026-03-26
+## [3.1.7-pre.3] - 2026-05-28
 
 ### Bugfixes
 - Fixed stack frame snapshot not resetting when CameraBlendStack completed blend.
 - Fixed blend cancellation not taking into account updates to "cancelled" camera state
+- Added a null check to avoid an issue when deleting a CinemachineCamera with a CinemachinePixelPerfect extension.
 
 ### Changed
 - Added support for fast enter play mode.
