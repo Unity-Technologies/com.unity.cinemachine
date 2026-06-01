@@ -18,7 +18,7 @@
       },
       "InternalOnly": false,
       "NeverPublish": false,
-      "MaxEditorVersion": "",
+      "MaxEditorVersion": "6000.5",
       "coverageEnabled": true,
       "coverageCommands": [
         "generateAdditionalMetrics;generateHtmlReport;assemblyFilters:ASSEMBLY_NAME;"
