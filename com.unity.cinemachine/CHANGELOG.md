@@ -4,7 +4,7 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
-## [3.1.7-pre.3] - 2026-05-28
+## [3.1.7] - 2026-06-08
 
 ### Bugfixes
 - Fixed stack frame snapshot not resetting when CameraBlendStack completed blend.
