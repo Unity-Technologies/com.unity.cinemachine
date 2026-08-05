@@ -47,10 +47,11 @@ namespace Unity.Cinemachine.Tests
         [SetUp]
         public override void SetUp()
         {
+            base.SetUp();
+            
             RuntimeEventRegistration.dummyCameraActivatedCallbackWasCalled = false;
             RuntimeEventRegistration.dummyCameraDeactivatedCallbackWasCalled = false;
             RuntimeEventRegistration.dummyCameraUpdatedCallbackWasCalled = false;
-            base.SetUp();
         }
 
         [TearDown]
@@ -76,7 +77,8 @@ namespace Unity.Cinemachine.Tests
         [Test]
         public void CameraUpdatedEvent_IsResetBeforeSceneLoad()
         {
-            CinemachineCore.CameraUpdatedEvent.Invoke(null);
+            CinemachineCore.CameraUpdatedEvent.Invoke(m_Brain);
+            Assert.That(RuntimeEventRegistration.dummyCameraUpdatedCallbackWasCalled, Is.True);
         }
     }
 }
