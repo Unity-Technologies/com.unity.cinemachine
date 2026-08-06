@@ -27,7 +27,8 @@ package_pack_-_cinemachine:
       - upm-ci~/packages/**/*
   variables:
     UPMCI_ACK_LARGE_PACKAGE: 1
+    WRENCH_LOCALAPV_URL: https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-14_fa918595e8175590318588d531758ad555efde33ffceb46b03c094ee6a0e5d79.zip
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 2.13.0.0
+    Wrench: 3.6.0.0
 

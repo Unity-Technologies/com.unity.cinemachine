@@ -4,6 +4,12 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.8-pre.2] - 2026-08-04
+
+### Bugfixes
+ - Fixed jitter in mix camera sample caused by using physics velocity without smoothing
+ - Changed static reset in CinemachineCore to happen during SubsystemRegistration
+
 ## [3.1.7] - 2026-06-08
 
 ### Bugfixes

@@ -9,6 +9,8 @@ namespace Unity.Cinemachine.Samples
         public float MaxSpeed;
         public Rigidbody Rigidbody;
         CinemachineMixingCamera m_Mixer;
+        float m_CurrentWeight;
+
         void Start()
         {
             m_Mixer = GetComponent<CinemachineMixingCamera>();
@@ -19,7 +21,7 @@ namespace Unity.Cinemachine.Samples
             MaxSpeed = Mathf.Max(1, MaxSpeed);
         }
 
-        void FixedUpdate()
+        void Update()
         {
             if (Rigidbody == null)
                 return;
@@ -29,8 +31,12 @@ namespace Unity.Cinemachine.Samples
 #else
             var t = Mathf.Clamp01(Rigidbody.velocity.magnitude / MaxSpeed);
 #endif
-            m_Mixer.Weight0 = 1 - t;
-            m_Mixer.Weight1 = t;
+            // Weights are not smoothed by cinemachine. If the weights come from a non-smooth source
+            // (in this case physics), it is important to smooth them to avoid jitter
+            m_CurrentWeight = Mathf.Lerp(m_CurrentWeight, t, Time.deltaTime);
+
+            m_Mixer.Weight0 = 1 - m_CurrentWeight;
+            m_Mixer.Weight1 = m_CurrentWeight;
         }
     }
 }

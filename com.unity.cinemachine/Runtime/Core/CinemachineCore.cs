@@ -109,14 +109,14 @@ namespace Unity.Cinemachine
 #else
         static readonly AxisInputDelegate s_DefaultGetInputAxis = delegate { return 0; };
 #endif
-        
+
         /// <summary>Delegate for overriding Unity's default input system.
         /// This makes Unity call your delegate instead of
         /// System.Input.GetAxis(axisName) whenever in-game user input is needed.</summary>
         public static AxisInputDelegate GetInputAxis = s_DefaultGetInputAxis;
 
         const float k_DefaultUniformDeltaTimeOverride = -1;
-        
+
         /// <summary>
         /// If non-negative, cinemachine will update with this uniform delta time.
         /// Usage is for timelines in manual update mode.
@@ -130,7 +130,7 @@ namespace Unity.Cinemachine
             => UniformDeltaTimeOverride >= 0 ? UniformDeltaTimeOverride : Time.deltaTime;
 
         const float k_DefaultCurrentTimeOverride = -1;
-        
+
         /// <summary>
         /// If non-negative, cinemachine will use this value whenever it wants current game time.
         /// Usage is for master timelines in manual update mode, for deterministic behaviour.
@@ -143,10 +143,10 @@ namespace Unity.Cinemachine
         public static float CurrentTime => CurrentTimeOverride >= 0 ? CurrentTimeOverride : Time.time;
 
         const int k_DefaultCurrentUpdateFrame = 0;
-        
+
         /// <summary>
         /// The current frame
-        /// By default this is Time.frameCount.  If you are using ManualUpdate with a custom update frame, 
+        /// By default this is Time.frameCount.  If you are using ManualUpdate with a custom update frame,
         /// then this value will reflect the custom framed passed to ManualUpdate().
         /// </summary>
         public static int CurrentUpdateFrame { get; internal set; }
@@ -200,9 +200,7 @@ namespace Unity.Cinemachine
         public class BrainEvent : UnityEvent<CinemachineBrain> {}
 
         /// <summary>This event will fire after a brain updates its Camera</summary>
-#pragma warning disable UDR0001
         public static BrainEvent CameraUpdatedEvent = new ();
-#pragma warning restore UDR0001
 
         /// <summary>This is sent with BlendEvent</summary>
         public struct BlendEventParams
@@ -219,9 +217,7 @@ namespace Unity.Cinemachine
 
         /// <summary>This event will fire when the current camera changes,
         /// at the start of a blend</summary>
-#pragma warning disable UDR0001
         public static ICinemachineCamera.ActivationEvent CameraActivatedEvent = new ();
-#pragma warning restore UDR0001
 
         /// <summary>This event will fire immediately after a camera that is
         /// live in some context stops being live.</summary>
@@ -384,7 +380,7 @@ namespace Unity.Cinemachine
         }
 
 #if UNITY_EDITOR
-        [RuntimeInitializeOnLoadMethod]
+        [RuntimeInitializeOnLoadMethod(RuntimeInitializeLoadType.SubsystemRegistration)]
         private static void ResetStaticsOnLoad()
         {
             CurrentUnscaledTimeTimeOverride = k_DefaultCurrentUnscaledTimeTimeOverride;
@@ -395,6 +391,8 @@ namespace Unity.Cinemachine
             GetInputAxis = s_DefaultGetInputAxis;
             GetBlendOverride = null;
             GetCustomBlender = null;
+            CameraUpdatedEvent = new();
+            CameraActivatedEvent = new ();
             CameraDeactivatedEvent = new();
             BlendCreatedEvent = new();
             BlendFinishedEvent = new();
