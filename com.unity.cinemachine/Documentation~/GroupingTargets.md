@@ -1,5 +1,7 @@
 # Follow and frame a group
 
+[!include[](includes/package-version-message.md)]
+
 Use Cinemachine Target Group to treat multiple Transforms as a single Tracking target.
 
 It can also be used as targets for procedural behaviours that need to know the size of the target, for example the [Group Framing](CinemachineGroupFraming.md) extension.

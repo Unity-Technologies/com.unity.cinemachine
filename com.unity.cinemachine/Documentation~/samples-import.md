@@ -1,5 +1,7 @@
 ## Import samples to your project
 
+[!include[](includes/package-version-message.md)]
+
 To import a **Cinemachine** sample to your project:
 
 1. Open the [Package manager window](https://docs.unity3d.com/Manual/upm-ui-access.html).

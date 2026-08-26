@@ -1,5 +1,7 @@
 # Cinemachine Target Group
 
+[!include[](includes/package-version-message.md)]
+
 Use Cinemachine Target Group to treat multiple GameObjects as a single Tracking target. It can also be used as targets for procedural behaviour that needs to know the size of the target, for example the [Group Framing](CinemachineGroupFraming.md) extension.
 
 To create a Target Group:

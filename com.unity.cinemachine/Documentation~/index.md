@@ -1,5 +1,7 @@
 # Cinemachine package
 
+[!include[](includes/package-version-message.md)]
+
 ![Unity Cinemachine](images/CinemachineSplash.png)
 
 >[!NOTE]

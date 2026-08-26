@@ -1,5 +1,7 @@
 # Cinemachine Impulse
 
+[!include[](includes/package-version-message.md)]
+
 Cinemachine Impulse generates and manages camera shake in response to game events. For example, you can use Impulse to make a CinemachineCamera shake when one GameObject collides with another, or when something in your Scene explodes.
 
 Impulse has two parts:

@@ -1,5 +1,7 @@
 # Samples and tutorials
 
+[!include[](includes/package-version-message.md)]
+
 Several sample scenes and video tutorials are available in addition to this documentation to demonstrate how to use the Cinemachine features in real-world scenarios.
 
 ## Sample scenes

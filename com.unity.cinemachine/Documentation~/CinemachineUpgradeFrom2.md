@@ -1,5 +1,7 @@
 # Upgrade a Project from Cinemachine 2.x
 
+[!include[](includes/package-version-message.md)]
+
 Follow these instructions if your project currently uses Cinemachine 2.x and you need to upgrade it to Cinemachine 3.x.
 
 > [!CAUTION]

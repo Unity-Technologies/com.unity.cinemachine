@@ -1,5 +1,7 @@
 # Cinemachine State-Driven Camera
 
+[!include[](includes/package-version-message.md)]
+
 The __Cinemachine State-Driven Camera__ component allows you to associate CinemachineCameras with animation states.  When the state becomes active, the associated CinemachineCamera will also activate.  This allows you to define specific camera settings and behaviours for specific anmation states.  For example, you could have one camera for the Walk state, another for the Run state.  The state-Driven camera will blend between those cameras when the animation target changes states.
 
 ![State-Driven camera with three child CinemachineCameras (red)](images/CinemachineStateDrivenChildren.png)

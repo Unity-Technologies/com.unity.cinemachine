@@ -1,5 +1,7 @@
 # Cinemachine Auto Focus
 
+[!include[](includes/package-version-message.md)]
+
 This CinemachineCamera extension drives the Camera's focusDistance property.  It can be used to lock focus onto a specific object, or (in HDRP) to auto-detect what is in front of the camera and focus on that.
 
 FocusDistance is only relevant for physical cameras, and appropriate processing must be installed for it to have any visible effect.

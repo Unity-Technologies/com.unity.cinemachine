@@ -1,5 +1,7 @@
 # Control and customize blends
 
+[!include[](includes/package-version-message.md)]
+
 Cinemachine offers a number of ways to control how one camera blends to another when the active camera changes.
 
 * The easiest and most common ways involve setting up assets to define rules about how to blend between specific cameras or families of cameras. 

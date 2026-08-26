@@ -1,5 +1,7 @@
 # Camera control and transitions
 
+[!include[](includes/package-version-message.md)]
+
 Learn about the conditions and mechanisms that make Cinemachine Cameras take turns controlling the Unity Camera and transition between each other by blend or cut.
 
 ## Cinemachine Camera states

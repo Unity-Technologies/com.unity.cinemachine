@@ -1,5 +1,7 @@
 # Set up multiple Cinemachine Cameras and transitions
 
+[!include[](includes/package-version-message.md)]
+
 Set up a Cinemachine environment with multiple Cinemachine Cameras and manage [camera control and transitions](concept-camera-control-transitions.md):
 
 * Create multiple Cinemachine Cameras with different properties,

@@ -1,5 +1,7 @@
 # Orbital Follow
 
+[!include[](includes/package-version-message.md)]
+
 This CinemachineCamera __Position Control__ behavior moves the Unity camera in a variable relationship to the CinemachineCamera’s __Tracking Target__. If you add a [Cinemachine Input Axis Controller](CinemachineInputAxisController.md) behavior, the camera position can be driven by [player input](https://docs.unity3d.com/Manual/ConventionalGameInput.html), which allows the player to dynamically control the position of the camera relative to the target.
 
 __Orbital Follow__ operates in 2 modes:

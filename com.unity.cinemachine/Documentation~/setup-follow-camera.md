@@ -1,5 +1,7 @@
 # Follow and frame a character
 
+[!include[](includes/package-version-message.md)]
+
 Create and set up a Cinemachine Camera that automatically follows and frames a character.
 
 > [!NOTE]

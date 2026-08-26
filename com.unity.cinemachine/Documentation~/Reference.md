@@ -1,5 +1,7 @@
 # Reference
 
+[!include[](includes/package-version-message.md)]
+
 <!--- Temporary list by main topic, to be reviewed, completed, and improved. --->
 
 Here is a list of all components and assets available in the Cinemachine package, organized by concepts.

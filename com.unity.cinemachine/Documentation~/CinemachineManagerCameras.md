@@ -1,5 +1,7 @@
 # Manage grouped cameras
 
+[!include[](includes/package-version-message.md)]
+
 A __Manager Camera__ oversees many CinemachineCameras but acts as a single CinemachineCamera from the point of view of Cinemachine Brain and Timeline.
 
 Cinemachine includes these manager cameras:

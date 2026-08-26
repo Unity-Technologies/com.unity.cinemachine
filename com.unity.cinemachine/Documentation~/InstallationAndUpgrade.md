@@ -1,5 +1,7 @@
 # Installation and upgrade
 
+[!include[](includes/package-version-message.md)]
+
 Cinemachine is a free package, available for any project.
 
 To install this package, follow the instructions in the [Package Manager documentation](https://docs.unity3d.com/Manual/upm-ui.html).

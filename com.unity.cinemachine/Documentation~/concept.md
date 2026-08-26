@@ -1,5 +1,7 @@
 # Discover Cinemachine concepts
 
+[!include[](includes/package-version-message.md)]
+
 Learn about the Cinemachine base elements and core functionality.
 
 | Section | Description |

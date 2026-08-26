@@ -1,5 +1,7 @@
 # Pan Tilt
 
+[!include[](includes/package-version-message.md)]
+
 This CinemachineCamera __Rotation Control__ behavior pans and tilts the camera in response stimulus, for instance the user’s input. This component does not read user input itself; it can be be driven by an [Cinemachine Input Axis Controller](CinemachineInputAxisController.md) component or by some other means that you devise.
 
 ## Properties:

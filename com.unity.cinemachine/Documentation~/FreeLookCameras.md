@@ -1,5 +1,7 @@
 # Create a FreeLook Camera
 
+[!include[](includes/package-version-message.md)]
+
 With Cinemachine 3.0, the FreeLook camera is no longer a separate class as it was in prior versions of Cinemachine. Instead, it is implemented by setting up a [CinemachineCamera](CinemachineCamera.md) with the appropriate behaviors.
 
 A FreeLook is a CinemachineCamera that tracks a GameObject target and allows the user to control the camera's viewing angle. Essentially, it is a camera that can orbit the target in response to user input. There are several possible ways to implement such a camera, each with its own style of behavior and idiosyncrasies. The one you choose will depend on the way your target moves, and on the specific camera behavior that you want. It's a good exercise to think carefully about how you want the camera to behave. There is no one-size-fits-all.

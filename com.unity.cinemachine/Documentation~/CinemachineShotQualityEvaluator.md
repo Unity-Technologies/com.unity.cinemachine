@@ -1,5 +1,7 @@
 # Cinemachine Shot Quality Evaluator
 
+[!include[](includes/package-version-message.md)]
+
 __Cinemachine Shot Quality Evaluator__ is an [extension](concept-procedural-motion.md#extensions) for the [Camera](CinemachineCamera.md). It post-processes the final position of the CinemachineCamera to evaluate shot quality based of visibility of the LookAt target and, optionally, camera distance from it.
 
 [CinemachineDeoccluder](CinemachineDeoccluder.md) Has this functionality bundled with it.  Use this extension if you want to evaluate shot quality without using the Deoccluder.

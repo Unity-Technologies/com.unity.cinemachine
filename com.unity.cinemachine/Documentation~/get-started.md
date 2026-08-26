@@ -1,5 +1,7 @@
 # Get started with Cinemachine
 
+[!include[](includes/package-version-message.md)]
+
 Get the essential information to understand how Cinemachine works and follow instructions to set up the minimum functional layers to start using Cinemachine in your project.
 
 <!--- NAVIGATION --->

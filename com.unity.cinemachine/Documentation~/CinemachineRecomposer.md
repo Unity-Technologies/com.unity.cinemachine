@@ -1,5 +1,7 @@
 # Cinemachine Recomposer Extension
 
+[!include[](includes/package-version-message.md)]
+
 Use the Cinemachine Recomposer [extension](concept-procedural-motion.md#extensions) in addition to the CinemachineCamera component to add a final tweak to the camera composition. This extension is intended for use in a Timeline context, where you want to hand-adjust the output of procedural or recorded camera aiming.
 
 All of these properties can be animated within the Timeline.

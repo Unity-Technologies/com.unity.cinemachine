@@ -1,5 +1,7 @@
 # Cinemachine Spline Dolly LookAt Targets
 
+[!include[](includes/package-version-message.md)]
+
 ![Spline Dolly LookAt Targets Inspector](images/SplineDollyLookAtTargetsInspector.png)
 
 This CinemachineCamera __Rotation Control__ behaviour lets you assign LookAt targets to points on a spline, so that as the camera arrives at the position on the spline, it looks at the specified place.

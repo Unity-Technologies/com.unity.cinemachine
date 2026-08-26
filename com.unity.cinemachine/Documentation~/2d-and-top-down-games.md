@@ -1,5 +1,7 @@
 # 2D and top-down games
 
+[!include[](includes/package-version-message.md)]
+
 Use and configure Cinemachine to meet your expectations according to specific requirements of 2D graphics and top-down games.
 
 * [Cinemachine and 2D graphics](Cinemachine2D.md)

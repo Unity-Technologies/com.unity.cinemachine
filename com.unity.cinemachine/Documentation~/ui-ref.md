@@ -1,5 +1,7 @@
 # Use convenient tools and shortcuts
 
+[!include[](includes/package-version-message.md)]
+
 Use UI tools and helpers to target the proper Cinemachine elements to set up according to your needs and ease your Cinemachine environment configuration experience.
 
 | Feature | Description |

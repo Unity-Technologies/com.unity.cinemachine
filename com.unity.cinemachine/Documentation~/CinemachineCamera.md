@@ -1,5 +1,7 @@
 # Cinemachine Camera component
 
+[!include[](includes/package-version-message.md)]
+
 The CinemachineCamera is a component that you add to an empty GameObject. It represents a Cinemachine Camera in the Unity Scene.
 
 ![CinemachineCamera properties](images/CmCameraInspector.png)

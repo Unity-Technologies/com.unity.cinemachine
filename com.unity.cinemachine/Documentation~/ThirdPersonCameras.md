@@ -1,5 +1,7 @@
 # Create a Third Person Camera
 
+[!include[](includes/package-version-message.md)]
+
 While it is possible - and often appropriate - to make a Third Person camera using a [FreeLook Camera](FreeLookCameras.md), there are cases where that doesn't give you all the control you need.  For example, when you want to have an over-the-shoulder offset, or precise aiming control (in a shooter, for instance) and want to keep that control while blending to an aiming camera, it can be difficult to maintain the desired precision with the FreeLook.
 
 To address this problem, Cinemachine provides the [Third Person Follow](CinemachineThirdPersonFollow.md) behaviour.  The paradigm for using this behaviour is not the same as with the FreeLook.  Specifically, the ThirdPersonCamera is rigidly attached to the Tracking target, and to aim the camera, you must rotate the target itself.  The camera's forward direction will always match the Target's forward direction, even though the camera is offset a little from the target, as specified in the rig settings.

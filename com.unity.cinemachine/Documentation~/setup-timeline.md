@@ -1,5 +1,7 @@
 # Set up Timeline with Cinemachine Cameras
 
+[!include[](includes/package-version-message.md)]
+
 Set up [Timeline in a Cinemachine environment](concept-timeline.md) to choreograph Cinemachine Cameras and produce a predictable shot sequence:
 
 * Prepare multiple Cinemachine Cameras to support the various shots,

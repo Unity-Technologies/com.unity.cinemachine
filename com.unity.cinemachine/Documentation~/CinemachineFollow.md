@@ -1,5 +1,7 @@
 # Cinemachine Follow component
 
+[!include[](includes/package-version-message.md)]
+
 This CinemachineCamera __Position Control__ behavior moves the CinemachineCamera to maintain a fixed offset relative to the __Tracking Target__. It also applies damping.
 
 The fixed offset can be interpreted in various ways, depending on the Binding Mode.

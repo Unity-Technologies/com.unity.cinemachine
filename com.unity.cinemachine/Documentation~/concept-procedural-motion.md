@@ -1,5 +1,7 @@
 # Procedural Motion
 
+[!include[](includes/package-version-message.md)]
+
 On its own, a Cinemachine Camera is a **passive** GameObject that acts as a camera placeholder that you can, for example:
 * Place in a fixed location with a static aim.
 * Parent to another GameObject to make it move and rotate along with it.

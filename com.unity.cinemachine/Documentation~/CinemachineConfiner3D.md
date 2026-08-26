@@ -1,5 +1,7 @@
 # Cinemachine Confiner 3D
 
+[!include[](includes/package-version-message.md)]
+
 Use the __Cinemachine Confiner 3D__ [extension](concept-procedural-motion.md#extensions) to limit the camera’s position to a volume.
 
 The camera’s position in 3D is confined to a volume.

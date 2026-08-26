@@ -1,5 +1,7 @@
 # Cinemachine Volume Settings Extension
 
+[!include[](includes/package-version-message.md)]
+
 Use the Cinemachine Volume Settings [extension](concept-procedural-motion.md#extensions) to attach an HDRP/URP VolumeSettings profile to a CinemachineCamera.
 
 The Cinemachine Volume Settings extension holds a Volume Settings Profile asset to apply to a CinemachineCamera when it is activated. If the camera is blending with another CinemachineCamera, then the blend weight is applied to the Volume Settings effects also.

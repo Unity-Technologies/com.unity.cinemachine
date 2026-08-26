@@ -1,5 +1,7 @@
 # Cinemachine Brain component
 
+[!include[](includes/package-version-message.md)]
+
 The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all active [**CinemachineCameras**](CinemachineCamera.md) in the Scene. It chooses the next CinemachineCamera to control the Unity camera. It also controls the [transition (cut or blend)](concept-camera-control-transitions.md) from the current CinemachineCamera to the next.
 
 Objects with a Cinemachine Brain are displayed in the hierarchy with a little CinemachineCamera icon next to them.  You can turn that off from the Cinemachine Preferences panel.

@@ -1,5 +1,7 @@
 # Cinemachine Third Person Aim Extension
 
+[!include[](includes/package-version-message.md)]
+
 This extension is a complement to the [ThirdPersonFollow component](CinemachineThirdPersonFollow.md) in the Cinemachine Camera.  Its purpose is to detect the object that the camera is aiming at.
 
 To accomplish this, the extension projects a ray from the camera's position along its forward axis, to detect the first object that intersects with that ray. The intersection point is then placed in the CinemachineCamera's `state.ReferenceLookAt`. That is the point that the camera will be considered to be looking at for algorithms that need to know it (for example, blending).
