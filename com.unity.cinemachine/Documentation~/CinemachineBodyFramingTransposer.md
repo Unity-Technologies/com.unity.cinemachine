@@ -1,5 +1,7 @@
 # Framing Transposer
 
+[!include[](includes/deprecation-message.md)]
+
 This Virtual Camera __Body__ algorithm moves the camera in a fixed screen-space relationship to the __Follow__ target. You can also specify offsets, damping, and composition rules. __Framing Transposer__ only changes the camera’s position in space. It does not re-orient or otherwise aim the camera.
 
 __Framing Transposer__ is designed for 2D and orthographic cameras. But it works also with perspective cameras and 3D environments.

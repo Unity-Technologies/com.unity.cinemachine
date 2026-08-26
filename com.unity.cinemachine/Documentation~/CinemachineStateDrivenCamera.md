@@ -1,5 +1,7 @@
 # Cinemachine State-Driven Camera
 
+[!include[](includes/deprecation-message.md)]
+
 The __Cinemachine State-Driven Camera__ component activates a child Virtual Camera when an animation target changes states. For example, consider your avatar’s local-motion system and orbit camera. Your game feels more alive to the player when the camera shakes more as your avatar runs. When the avatar walks, blend for example to a Virtual Camera with more damping.
 
 ![State-Driven camera with three child Virtual Cameras (red)](images/CinemachineStateDrivenChildren.png)

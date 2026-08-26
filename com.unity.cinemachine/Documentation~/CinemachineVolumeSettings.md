@@ -1,5 +1,7 @@
 # Cinemachine Volume Settings Extension
 
+[!include[](includes/deprecation-message.md)]
+
 Use the Cinemachine Volume Settings [extension](CinemachineVirtualCameraExtensions.md) to attach an HDRP/URP VolumeSettings profile to a Virtual Camera.
 
 The Cinemachine Volume Settings extension holds a Volume Settings Profile asset to apply to a Virtual Camera when it is activated. If the camera is blending with another Virtual Camera, then the blend weight is applied to the Volume Settings effects also.

@@ -1,5 +1,7 @@
 # Setting Cinemachine Brain properties
 
+[!include[](includes/deprecation-message.md)]
+
 The Cinemachine Brain is a component in the Unity camera itself. Cinemachine Brain monitors all active Virtual Cameras in the Scene. It chooses the next Virtual Camera to control the Unity camera. It also controls the [cut or blend](CinemachineBlending.md) from the current Virtual Camera to the next.
 
 To add a Cinemachine Brain component to a Unity camera, do __one__ of the following:

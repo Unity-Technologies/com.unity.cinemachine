@@ -1,3 +1,4 @@
+[!include[](includes/deprecation-message.md)]
 
 ### AxisState
 

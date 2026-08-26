@@ -1,5 +1,7 @@
 # Extensions
 
+[!include[](includes/deprecation-message.md)]
+
 Extensions are components that augment the behavior of a Virtual Camera. For example, the [Collider](CinemachineCollider.md) extension moves a camera out of the way of GameObjects that obstruct the camera’s view of its target.
 
 Cinemachine includes a variety of extensions. Create your own custom extensions by deriving from the `CinemachineExtension` class.

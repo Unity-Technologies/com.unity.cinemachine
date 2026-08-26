@@ -1,5 +1,7 @@
 # Cinemachine Scene Handles
 
+[!include[](includes/deprecation-message.md)]
+
 Cinemachine Scene Handles are a group of 3D controls that allow you to manipulate virtual camera parameters visually in the Scene view. You can use the handle tools to interactively adjust the selected object's parameters quickly and efficiently rather than controlling them via the inspector.
 
 Cinemachine Scene Handles automatically appear in the Scene view **toolbar overlay** when you select a type of virtual camera with an associated handle.

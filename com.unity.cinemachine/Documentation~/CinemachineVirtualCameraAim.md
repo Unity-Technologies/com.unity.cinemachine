@@ -1,5 +1,7 @@
 # Aim properties
 
+[!include[](includes/deprecation-message.md)]
+
 Use the Aim properties to specify how to rotate the Virtual Camera. To change the camera’s position, use the [Body properties](CinemachineVirtualCameraBody.md).
 
 ![Aim properties, with the Composer algorithm (red)](images/CinemachineAim.png)

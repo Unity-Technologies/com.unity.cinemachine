@@ -1,5 +1,7 @@
 # Cinemachine Dolly Cart
 
+[!include[](includes/deprecation-message.md)]
+
 __Cinemachine Dolly Cart__ is a component that constrains the transform of its GameObject to a __Cinemachine Path__ or __Cinemachine Smooth Path__. Use it to animate a GameObject along a path, or as a __Follow__ target for Virtual Cameras.
 
 ## Properties:

@@ -1,5 +1,7 @@
 # Cinemachine Target Group
 
+[!include[](includes/deprecation-message.md)]
+
 Use Cinemachine Target Group to treat multiple GameObjects as a single Look At target. Use a Target Group with the [Group Composer](CinemachineAimGroupComposer.md) algorithm.
 
 To create a Virtual Camera with a Target Group:

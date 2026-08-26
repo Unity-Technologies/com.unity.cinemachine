@@ -1,5 +1,7 @@
 # Tracked Dolly
 
+[!include[](includes/deprecation-message.md)]
+
 This Virtual Camera __Body__ algorithm restricts the Virtual Camera to move along a predefined [path](CinemachineDolly.md). Use the __Path Position__ property to specify where to put the Virtual Camera on the path.
 
 Use __Auto-Dolly__ mode to move the Virtual Camera to a position on the path that is closest to the __Follow__ target. When enabled, __Auto-Dolly__ automatically animates the position of the Virtual Camera to the position on the path that’s closest to the target.

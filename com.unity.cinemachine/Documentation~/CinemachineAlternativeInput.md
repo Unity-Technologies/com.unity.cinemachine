@@ -1,5 +1,7 @@
 # Alternative Input Systems
 
+[!include[](includes/deprecation-message.md)]
+
 Some Cinemachine components (e.g. FreeLook, POV, OrbitalTransposer) require user input to position or orient the camera.  By default, Cinemachine gets user input by querying the standard Unity `Input.GetAxis(name)`.  
 
 When alternative input systems are used in a project, this default behaviour must be overridden so that input is obtained from the appropriate source.

@@ -1,5 +1,7 @@
 # Cinemachine Mixing Camera
 
+[!include[](includes/deprecation-message.md)]
+
 The __Cinemachine Mixing Camera__ component uses the weighted average of its child Virtual Cameras to compute the position and other properties of the Unity camera.
 
 ![Cinemachine Mixing Camera with two child Virtual Cameras (red)](images/CinemachineMixingCamera.png)

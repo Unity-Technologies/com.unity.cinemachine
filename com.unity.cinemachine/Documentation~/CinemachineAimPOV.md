@@ -1,5 +1,7 @@
 # POV
 
+[!include[](includes/deprecation-message.md)]
+
 This Virtual Camera __Aim__ algorithm aims the camera in response to the user’s input.
 
 ## Properties:

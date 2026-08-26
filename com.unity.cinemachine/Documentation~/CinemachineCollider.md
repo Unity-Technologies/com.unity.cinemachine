@@ -1,5 +1,7 @@
 # Cinemachine Collider
 
+[!include[](includes/deprecation-message.md)]
+
 __Cinemachine Collider__ is an [extension](CinemachineVirtualCameraExtensions.md) for the Cinemachine Virtual Camera. It post-processes the final position of the Virtual Camera to attempt to preserve the line of sight with the __Look At__ target of the Virtual Camera. It does this by moving away from the GameObjects that obstruct the view.
 
 Add a Cinemachine Collider extension to a Cinemachine Virtual Camera to do any of the following tasks:

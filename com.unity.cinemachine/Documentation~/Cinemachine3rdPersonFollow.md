@@ -1,4 +1,7 @@
 # 3rd Person Follow
+
+[!include[](includes/deprecation-message.md)]
+
 Use Cinemachine Virtual Camera’s **3rd Person Follow** to keep the camera at a constant position and distance relative to a Follow target (subject to damping controls), tracking the target’s movement and rotation.
 
 The 3rd Person Follow’s mini-rig setup defines the camera position and distance relative to the target. With a suitable shoulder offset, this mini-rig can produce a 3rd-person camera, where the character is offset in the frame and the camera looks over the character’s shoulder. With different settings, it can produce a first-person camera.

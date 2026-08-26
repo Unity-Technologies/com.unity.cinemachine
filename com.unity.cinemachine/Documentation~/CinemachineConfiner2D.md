@@ -1,5 +1,7 @@
 # Cinemachine Confiner 2D
 
+[!include[](includes/deprecation-message.md)]
+
 ![](images/CinemachineConfiner2Dc.png)
 
 Use the Cinemachine Confiner 2D [extension](https://docs.unity3d.com/Packages/com.unity.cinemachine@2.6/manual/CinemachineVirtualCameraExtensions.html) to confine the camera’s position so that the screen edges stay within a shape defined by a 2D polygon. This works for orthographic or perspective cameras, provided that the camera's forward vector remains parallel to the bounding shape’s normal (that is, that the camera is looking straight at the polygon, and not obliquely at it).

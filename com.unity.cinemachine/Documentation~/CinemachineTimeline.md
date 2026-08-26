@@ -1,5 +1,7 @@
 # Cinemachine and Timeline
 
+[!include[](includes/deprecation-message.md)]
+
 Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between Virtual Cameras. In Timeline, combine Cinemachine with other GameObjects and assets to interactively implement and tune rich cutscenes, even interactive ones.
 
 **Tip**: For simple shot sequences, use a [Cinemachine Blend List Camera](CinemachineBlendListCamera.md) instead of Timeline.

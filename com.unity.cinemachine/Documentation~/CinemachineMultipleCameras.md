@@ -1,5 +1,7 @@
 # Multiple Unity cameras
 
+[!include[](includes/deprecation-message.md)]
+
 Split-screen and picture-in-picture effects require the use of more than one Unity camera. Each Unity camera presents its own view on the player’s screen.
 
 To use a multi-camera split-screen for two players:

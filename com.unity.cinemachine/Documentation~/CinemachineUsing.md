@@ -1,5 +1,7 @@
 # Using Cinemachine
 
+[!include[](includes/deprecation-message.md)]
+
 Using Cinemachine requires a new way of thinking about working with cameras. For example, you might have invested heavily in carefully scripted camera behaviors. However, Cinemachine can give the same results, if not better, in less time.
 
 
