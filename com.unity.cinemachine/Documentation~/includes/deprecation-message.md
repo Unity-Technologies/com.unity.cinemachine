@@ -1,0 +1,2 @@
+> [!IMPORTANT]
+> Cinemachine 2 is deprecated in Unity 6.5 and later. In Unity 6.6 and later, Cinemachine 2 and Cinemachine 3 aren't available in the Package Manager, and the version of Cinemachine matches your Unity Editor version. 
