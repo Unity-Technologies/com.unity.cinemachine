@@ -1,2 +1,2 @@
 > [!IMPORTANT]
-> In Unity 6.6 and later, Cinemachine 3 isn't available in the Package Manager. The version of Cinemachine matches your Unity Editor version instead.
+> In Unity 6.6 and later, Cinemachine is a [core package](https://docs.unity3d.com/Manual/pack-core.html) that's distributed with your Unity Editor, so Cinemachine 3 isn't available in the Package Manager. In the Package Manager, use the Cinemachine version that matches your Unity Editor version instead. If your project already uses Cinemachine 3, you don't have to upgrade its content.
