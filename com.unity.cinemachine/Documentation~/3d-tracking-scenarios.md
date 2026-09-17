@@ -1,5 +1,7 @@
 # 3D tracking scenarios
 
+[!include[](includes/package-version-message.md)]
+
 Use Cinemachine to follow and look at the active characters of your 3D games.
 
 

@@ -1,5 +1,7 @@
 # Cinemachine Collision Impulse Source
 
+[!include[](includes/package-version-message.md)]
+
 For collision-based impulses, attach a **CinemachineCollisionImpulseSource** component to a GameObject that has a Collider or Collider2D component. **CinemachineCollisionImpulseSource** generates an impulse when something collides with the GameObject or enters a trigger zone.
 
 To add a Collision Impulse Source component:

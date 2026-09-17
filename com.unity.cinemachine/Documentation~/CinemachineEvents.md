@@ -1,5 +1,7 @@
 # Cinemachine Events
 
+[!include[](includes/package-version-message.md)]
+
 Cinemachine generates events in the following contexts:
 * Whenever cameras are activated and deactivated.
 * When blends are started and when they finish.

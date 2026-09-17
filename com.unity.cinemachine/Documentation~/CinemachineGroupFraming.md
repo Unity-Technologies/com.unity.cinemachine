@@ -1,5 +1,7 @@
 # Cinemachine Group Framing component
 
+[!include[](includes/package-version-message.md)]
+
 This component is a Cinemachine Camera extension that adds the ability to frame one or more targets when they are members of a Cinemachine Target Group. You can use it to dynamically adjust the zoom or to move the camera closer to or farther from the targets, to keep them in the frame at the desired size.
 
 To enable the functionality of the Cinemachine Group Framing component, you must:

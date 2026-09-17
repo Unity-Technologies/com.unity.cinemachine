@@ -1,5 +1,7 @@
 # Cinemachine Spline Cart
 
+[!include[](includes/package-version-message.md)]
+
 __Cinemachine Spline Cart__ is a component that constrains the transform of its GameObject to a __Spline__ . Use it to animate a GameObject along a path, or as a tracking target for CinemachineCamera.
 
 ## Properties:

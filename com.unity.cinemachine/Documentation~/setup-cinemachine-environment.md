@@ -1,5 +1,7 @@
 # Set up a basic Cinemachine environment
 
+[!include[](includes/package-version-message.md)]
+
 Set up your Unity project with the [minimum required elements](concept-essential-elements.md) to make a functional Cinemachine environment:
 
 * Create a passive Cinemachine Camera – with no specific behavior by definition,

@@ -1,5 +1,7 @@
 # What's new in Cinemachine 3
 
+[!include[](includes/package-version-message.md)]
+
 This page describes the main new features and changes in Cinemachine 3.
 
 ## Major API changes

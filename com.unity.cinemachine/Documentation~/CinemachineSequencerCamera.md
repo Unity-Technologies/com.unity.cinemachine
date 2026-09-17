@@ -1,5 +1,7 @@
 # Cinemachine Sequencer Camera
 
+[!include[](includes/package-version-message.md)]
+
 The __Cinemachine Sequencer Camera__ component executes a sequence of blends or cuts among its child CinemachineCameras.
 
 When the Sequencer camera is activated, it executes its list of instructions, activating the first child CinemachineCamera in the list, holding for a designated time, then cutting or blending to the next child, and so on. The Sequencer camera holds the last CinemachineCamera until Cinemachine Brain or Timeline deactivates the Sequencer camera.  If the Loop flag is enabled, the Sequencer will go back to the first camera in the list and continue the sequence.

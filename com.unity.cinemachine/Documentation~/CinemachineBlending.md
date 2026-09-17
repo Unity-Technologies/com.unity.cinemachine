@@ -1,5 +1,7 @@
 # Cinemachine Blender Settings asset
 
+[!include[](includes/package-version-message.md)]
+
 Use a Cinemachine Blender Settings asset from the [Cinemachine Brain component](CinemachineBrain.md) to define **Custom Blends** (overriding the **Default Blend** setting) between specific pairs of Cinemachine Cameras.
 
 For more information about blends, refer to [Camera control and transitions](concept-camera-control-transitions.md).

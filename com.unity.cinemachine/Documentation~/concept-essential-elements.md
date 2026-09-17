@@ -1,5 +1,7 @@
 # Cinemachine essential elements
 
+[!include[](includes/package-version-message.md)]
+
 Learn about the essential elements that make a functional Cinemachine environment.
 
 ## Overview

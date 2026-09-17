@@ -1,5 +1,7 @@
 # Hard Look At
 
+[!include[](includes/package-version-message.md)]
+
 This CinemachineCamera __Rotation Control__ behaviour rotates the camera to keep the __Look At__ target in the center of the camera's frame.  Optionally, an offset can be specified in order to look at a point that is offset from the LookAt target's origin.
 This is useful for looking at a character's head, or some other point of interest.
 

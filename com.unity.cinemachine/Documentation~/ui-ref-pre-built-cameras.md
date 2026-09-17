@@ -1,5 +1,7 @@
 # Pre-built Cinemachine Cameras
 
+[!include[](includes/package-version-message.md)]
+
 The Cinemachine package includes a series of shortcuts for pre-built Cinemachine Cameras that target specific use cases.
 
 To use a pre-built Cinemachine Cameras, from the Editor's menu, select **GameObject** > **Cinemachine**, and then select the camera type according to the following list:

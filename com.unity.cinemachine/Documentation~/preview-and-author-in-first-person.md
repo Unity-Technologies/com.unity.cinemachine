@@ -1,5 +1,7 @@
 # Preview and author a Cinemachine Camera in first person
 
+[!include[](includes/package-version-message.md)]
+
 > [!NOTE]
 > The following tasks require the use of Unity's [Cameras overlay](https://docs.unity3d.com/Manual/cameras-overlay.html). To benefit from the full functionality described in this page, you have to use Unity 6.0 or later.
 

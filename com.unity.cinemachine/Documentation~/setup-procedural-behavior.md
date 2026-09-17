@@ -1,5 +1,7 @@
 # Add procedural behavior to a Cinemachine Camera
 
+[!include[](includes/package-version-message.md)]
+
 Set up a Cinemachine Camera with [procedural behaviors](concept-procedural-motion.md):
 
 * Add behaviors to control the camera position and rotation,

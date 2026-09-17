@@ -1,5 +1,7 @@
 # Cinemachine Spline Smoother
 
+[!include[](includes/package-version-message.md)]
+
 This behaviour can be attached to a GameObject with a SplineContainer.  It proivdes a function to apply smoothing to the spline.  Smoothing auto-adjusts the knot settings to maintain second-order smoothness of the spline, making it suitable for camera paths.
 
 When this behaviour is present while editing the spline, it will automatically adjust the knot tangents to maintain smoothness.  Do not adjust the knot tangents manually; they will be overwritten by the smoother.

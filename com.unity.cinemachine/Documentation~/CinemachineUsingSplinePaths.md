@@ -1,5 +1,7 @@
 # Constrain a camera to a path
 
+[!include[](includes/package-version-message.md)]
+
 Use a [Spline](https://docs.unity3d.com/Packages/com.unity.splines@latest) to constrain the movement of a camera along a predefined and customizable path.
 
 A Spline path is a path formed by a Spline in a scene. Use a Spline to specify a fixed course to position or animate a CinemachineCamera. Use the [Spline Dolly](CinemachineSplineDolly.md) behaviour to make your CinemachineCamera follow a Spline path.

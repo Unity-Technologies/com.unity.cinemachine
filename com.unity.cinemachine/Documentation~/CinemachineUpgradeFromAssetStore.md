@@ -1,5 +1,7 @@
 # Upgrade from the old Asset Store version of Cinemachine
 
+[!include[](includes/package-version-message.md)]
+
 If you already installed a very old version of Cinemachine from the Unity Asset Store, you should upgrade to the Cinemachine Package.
 
 > [!NOTE]

@@ -1,5 +1,7 @@
 # Cinemachine FreeLook Modifier
 
+[!include[](includes/package-version-message.md)]
+
 This component is intended to be added to a CinemachineCamera set up as a [FreeLook](FreeLookCameras.md).  It is not necessary to have it (the FreeLook works just fine without it) but it can add some richness to the camera experience.
 
 It allows you to vary some settings (for instance lens, noise, damping, composition, or camera distance) depending on whether the camera is at the top, middle, or bottom of its defined orbit. By default, the camera settings remain constant over the entire orbit. With the FreeLook  Modifier, you can change that.

@@ -1,5 +1,7 @@
 # Cinemachine and Timeline
 
+[!include[](includes/package-version-message.md)]
+
 Use [Timeline](https://docs.unity3d.com/Packages/com.unity.timeline@latest) to activate, deactivate, and blend between CinemachineCameras when you need to produce a predictable shot sequence with choreographed cameras.
 
 **Tip**: For simple shot sequences, you can also use a [Cinemachine Sequencer Camera](CinemachineSequencerCamera.md) instead of Timeline.

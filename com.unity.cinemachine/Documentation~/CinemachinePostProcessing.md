@@ -1,5 +1,7 @@
 # Post Processing Extension
 
+[!include[](includes/package-version-message.md)]
+
 Use the Cinemachine Post Processing [extension](concept-procedural-motion.md#extensions) to attach a Postprocessing V2 profile to a CinemachineCamera.
 
 **Note 1**: Unity recommends using Postprocessing V2 instead of Postprocessing V1.

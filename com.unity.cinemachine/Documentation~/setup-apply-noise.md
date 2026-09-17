@@ -1,5 +1,7 @@
 # Apply noise to simulate camera shake
 
+[!include[](includes/package-version-message.md)]
+
 To apply a noise behavior to a Cinemachine Camera:
 
 1. In the Hierarchy, select your Cinemachine Camera.

@@ -1,5 +1,7 @@
 # Cinemachine Brain Events
 
+[!include[](includes/package-version-message.md)]
+
 Use the Cinemachine Brain Events component to handle events sent for a specific Cinemachine Brain.
 
 For more information, refer to [Cinemachine Events](CinemachineEvents.md).

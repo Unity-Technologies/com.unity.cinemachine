@@ -1,5 +1,7 @@
 # Cinemachine Camera Manager Events
 
+[!include[](includes/package-version-message.md)]
+
 Use the Cinemachine Camera Manager Events component to handle events sent for a specific Cinemachine Camera Manager.
 
 For more information, refer to [Cinemachine Events](CinemachineEvents.md).

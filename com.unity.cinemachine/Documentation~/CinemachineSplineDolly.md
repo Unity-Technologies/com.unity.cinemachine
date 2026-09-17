@@ -1,5 +1,7 @@
 # Spline Dolly
 
+[!include[](includes/package-version-message.md)]
+
 This CinemachineCamera __Position Control__ behavior restricts the CinemachineCamera to move along a predefined spline. Use the __Position__ property to specify where to put the Camera on the spline.
 
 Enable __Automatic Dolly__ to move the camera to a position on the spline in an automated fashion: either at a fixed speed, or towards a point on the spline that is closest to the __Tracking Target__, or in some custom way that you devise.

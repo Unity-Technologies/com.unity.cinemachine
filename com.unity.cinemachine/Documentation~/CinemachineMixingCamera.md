@@ -1,5 +1,7 @@
 # Cinemachine Mixing Camera
 
+[!include[](includes/package-version-message.md)]
+
 The __Cinemachine Mixing Camera__ component uses the weighted average of its child CinemachineCameras to compute the position and other properties of the Unity camera.
 
 ![Cinemachine Mixing Camera with two child CinemachineCameras (red)](images/CinemachineMixingCamera.png)
