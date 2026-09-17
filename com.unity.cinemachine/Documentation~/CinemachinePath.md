@@ -1,5 +1,7 @@
 # Cinemachine Path
 
+[!include[](includes/deprecation-message.md)]
+
 __Cinemachine Path__ is a component that defines a world-space path, consisting of an array of waypoints. Each waypoint specifies position, tangent, and roll settings. Bezier interpolation is performed between the waypoints, to get a smooth and continuous path.
 
 **Tip**: While the path position will always be smooth and continuous, it is still possible to get jarring movement when animating along the path. This happens when tangents aren’t set to ensure continuity of both the first and second order derivatives. It is not easy to get this right.  To avoid this potentially jarring movement, use Cinemachine Smooth Path. CinemachineSmoothPath sets the tangents automatically to ensure complete smoothness.

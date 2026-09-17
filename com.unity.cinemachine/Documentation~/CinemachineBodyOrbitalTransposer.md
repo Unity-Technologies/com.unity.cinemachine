@@ -1,5 +1,7 @@
 # Orbital Transposer
 
+[!include[](includes/deprecation-message.md)]
+
 This Virtual Camera __Body__ algorithm moves the Unity camera in a variable relationship to the Virtual Camera’s __Follow__ target. It optionally accepts [player input](https://docs.unity3d.com/Manual/ConventionalGameInput.html), which allows the player to dynamically control the position of the camera relative to the target.
 
 The __Orbital Transposer__ introduces the concept of __heading__, which is the direction in which the target is moving or facing. Orbital Transposer attempts to position the camera so that it points in the same direction as the heading direction. By default, this position is directly behind the target. Control this relationship by adjusting the __Heading Bias__ property.

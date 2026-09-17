@@ -1,5 +1,7 @@
 # Cinemachine External Camera - (deprecated)
 
+[!include[](includes/deprecation-message.md)]
+
 **Note:** This component is **deprecated** in favour of using a normal CinemachineVirtualCamera with Do Nothing in both Aim and Body.
 
 This component will expose a non-cinemachine camera to the cinemachine system, allowing it to participate in blends. Just add it as a component alongside an existing Unity Camera component. You will need to take steps (e.g. disabling the Camera component) to ensure that the Camera doesn't fight with the main Cinemachine Camera.

@@ -1,5 +1,7 @@
 # Body properties
 
+[!include[](includes/deprecation-message.md)]
+
 Use the Body properties to specify the algorithm that moves the Virtual Camera in the Scene. To rotate the camera, set the [Aim properties](CinemachineVirtualCameraAim.md).
 
 ![__Body__ properties, with the __Transposer__ algorithm (red)](images/CinemachineBody.png)

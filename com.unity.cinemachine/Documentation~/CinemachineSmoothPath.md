@@ -1,5 +1,7 @@
 # Cinemachine Smooth Path
 
+[!include[](includes/deprecation-message.md)]
+
 A __Cinemachine Smooth Path__ is a component that defines a world-space path, consisting of an array of waypoints. Each waypoint has position and roll settings. Cinemachine uses Bezier interpolation to calculate positions between the waypoints to get a smooth and continuous path. The path passes through all waypoints. Unlike Cinemachine Path, first and second order continuity is guaranteed, which means that not only the positions but also the angular velocities of objects animated along the path will be smooth and continuous.
 
 ## Properties:

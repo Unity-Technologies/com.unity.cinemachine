@@ -1,5 +1,7 @@
 # Blending between Virtual Cameras
 
+[!include[](includes/deprecation-message.md)]
+
 Use blending properties to specify how the Cinemachine Brain component performs a blend between virtual cameras.
 
 A Cinemachine blend is not a fade, wipe, or dissolve. Rather, Cinemachine Brain performs a smooth animation of the position, rotation, and other settings of the Unity camera from one Virtual Camera to the next.

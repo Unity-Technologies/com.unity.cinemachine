@@ -1,5 +1,7 @@
 # Filtering impulses
 
+[!include[](includes/deprecation-message.md)]
+
 Filtering lets you fine-tune how and when an Impulse Source generates impulses. Cinemachine Impulse allows two types of filtering:
 
 - Use channel filtering to set things up so that an Impulse Listener reacts to certain Impulse Sources and ignores others. See [Filtering with channels](#ChannelFiltering) below for details.

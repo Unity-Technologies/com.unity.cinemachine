@@ -1,5 +1,7 @@
 # Post Processing Extension
 
+[!include[](includes/deprecation-message.md)]
+
 Use the Cinemachine Post Processing [extension](CinemachineVirtualCameraExtensions.md) to attach a Postprocessing V2 profile to a Virtual Camera.
 
 **Note 1**: Unity recommends using Postprocessing V2 instead of Postprocessing V1.

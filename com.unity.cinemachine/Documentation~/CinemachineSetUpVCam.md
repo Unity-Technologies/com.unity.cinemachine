@@ -1,5 +1,7 @@
 # Setting up Virtual Cameras
 
+[!include[](includes/deprecation-message.md)]
+
 In your project, organize your Scene Hierarchy to have a single Unity camera with a CinemachineBrain component and many Virtual Cameras.
 
 To add a Virtual Camera to a Scene:

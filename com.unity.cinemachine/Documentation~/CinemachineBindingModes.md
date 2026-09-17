@@ -1,5 +1,7 @@
 # Binding Modes
 
+[!include[](includes/deprecation-message.md)]
+
 The binding mode defines the coordinate space Unity uses to interpret the camera offset from the target and the damping.
 </br></br>
 

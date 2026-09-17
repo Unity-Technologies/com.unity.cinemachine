@@ -1,5 +1,7 @@
 # Using dolly paths
 
+[!include[](includes/deprecation-message.md)]
+
 A dolly path is an array of waypoints in a Scene. Use a dolly path to specify a fixed course to position or animate a Virtual Camera. Use the [Tracked Dolly](CinemachineBodyTrackedDolly.md) algorithm to use a dolly path with your Virtual Camera.
 
 ![Editing a dolly path in the Scene view](images/CinemachinePathScene.png)

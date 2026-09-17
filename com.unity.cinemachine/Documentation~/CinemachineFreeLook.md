@@ -1,5 +1,7 @@
 # Cinemachine Free Look Camera
 
+[!include[](includes/deprecation-message.md)]
+
 The __Cinemachine Free Look Camera__ component provides a third-person camera experience. This Cinemachine Virtual Camera orbits around its subject along a position specified by three separate camera rigs: __Top__, __Middle__, and __Bottom__.
 
 ![Cinemachine Free Look in the Scene window](images/CinemachineFreelook.png)

@@ -1,5 +1,7 @@
 # Noise properties
 
+[!include[](includes/deprecation-message.md)]
+
 Use Noise properties in a Virtual Camera to simulate camera shake. Cinemachine includes a __Basic Multi Channel Perlin__ component, which adds Perlin noise to the movement of the Virtual Camera. __Perlin noise__ is a technique to compute random movement with a natural behavior.
 
 ![Choosing the Basic Multi Channel Perlin component to add camera noise](images/CinemachineBasicMultiChannelPerlin.png)

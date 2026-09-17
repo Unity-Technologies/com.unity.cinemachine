@@ -1,5 +1,7 @@
 # Managing and grouping Virtual Cameras
 
+[!include[](includes/deprecation-message.md)]
+
 A __manager__ camera oversees many Virtual Cameras but acts as a single Virtual Camera from the point of view of Cinemachine Brain and Timeline.
 
 Cinemachine includes these manager cameras:

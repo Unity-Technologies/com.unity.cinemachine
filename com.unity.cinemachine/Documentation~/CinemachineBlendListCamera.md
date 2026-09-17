@@ -1,5 +1,7 @@
 # Cinemachine Blend List Camera
 
+[!include[](includes/deprecation-message.md)]
+
 The __Cinemachine Blend List Camera__ component executes a sequence of blends or cuts among its child Virtual Cameras.
 
 When the Blend List camera is activated, it executes its list of instructions, activating the first child Virtual Camera in the list, holding for a designated time, then cutting or blending to the next child, and so on. The Blend List camera holds the last Virtual Camera until Cinemachine Brain or Timeline deactivates the Blend List camera.

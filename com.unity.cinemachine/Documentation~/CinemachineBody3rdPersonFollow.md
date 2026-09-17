@@ -1,5 +1,7 @@
 # 3rd Person Follow
 
+[!include[](includes/deprecation-message.md)]
+
 This Virtual Camera __Body__ algorithm is intended for use to implement a 3rd-person or 1st person camera.  The algorithm places the camera on a mini-rig with 3 pivot points:
 
 Pivot point 1 is the _origin_, which is the Follow target's position.  When the target rotates horizontally, the rig rotates with it around this point.
