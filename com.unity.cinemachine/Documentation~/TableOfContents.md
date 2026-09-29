@@ -49,6 +49,7 @@
   * [Cinemachine Camera](CinemachineCamera.md)
   * [Cinemachine Camera Events](CinemachineCameraEvents.md)
   * [Cinemachine Camera Manager Events](CinemachineCameraManagerEvents.md)
+  * [Cinemachine Camera Offset](CinemachineCameraOffset.md)
   * [Cinemachine Clear Shot](CinemachineClearShot.md)
   * [Cinemachine Collision Impulse Source](CinemachineCollisionImpulseSource.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)

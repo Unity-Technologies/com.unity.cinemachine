@@ -44,6 +44,7 @@ For example, the [Deoccluder](CinemachineDeoccluder.md) extension moves a camera
 Here is the list of all available Cinemachine Camera Extensions:
 
   * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
+  * [Cinemachine Camera Offset](CinemachineCameraOffset.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
   * [Cinemachine Decollider](CinemachineDecollider.md)
@@ -58,7 +59,6 @@ Here is the list of all available Cinemachine Camera Extensions:
   * [Cinemachine Storyboard](CinemachineStoryboard.md)
   * [Cinemachine Third Person Aim](CinemachineThirdPersonAim.md)
   * [Cinemachine Volume Settings](CinemachineVolumeSettings.md)
-  <!---* Cinemachine Camera Offset (component/extension, missing in docs)--->
 
 
 ## Target GameObject tracking
