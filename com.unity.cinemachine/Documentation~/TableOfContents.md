@@ -33,6 +33,7 @@
 * [Cinemachine Events](CinemachineEvents.md)
 * [Cinemachine Impulse](CinemachineImpulse.md)
   * [Cinemachine Impulse Sources](CinemachineImpulseSourceOverview.md)
+  * [Using Fixed Signals](CinemachineImpulseFixedSignals.md)
   * [Filtering impulses](CinemachineImpulseFiltering.md)
 * [Split screen and multiple Unity Cameras](CinemachineMultipleCameras.md)
 * [Use Input System with Cinemachine](InputSystemComponents.md)
