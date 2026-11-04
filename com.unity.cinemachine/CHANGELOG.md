@@ -4,6 +4,20 @@ All notable changes to this package will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/en/1.0.0/)
 and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.html).
 
+## [3.1.8-pre.3] - 2026-11-04
+
+### Bugfixes
+ - Fixed orbital jerk in CinemachineOrbitalFollow when blending with InheritPosition and damping (UUM-149754)
+ - Fixed infinite recursion in the obsolete CinemachineConfiner.InvalidatePathCache()
+ - Fixed SerializeReference warning when adding a modifier to CinemachineFreeLookModifier (UUM-147115)
+ - Fixed visual elements staying hidden in inspectors after being shown again (SetVisible)
+ - Removed the DebugText finalizer
+ - Replaced obsolete Find APIs to fix compiler warnings in Unity 6000.4 and newer (UUM-156111)
+
+### Changed
+ - The Cinemachine 2 to 3 upgrader now asks the user to save modified scenes before upgrading the project
+ - Added documentation for Impulse fixed signals and refreshed its screenshots
+
 ## [3.1.8-pre.2] - 2026-08-04
 
 ### Bugfixes
