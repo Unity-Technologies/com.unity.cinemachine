@@ -60,9 +60,9 @@ api_validation_-_cinemachine_-_2022_3_-_win10:
     UNITY_LICENSING_SERVER_DELETE_NUL: 0
     UNITY_LICENSING_SERVER_DELETE_ULF: 0
     UNITY_LICENSING_SERVER_TOOLSET: pro
-    UPMPVP_CONTEXT_WRENCH: 3.6.0.0
-    WRENCH_LOCALAPV_URL: https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-14_fa918595e8175590318588d531758ad555efde33ffceb46b03c094ee6a0e5d79.zip
+    UPMPVP_CONTEXT_WRENCH: 3.29.0.0
+    WRENCH_LOCALAPV_URL: https://artifactory.prd.it.unity3d.com/artifactory/stevedore-unity-internal/wrench-localapv/1-3-25_62e5de96ec03d5fbee3cd2b34aeef6e7c8b2437b7c040a16abb49a9653654cf9.zip
   metadata:
     Job Maintainers: '#rm-packageworks'
-    Wrench: 3.6.0.0
+    Wrench: 3.29.0.0
 

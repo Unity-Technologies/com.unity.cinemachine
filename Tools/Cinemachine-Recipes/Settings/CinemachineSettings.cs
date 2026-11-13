@@ -28,7 +28,7 @@ public class CinemachineSettings
                     // See https://unity.slack.com/archives/C18KJF78T/p1773654217935869 for details
                     AdditionalUtrArguments = ["--coverage-pkg-version=1.3.0"] 
                 },
-                MaximumEditorVersion = "6000.5",
+                MaximumEditorVersion = "6000.3",
             }
         },
     };
