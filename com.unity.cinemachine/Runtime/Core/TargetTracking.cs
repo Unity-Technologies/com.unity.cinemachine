@@ -392,6 +392,19 @@ namespace Unity.Cinemachine.TargetTracking
         }
 
         /// <summary>
+        /// Reset the previous target position to the current follow target position.
+        /// </summary>
+        internal void ResetPreviousTargetPosition(
+            CinemachineComponentBase component,
+            BindingMode bindingMode, Vector3 targetOffset, Vector3 worldUp)
+        {
+            var state = component.VcamState;
+            var refOrient = GetReferenceOrientation(component, bindingMode, targetOffset, worldUp, ref state);
+            PreviousTargetPosition = component.FollowTargetPosition
+                + (bindingMode == BindingMode.LazyFollow ? component.FollowTargetRotation : refOrient) * targetOffset;
+        }
+
+        /// <summary>
         /// Force the virtual camera to assume a given position and orientation
         /// </summary>
         /// <param name="component">The component caller</param>

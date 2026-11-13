@@ -223,7 +223,7 @@ namespace Unity.Cinemachine.Editor
         /// <param name="e">The widget</param>
         /// <param name="show">Whether it should be visible</param>
         public static void SetVisible(this VisualElement e, bool show)
-            => e.style.display = show ? StyleKeyword.Null : DisplayStyle.None;
+            => e.style.display = show ? DisplayStyle.Flex : DisplayStyle.None;
 
         /// <summary>Is the widgte visible?</summary>
         /// <param name="e">The widget</param>

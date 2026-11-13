@@ -44,17 +44,6 @@ namespace Unity.Cinemachine
 
         public void Dispose()
         {
-            ReleaseUnmanagedResources();
-            GC.SuppressFinalize(this);
-        }
-
-        ~DebugText()
-        {
-            ReleaseUnmanagedResources();
-        }
-
-        void ReleaseUnmanagedResources()
-        {
             if (m_DebugLabel != null)
             {
                 m_DebugLabel.RemoveFromHierarchy();
