@@ -268,6 +268,13 @@ namespace Unity.Cinemachine
                 m_BrainOverrideId, Priority, camA, camB, weightB, GetDeltaTime(info.deltaTime));
 
 #if UNITY_EDITOR
+            // In the editor, Timeline's preview can reset the brain's camera to its authored pose
+            // when the graph is rebuilt (e.g. editing a clip in the Inspector).  Restore the brain's
+            // last output right away, otherwise the Game view can repaint with the reverted camera
+            // before the brain's next update, which shows up as a flicker.
+            if (!Application.isPlaying && m_BrainOverrideStack is CinemachineBrain brain)
+                brain.ReapplyLastStateToUnityCamera();
+
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
             {
                 bool isNewB = (m_ScrubbingCacheHelper.ActivePlayableA != clipIndexB

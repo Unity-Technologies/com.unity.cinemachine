@@ -723,8 +723,33 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary> Applies a <see cref="CameraState"/> to the GameOject.</summary>
+        /// <summary> Applies a <see cref="CameraState"/> to the GameOject and sends the camera updated event.</summary>
         void PushStateToUnityCamera(ref CameraState state)
+        {
+            ApplyStateToUnityCamera(ref state);
+
+            // Send the camera updated event
+            CinemachineCore.CameraUpdatedEvent.Invoke(this);
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Re-applies the most recently computed camera state to the Unity camera, without
+        /// recomputing it and without sending the camera updated event.  Timeline's preview
+        /// can reset the controlled object's transform and lens between brain updates (for
+        /// example when the Timeline graph is rebuilt after editing a clip in the Inspector).
+        /// Calling this restores the brain's output immediately, so the Game view doesn't
+        /// briefly show the reverted camera.
+        /// </summary>
+        internal void ReapplyLastStateToUnityCamera()
+        {
+            // Nothing to restore until the brain has produced a state at least once
+            if (m_LastFrameUpdated >= 0 && m_BlendManager.IsInitialized && ControlledObject != null)
+                ApplyStateToUnityCamera(ref m_CameraState);
+        }
+#endif
+
+        void ApplyStateToUnityCamera(ref CameraState state)
         {
             m_CameraState = state;
             var target = ControlledObject.transform;
@@ -790,8 +815,6 @@ namespace Unity.Cinemachine
                     }
                 }
             }
-            // Send the camera updated event
-            CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
     }
 }
