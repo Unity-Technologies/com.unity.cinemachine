@@ -743,8 +743,10 @@ namespace Unity.Cinemachine
         /// </summary>
         internal void ReapplyLastStateToUnityCamera()
         {
-            // Nothing to restore until the brain has produced a state at least once
-            if (m_LastFrameUpdated >= 0 && m_BlendManager.IsInitialized && ControlledObject != null)
+            // Nothing to restore until the brain has produced a state at least once.
+            // A disabled brain no longer drives the camera, so it must not overwrite it either.
+            if (isActiveAndEnabled && m_LastFrameUpdated >= 0 && m_BlendManager.IsInitialized
+                && ControlledObject != null)
                 ApplyStateToUnityCamera(ref m_CameraState);
         }
 #endif
