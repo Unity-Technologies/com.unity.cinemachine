@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes
  - Fixed jitter in mix camera sample caused by using physics velocity without smoothing
  - Changed static reset in CinemachineCore to happen during SubsystemRegistration
+ - Fixed Game view flickering when editing a Timeline clip in the Inspector while Timeline preview is active (UUM-152885)
 
 ## [3.1.7] - 2026-06-08
 

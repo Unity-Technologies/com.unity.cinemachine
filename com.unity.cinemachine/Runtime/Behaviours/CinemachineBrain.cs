@@ -168,6 +168,9 @@ namespace Unity.Cinemachine
         readonly BlendManager m_BlendManager = new ();
         static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
+#if UNITY_EDITOR
+        bool m_HasAppliedState; // True once m_CameraState holds a state pushed since the last OnEnable
+#endif
 
 #if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
         DebugText m_DebugText;
@@ -205,6 +208,9 @@ namespace Unity.Cinemachine
 
         void OnEnable()
         {
+#if UNITY_EDITOR
+            m_HasAppliedState = false;
+#endif
             m_BlendManager.OnEnable();
             m_BlendManager.LookupBlendDelegate = LookupBlend;
 
@@ -723,10 +729,40 @@ namespace Unity.Cinemachine
             }
         }
 
-        /// <summary> Applies a <see cref="CameraState"/> to the GameOject.</summary>
+        /// <summary> Applies a <see cref="CameraState"/> to the GameOject and sends the camera updated event.</summary>
         void PushStateToUnityCamera(ref CameraState state)
         {
+            ApplyStateToUnityCamera(ref state);
+
+            // Send the camera updated event
+            CinemachineCore.CameraUpdatedEvent.Invoke(this);
+        }
+
+#if UNITY_EDITOR
+        /// <summary>
+        /// Re-applies the most recently computed camera state to the Unity camera, without
+        /// recomputing it and without sending the camera updated event.  Timeline's preview
+        /// can reset the controlled object's transform and lens between brain updates (for
+        /// example when the Timeline graph is rebuilt after editing a clip in the Inspector).
+        /// Calling this restores the brain's output immediately, so the Game view doesn't
+        /// briefly show the reverted camera.
+        /// </summary>
+        internal void ReapplyLastStateToUnityCamera()
+        {
+            // Nothing to restore until the brain has pushed a state since it was last enabled.
+            // A disabled brain no longer drives the camera, so it must not overwrite it either,
+            // and a state cached before a disable/enable cycle is stale.
+            if (isActiveAndEnabled && m_HasAppliedState && ControlledObject != null)
+                ApplyStateToUnityCamera(ref m_CameraState);
+        }
+#endif
+
+        void ApplyStateToUnityCamera(ref CameraState state)
+        {
             m_CameraState = state;
+#if UNITY_EDITOR
+            m_HasAppliedState = true;
+#endif
             var target = ControlledObject.transform;
 
             var pos = target.position;
@@ -790,8 +826,6 @@ namespace Unity.Cinemachine
                     }
                 }
             }
-            // Send the camera updated event
-            CinemachineCore.CameraUpdatedEvent.Invoke(this);
         }
     }
 }
