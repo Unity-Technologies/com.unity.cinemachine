@@ -101,6 +101,22 @@ namespace Unity.Cinemachine.Tests.Editor
             Assert.That((m_Brain.transform.position - k_AuthoredPos).magnitude, Is.LessThan(0.01f),
                 "A disabled brain's camera must be left alone");
         }
+
+        [Test]
+        public void ReenabledBrain_DoesNotRestoreStaleState()
+        {
+            EvaluateAndUpdateBrain();
+            m_Brain.enabled = false;
+            m_Brain.transform.position = k_AuthoredPos;
+            m_Brain.enabled = true;
+
+            m_Director.RebuildGraph();
+            m_Director.Play();
+            m_Director.Evaluate();
+
+            Assert.That((m_Brain.transform.position - k_AuthoredPos).magnitude, Is.LessThan(0.01f),
+                "State cached before a disable/enable cycle must not be re-applied");
+        }
     }
 }
 #endif

@@ -168,6 +168,9 @@ namespace Unity.Cinemachine
         readonly BlendManager m_BlendManager = new ();
         static readonly List<CinemachineBrain> s_ActiveBrains = new ();
         CameraState m_CameraState; // Cached camera state
+#if UNITY_EDITOR
+        bool m_HasAppliedState; // True once m_CameraState holds a state pushed since the last OnEnable
+#endif
 
 #if CINEMACHINE_UIELEMENTS && UNITY_EDITOR
         DebugText m_DebugText;
@@ -205,6 +208,9 @@ namespace Unity.Cinemachine
 
         void OnEnable()
         {
+#if UNITY_EDITOR
+            m_HasAppliedState = false;
+#endif
             m_BlendManager.OnEnable();
             m_BlendManager.LookupBlendDelegate = LookupBlend;
 
@@ -743,10 +749,10 @@ namespace Unity.Cinemachine
         /// </summary>
         internal void ReapplyLastStateToUnityCamera()
         {
-            // Nothing to restore until the brain has produced a state at least once.
-            // A disabled brain no longer drives the camera, so it must not overwrite it either.
-            if (isActiveAndEnabled && m_LastFrameUpdated >= 0 && m_BlendManager.IsInitialized
-                && ControlledObject != null)
+            // Nothing to restore until the brain has pushed a state since it was last enabled.
+            // A disabled brain no longer drives the camera, so it must not overwrite it either,
+            // and a state cached before a disable/enable cycle is stale.
+            if (isActiveAndEnabled && m_HasAppliedState && ControlledObject != null)
                 ApplyStateToUnityCamera(ref m_CameraState);
         }
 #endif
@@ -754,6 +760,9 @@ namespace Unity.Cinemachine
         void ApplyStateToUnityCamera(ref CameraState state)
         {
             m_CameraState = state;
+#if UNITY_EDITOR
+            m_HasAppliedState = true;
+#endif
             var target = ControlledObject.transform;
 
             var pos = target.position;

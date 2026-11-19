@@ -145,10 +145,16 @@ namespace Unity.Cinemachine
 #endif
 
 #if UNITY_EDITOR
+        // Set when the graph is (re)built, cleared once the brain's state has been restored
+        bool m_RestoreBrainState = true;
+#endif
+
+#if UNITY_EDITOR
         public override void OnGraphStart(Playable playable)
         {
             base.OnGraphStart(playable);
             m_ScrubbingCacheHelper = null;
+            m_RestoreBrainState = true;
         }
 #endif
 
@@ -272,8 +278,13 @@ namespace Unity.Cinemachine
             // when the graph is rebuilt (e.g. editing a clip in the Inspector).  Restore the brain's
             // last output right away, otherwise the Game view can repaint with the reverted camera
             // before the brain's next update, which shows up as a flicker.
-            if (!Application.isPlaying && m_BrainOverrideStack is CinemachineBrain brain)
+            // Only done on the first evaluation after a graph (re)build: restoring on every frame
+            // would make the camera lag behind while scrubbing, and would clobber manual edits.
+            if (m_RestoreBrainState && !Application.isPlaying && m_BrainOverrideStack is CinemachineBrain brain)
+            {
+                m_RestoreBrainState = false;
                 brain.ReapplyLastStateToUnityCamera();
+            }
 
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
             {
