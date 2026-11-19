@@ -170,7 +170,7 @@ namespace Unity.Cinemachine
         }
 
         [Obsolete("Please use InvalidateCache() instead")]
-        public void InvalidatePathCache() => InvalidatePathCache();
+        public void InvalidatePathCache() => InvalidateCache();
 
         /// <summary>Call this if the bounding shape's points change at runtime</summary>
         public void InvalidateCache()

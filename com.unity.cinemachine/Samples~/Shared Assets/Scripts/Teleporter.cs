@@ -27,7 +27,11 @@ namespace Unity.Cinemachine.Samples
             var targetPortal = TargetPortal;
             if (targetPortal == null)
             {
+#if UNITY_6000_4_OR_NEWER
+                var allPortals = FindObjectsByType<Teleporter>(FindObjectsInactive.Exclude);
+#else
                 var allPortals = FindObjectsByType<Teleporter>(FindObjectsInactive.Exclude, FindObjectsSortMode.None);
+#endif
                 if (allPortals.Length < 2)
                     return; // no other portals
 
