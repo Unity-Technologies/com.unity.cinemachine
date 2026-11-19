@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
  - The Cinemachine 2 to 3 upgrader now asks the user to save modified scenes before upgrading the project
  - Added documentation for Impulse fixed signals and refreshed its screenshots
+ - Added documentation for Cinemachine Camera Offset
 
 ## [3.1.8-pre.2] - 2026-08-04
 
