@@ -15,6 +15,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
  - Fixed visual elements staying hidden in inspectors after being shown again (SetVisible)
  - Removed the DebugText finalizer
  - Replaced obsolete Find APIs to fix compiler warnings in Unity 6000.4 and newer (UUM-156111)
+ - Fixed Game view flickering when editing a Timeline clip in the Inspector while Timeline preview is active (UUM-152885)
 
 ### Changed
  - The Cinemachine 2 to 3 upgrader now asks the user to save modified scenes before upgrading the project
@@ -26,7 +27,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Bugfixes
  - Fixed jitter in mix camera sample caused by using physics velocity without smoothing
  - Changed static reset in CinemachineCore to happen during SubsystemRegistration
- - Fixed Game view flickering when editing a Timeline clip in the Inspector while Timeline preview is active (UUM-152885)
 
 ## [3.1.7] - 2026-06-08
 
