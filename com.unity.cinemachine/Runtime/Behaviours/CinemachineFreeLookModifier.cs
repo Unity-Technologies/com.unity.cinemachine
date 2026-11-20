@@ -129,6 +129,7 @@ namespace Unity.Cinemachine
         /// Modifier for things inside a single CinemachineComponentBase.
         /// </summary>
         /// <typeparam name="T">The type of the thing for which this a modifier.</typeparam>
+        [Serializable]
         public abstract class ComponentModifier<T> : Modifier
         {
             /// <summary>The CinemachineComponentBase that will be modified.  Cached here for efficiency.</summary>
@@ -149,6 +150,7 @@ namespace Unity.Cinemachine
         /// Builtin FreeLook modifier for camera tilt.  Applies a vertical rotation to the camera
         /// at the end of the camera pipeline.
         /// </summary>
+        [Serializable]
         public class TiltModifier : Modifier
         {
             /// <summary>Values for the top and bottom rigs</summary>
@@ -196,6 +198,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Builtin modifier for camera lens.  Applies the lens at the start of the camera pipeline.
         /// </summary>
+        [Serializable]
         public class LensModifier : Modifier
         {
             /// <summary>Settings for top orbit</summary>
@@ -257,6 +260,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Builtin FreeLook modifier for positional damping. Modifies positional damping at the start of the camera pipeline.
         /// </summary>
+        [Serializable]
         public class PositionDampingModifier : ComponentModifier<IModifiablePositionDamping>
         {
             /// <summary>Values for the top and bottom rigs</summary>
@@ -328,6 +332,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Builtin Freelook modifier for screen composition. Modifies composition at the start of the camera pipeline.
         /// </summary>
+        [Serializable]
         public class CompositionModifier : ComponentModifier<IModifiableComposition>
         {
             /// <summary>Values for the top and bottom rigs</summary>
@@ -401,6 +406,7 @@ namespace Unity.Cinemachine
         /// <summary>
         /// Builtin FreeLook modifier for camera distance.  Applies distance to the camera at the start of the camera pipeline.
         /// </summary>
+        [Serializable]
         public class DistanceModifier : ComponentModifier<IModifiableDistance>
         {
             /// <summary>Values for the top and bottom rigs</summary>
@@ -473,6 +479,7 @@ namespace Unity.Cinemachine
         /// Builtin modifier for noise components such as <see cref="CinemachineBasicMultiChannelPerlin"/>.
         /// Applies scaling to amplitude and frequency.
         /// </summary>
+        [Serializable]
         public class NoiseModifier : ComponentModifier<IModifiableNoise>
         {
             /// <summary>
