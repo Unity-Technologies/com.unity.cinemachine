@@ -109,6 +109,10 @@ namespace Unity.Cinemachine.Editor
         /// </summary>
         public static void UpgradeProject()
         {
+            // Prompt user to save any unsaved scene changes before upgrade
+            if (!EditorSceneManager.SaveCurrentModifiedScenesIfUserWantsTo())
+                return;
+
             if (EditorUtility.DisplayDialog(
                 "Upgrade Project to Cinemachine 3",
                 "This project contains objects created with Cinemachine 2, "

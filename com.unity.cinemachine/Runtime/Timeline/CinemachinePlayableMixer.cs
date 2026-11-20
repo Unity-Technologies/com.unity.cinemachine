@@ -145,10 +145,16 @@ namespace Unity.Cinemachine
 #endif
 
 #if UNITY_EDITOR
+        // Set when the graph is (re)built, cleared once the brain's state has been restored
+        bool m_RestoreBrainState = true;
+#endif
+
+#if UNITY_EDITOR
         public override void OnGraphStart(Playable playable)
         {
             base.OnGraphStart(playable);
             m_ScrubbingCacheHelper = null;
+            m_RestoreBrainState = true;
         }
 #endif
 
@@ -268,6 +274,18 @@ namespace Unity.Cinemachine
                 m_BrainOverrideId, Priority, camA, camB, weightB, GetDeltaTime(info.deltaTime));
 
 #if UNITY_EDITOR
+            // In the editor, Timeline's preview can reset the brain's camera to its authored pose
+            // when the graph is rebuilt (e.g. editing a clip in the Inspector).  Restore the brain's
+            // last output right away, otherwise the Game view can repaint with the reverted camera
+            // before the brain's next update, which shows up as a flicker.
+            // Only done on the first evaluation after a graph (re)build: restoring on every frame
+            // would make the camera lag behind while scrubbing, and would clobber manual edits.
+            if (m_RestoreBrainState && !Application.isPlaying && m_BrainOverrideStack is CinemachineBrain brain)
+            {
+                m_RestoreBrainState = false;
+                brain.ReapplyLastStateToUnityCamera();
+            }
+
             if (m_ScrubbingCacheHelper != null && TargetPositionCache.CacheMode != TargetPositionCache.Mode.Disabled)
             {
                 bool isNewB = (m_ScrubbingCacheHelper.ActivePlayableA != clipIndexB
