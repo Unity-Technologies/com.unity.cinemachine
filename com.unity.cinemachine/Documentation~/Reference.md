@@ -49,6 +49,7 @@ Here is a list of all components and assets available in the Cinemachine package
   <!---* Cinemachine External Impulse Listener (component, missing in docs)--->
 * Extensions
   * [Cinemachine Auto Focus](CinemachineAutoFocus.md)
+  * [Cinemachine Camera Offset](CinemachineCameraOffset.md)
   * [Cinemachine Confiner 3D](CinemachineConfiner3D.md)
   * [Cinemachine Confiner 2D](CinemachineConfiner2D.md)
   * [Cinemachine Decollider](CinemachineDecollider.md)
@@ -63,7 +64,6 @@ Here is a list of all components and assets available in the Cinemachine package
   * [Cinemachine Storyboard](CinemachineStoryboard.md)
   * [Cinemachine Third Person Aim](CinemachineThirdPersonAim.md)
   * [Cinemachine Volume Settings](CinemachineVolumeSettings.md)
-  <!---* Cinemachine Camera Offset (component/extension, missing in docs)--->
 * Events
   * [Cinemachine Brain Events](CinemachineBrainEvents.md)
   * [Cinemachine Camera Events](CinemachineCameraEvents.md)

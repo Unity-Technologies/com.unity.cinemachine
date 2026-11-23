@@ -247,6 +247,14 @@ namespace Unity.Cinemachine
             {
                 var state = fromCam.State;
                 ForceCameraPosition(state.GetFinalPosition(), state.GetFinalOrientation());
+
+                if (FollowTarget != null)
+                {
+                    // needed so that blending is consistent in e.g. lazy follow where blend factors are not all identical
+                    m_TargetTracker.ResetPreviousTargetPosition(this, TrackerSettings.BindingMode, TargetOffset, worldUp);
+                    state = GetForcedState(state.GetFinalPosition(), state.GetFinalOrientation());
+                    InferAxesFromPosition(state.GetFinalPosition(), ref state);
+                }
                 return true;
             }
             return false;
@@ -261,26 +269,34 @@ namespace Unity.Cinemachine
         {
             if (FollowTarget != null)
             {
-                var state = VcamState;
-
-                state.RawPosition = pos;
-                state.RawOrientation = rot;
-                state.PositionCorrection = Vector3.zero;
-                state.OrientationCorrection = Quaternion.identity;
-
+                var state = GetForcedState(pos, rot);
                 m_TargetTracker.OnForceCameraPosition(this, TrackerSettings.BindingMode, TargetOffset, ref state);
+                InferAxesFromPosition(pos, ref state);
+            }
+        }
 
-                var dir = pos - m_TargetTracker.PreviousTargetPosition;
-                var distance = dir.magnitude;
-                if (distance > 0.001f)
-                {
-                    dir /= distance;
-                    if (OrbitStyle == OrbitStyles.ThreeRing)
-                        InferAxesFromPosition_ThreeRing(dir, distance, ref state);
-                    else
-                        InferAxesFromPosition_Sphere(dir, distance, ref state);
-                    m_PreviousAxisValues = AxisValues;
-                }
+        CameraState GetForcedState(Vector3 pos, Quaternion rot)
+        {
+            var state = VcamState;
+            state.RawPosition = pos;
+            state.RawOrientation = rot;
+            state.PositionCorrection = Vector3.zero;
+            state.OrientationCorrection = Quaternion.identity;
+            return state;
+        }
+
+        void InferAxesFromPosition(Vector3 pos, ref CameraState state)
+        {
+            var dir = pos - m_TargetTracker.PreviousTargetPosition;
+            var distance = dir.magnitude;
+            if (distance > 0.001f)
+            {
+                dir /= distance;
+                if (OrbitStyle == OrbitStyles.ThreeRing)
+                    InferAxesFromPosition_ThreeRing(dir, distance, ref state);
+                else
+                    InferAxesFromPosition_Sphere(dir, distance, ref state);
+                m_PreviousAxisValues = AxisValues;
             }
         }
 
