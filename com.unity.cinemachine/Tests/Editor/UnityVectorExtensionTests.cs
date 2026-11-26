@@ -114,5 +114,21 @@ namespace Unity.Cinemachine.Tests.Editor
             var angle3 = UnityVectorExtensions.SignedAngle(v1, v2, Vector3.back);
             Assert.That(angle3, Is.EqualTo(-angle).Within(UnityVectorExtensions.Epsilon));
         }
+
+        [TestCase(0f, 0f)]
+        [TestCase(90f, 90f)]
+        [TestCase(180f, 180f)]
+        [TestCase(270f, -90f)]
+        [TestCase(-90f, -90f)]
+        [TestCase(-200f, 160f)]
+        [TestCase(-270f, 90f)]
+        [TestCase(-540f, -180f)]
+        [TestCase(-725f, -5f)]
+        [TestCase(725f, 5f)]
+        public void TestNormalizeAngle(float angle, float expected)
+        {
+            Assert.That(UnityVectorExtensions.NormalizeAngle(angle),
+                Is.EqualTo(expected).Within(UnityVectorExtensions.Epsilon));
+        }
     }
 }

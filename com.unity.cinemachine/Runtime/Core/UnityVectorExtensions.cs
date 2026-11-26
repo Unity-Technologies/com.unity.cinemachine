@@ -336,7 +336,9 @@ namespace Unity.Cinemachine
         public static float NormalizeAngle(float angle)
         {
             angle %= 360;
-            return angle > 180 ? angle -360 : angle;
+            if (angle > 180)
+                return angle - 360;
+            return angle < -180 ? angle + 360 : angle;
         }
     }
 
